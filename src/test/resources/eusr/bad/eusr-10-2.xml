@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EndUserStatisticsReport xmlns="urn:fdc:peppol:end-user-statistics-report:1.0">
+  <CustomizationID>urn:fdc:peppol.eu:edec:trns:end-user-statistics-report:1.0</CustomizationID>
+  <ProfileID>urn:fdc:peppol.eu:edec:bis:reporting:1.0</ProfileID>
+  <Header>
+    <ReportPeriod>
+      <StartDate>2022-01-01</StartDate>
+      <EndDate>2022-01-31</EndDate>
+    </ReportPeriod>
+    <ReporterID schemeID="CertSubjectCN">POP000360</ReporterID>
+  </Header>
+
+  <Total>
+    <SendingEndUsers>4</SendingEndUsers>
+    <ReceivingEndUsers>2</ReceivingEndUsers>
+    <DistinctEndUsers>4</DistinctEndUsers>
+  </Total>
+
+  <Subtotal type="PerDT-PR">
+    <!-- [SCH-EUSR-10] The subtotal per Dataset Type ID and Process ID MUST have one Key element with the meta scheme ID 'DT' -->
+    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
+    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:fdc:peppol.org:2020:ctc:schema:Report-1::Report##urn:fdc:peppol.org:2020:ctc:dt:billing:report:1.0::1.0</Key>
+    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
+    <SendingEndUsers>4</SendingEndUsers>
+    <ReceivingEndUsers>2</ReceivingEndUsers>
+  </Subtotal>
+</EndUserStatisticsReport>

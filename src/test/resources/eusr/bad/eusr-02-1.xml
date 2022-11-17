@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EndUserStatisticsReport xmlns="urn:fdc:peppol:end-user-statistics-report:1.0">
+  <CustomizationID>urn:fdc:peppol.eu:edec:trns:end-user-statistics-report:1.0</CustomizationID>
+  <!-- [SCH-EUSR-02] The profile ID MUST use the value 'urn:fdc:peppol.eu:edec:bis:reporting:1.0' -->
+  <ProfileID>Xurn:fdc:peppol.eu:edec:bis:reporting:1</ProfileID>
+  <Header>
+    <ReportPeriod>
+      <StartDate>2022-01-01</StartDate>
+      <EndDate>2022-01-31</EndDate>
+    </ReportPeriod>
+    <ReporterID schemeID="CertSubjectCN">POP000360</ReporterID>
+  </Header>
+
+  <Total>
+    <SendingEndUsers>0</SendingEndUsers>
+    <ReceivingEndUsers>0</ReceivingEndUsers>
+    <DistinctEndUsers>0</DistinctEndUsers>
+  </Total>
+</EndUserStatisticsReport>
