@@ -24,8 +24,7 @@ import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
 
 /**
- * This class provides the {@link ISchematronResource} for End User Statistics
- * reports.
+ * This class can be used to trigger Schematron validation of EUSR documents.
  *
  * @author Philip Helger
  */
@@ -45,6 +44,9 @@ public final class EndUserStatisticsReportValidator
   private EndUserStatisticsReportValidator ()
   {}
 
+  /**
+   * @return Schematron EUSR v1.0.0-RC2
+   */
   @Nonnull
   public static ISchematronResource getSchematronEUSR_100RC2 ()
   {

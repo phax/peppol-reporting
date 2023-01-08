@@ -23,6 +23,11 @@ import com.helger.commons.exception.InitializationException;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
 
+/**
+ * This class can be used to trigger Schematron validation of TSR documents.
+ *
+ * @author Philip Helger
+ */
 @NotThreadSafe
 public final class TransactionStatisticsReportValidator
 {
@@ -39,6 +44,9 @@ public final class TransactionStatisticsReportValidator
   private TransactionStatisticsReportValidator ()
   {}
 
+  /**
+   * @return Schematron TSR v1.0.0
+   */
   @Nonnull
   public static ISchematronResource getSchematronTSR_100 ()
   {
