@@ -31,25 +31,25 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 @NotThreadSafe
 public final class TransactionStatisticsReportValidator
 {
-  public static final String SCH_TSR_100_PATH = "schematron/peppol-transaction-statistics-reporting-1.0.0.sch";
+  public static final String SCH_TSR_101_PATH = "schematron/peppol-transaction-statistics-reporting-1.0.1.sch";
 
-  private static final ISchematronResource SCH_TSR_100 = SchematronResourceSCH.fromClassPath (SCH_TSR_100_PATH);
+  private static final ISchematronResource SCH_TSR_101 = SchematronResourceSCH.fromClassPath (SCH_TSR_101_PATH);
 
   static
   {
-    if (!SCH_TSR_100.isValidSchematron ())
-      throw new InitializationException ("Schematron in " + SCH_TSR_100.getResource ().getPath () + " is invalid");
+    if (!SCH_TSR_101.isValidSchematron ())
+      throw new InitializationException ("Schematron in " + SCH_TSR_101.getResource ().getPath () + " is invalid");
   }
 
   private TransactionStatisticsReportValidator ()
   {}
 
   /**
-   * @return Schematron TSR v1.0.0
+   * @return Schematron TSR v1.0.1
    */
   @Nonnull
-  public static ISchematronResource getSchematronTSR_100 ()
+  public static ISchematronResource getSchematronTSR_101 ()
   {
-    return SCH_TSR_100;
+    return SCH_TSR_101;
   }
 }

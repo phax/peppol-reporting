@@ -25,7 +25,7 @@ import com.helger.peppol.reporting.jaxb.tsr.v100.ObjectFactory;
 import com.helger.peppol.reporting.jaxb.tsr.v100.TransactionStatisticsReportType;
 
 /**
- * XML marshaller for Peppol Transaction Statistics Reports, version 1.0.0 final
+ * XML marshaller for Peppol Transaction Statistics Reports, version 1.0.1 final
  * draft.
  *
  * @author Philip Helger
@@ -36,7 +36,7 @@ public class TransactionStatisticsReportMarshaller extends GenericJAXBMarshaller
   public TransactionStatisticsReportMarshaller ()
   {
     super (TransactionStatisticsReportType.class,
-           new CommonsArrayList <> (new ClassPathResource ("schemas/peppol-transaction-statistics-reporting-1.0.0.xsd",
+           new CommonsArrayList <> (new ClassPathResource ("schemas/peppol-transaction-statistics-reporting-1.0.1.xsd",
                                                            TransactionStatisticsReportMarshaller.class.getClassLoader ())),
            new ObjectFactory ()::createTransactionStatisticsReport);
   }

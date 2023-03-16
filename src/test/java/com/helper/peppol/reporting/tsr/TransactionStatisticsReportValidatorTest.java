@@ -52,7 +52,7 @@ public final class TransactionStatisticsReportValidatorTest
   {
     for (final File f : TSRTestHelper.getAllGoodFiles ())
     {
-      final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_100 ()
+      final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
                                                                              .applySchematronValidationToSVRL (new FileSystemResource (f));
       assertNotNull (aSVRL);
 
@@ -70,7 +70,7 @@ public final class TransactionStatisticsReportValidatorTest
     final File f = new File ("src/test/resources/tsr/bad/" + sFilename);
     assertNotNull ("The file is not XSD compliant", new TransactionStatisticsReportMarshaller ().read (f));
 
-    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_100 ()
+    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
                                                                            .applySchematronValidationToSVRL (new FileSystemResource (f));
     assertNotNull (aSVRL);
 
@@ -127,8 +127,6 @@ public final class TransactionStatisticsReportValidatorTest
     // PerSP-DT-CC
     assertTrue (_checkFailedID ("tsr-12-1.xml", "SCH-TSR-12"));
     assertTrue (_checkFailedID ("tsr-12-2.xml", "SCH-TSR-12"));
-
-    assertTrue (_checkFailedID ("tsr-13.xml", "SCH-TSR-13"));
 
     assertTrue (_checkFailedID ("tsr-14-1.xml", "SCH-TSR-14"));
     assertTrue (_checkFailedID ("tsr-14-2.xml", "SCH-TSR-14"));
@@ -206,5 +204,7 @@ public final class TransactionStatisticsReportValidatorTest
     assertTrue (_checkFailedID ("tsr-41-1.xml", "SCH-TSR-41"));
 
     assertTrue (_checkFailedID ("tsr-42-1.xml", "SCH-TSR-42"));
+
+    assertTrue (_checkFailedID ("tsr-43-1.xml", "SCH-TSR-43"));
   }
 }

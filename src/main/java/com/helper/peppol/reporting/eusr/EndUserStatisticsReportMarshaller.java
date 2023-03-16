@@ -25,7 +25,7 @@ import com.helger.peppol.reporting.jaxb.eusr.v100rc2.EndUserStatisticsReportType
 import com.helger.peppol.reporting.jaxb.eusr.v100rc2.ObjectFactory;
 
 /**
- * XML marshaller for Peppol End User Statistics Reports, version 1.0.0-RC2.
+ * XML marshaller for Peppol End User Statistics Reports, version 1.0.0.
  *
  * @author Philip Helger
  */
@@ -35,7 +35,7 @@ public class EndUserStatisticsReportMarshaller extends GenericJAXBMarshaller <En
   public EndUserStatisticsReportMarshaller ()
   {
     super (EndUserStatisticsReportType.class,
-           new CommonsArrayList <> (new ClassPathResource ("schemas/peppol-end-user-statistics-reporting-1.0.0-RC2.xsd",
+           new CommonsArrayList <> (new ClassPathResource ("schemas/peppol-end-user-statistics-reporting-1.0.0.xsd",
                                                            EndUserStatisticsReportMarshaller.class.getClassLoader ())),
            new ObjectFactory ()::createEndUserStatisticsReport);
   }

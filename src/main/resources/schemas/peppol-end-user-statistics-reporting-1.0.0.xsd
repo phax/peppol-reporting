@@ -1,39 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Copyright (C) 2022-2023 Philip Helger
-    philip[at]helger[dot]com
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-            http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
--->
-<xs:schema xmlns="urn:fdc:peppol:transaction-statistics-report:1.0" 
-           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-           targetNamespace="urn:fdc:peppol:transaction-statistics-report:1.0" 
+<xs:schema xmlns="urn:fdc:peppol:end-user-statistics-report:1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="urn:fdc:peppol:end-user-statistics-report:1.0"
            elementFormDefault="qualified"
            attributeFormDefault="unqualified">
   <xs:annotation>
     <xs:documentation>
-      This is the XML schema for the Peppol Transaction Statistics Reporting
-      This is based on the "Internal Regulations" document, 
-        chapter 4.4 "Service Provider Reporting on Transaction Statistics"
-      
+      This is the XML schema for the Peppol End User Statistics Reporting.
+      This is based on the "Internal Regulations" document,
+        chapter 4.3 "Service Provider Reporting about End Users"
+
       Author:
         Philip Helger
 
-      History: 
-        2022-11-04, Muhammet Yildiz, Philip Helger - updates after the review
-        2022-04-13, Philip Helger - initial version
+      History:
+        EUSR 1.0.0
+        * 2023-03-06, Philip Helger - updates after second review
+        EUSR RC2
+        * 2022-11-04, Muhammet Yildiz, Philip Helger - updates after the first review
+        EUR RC1
+        * 2022-04-14, Philip Helger - initial version
     </xs:documentation>
   </xs:annotation>
 
@@ -77,7 +63,7 @@
   </xs:complexType>
 
   <xs:complexType name="HeaderType">
-    <xs:annotation> 
+    <xs:annotation>
       <xs:documentation>
         The type for the report header metadata.
       </xs:documentation>
@@ -95,30 +81,23 @@
           <xs:documentation>
             The unique identification of the Service Provider that is providing the data.
             If the "schemeID" attribute is set to "CertSubjectCN" than the value must be
-              the Peppol AP Certificate Subject CN (Common Name).
-              Other scheme IDs are currently not supported.
+            the Peppol AP Certificate Subject CN (Common Name).
+            Other scheme IDs are currently not supported.
           </xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  
-  <xs:complexType name="IncomingOutgoingType">
+
+  <xs:complexType name="FullSetType">
     <xs:sequence>
-      <xs:element name="Incoming" type="xs:nonNegativeInteger">
-        <xs:annotation>
-          <xs:documentation>Number of incoming/received datasets</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="Outgoing" type="xs:nonNegativeInteger">
-        <xs:annotation>
-          <xs:documentation>Number of outgoing/sent datasets</xs:documentation>
-        </xs:annotation>
-      </xs:element>
+      <xs:element name="SendingEndUsers" type="xs:nonNegativeInteger"/>
+      <xs:element name="ReceivingEndUsers" type="xs:nonNegativeInteger"/>
+      <xs:element name="SendingOrReceivingEndUsers" type="xs:nonNegativeInteger"/>
     </xs:sequence>
   </xs:complexType>
-  
-  <xs:complexType name="SubtotalKeyType">
+
+  <xs:complexType name="SubsetKeyType">
     <xs:annotation>
       <xs:documentation>
         A key type with mandatory "metaSchemeID" and "schemeID" attributes and a value
@@ -145,21 +124,26 @@
     </xs:simpleContent>
   </xs:complexType>
 
-  <xs:complexType name="SubtotalType">
+  <xs:complexType name="SubsetType">
     <xs:sequence>
-      <xs:element name="Key" type="SubtotalKeyType" maxOccurs="unbounded">
+      <xs:element name="Key" type="SubsetKeyType" maxOccurs="unbounded">
         <xs:annotation>
-          <xs:documentation>The sub total keys</xs:documentation>
+          <xs:documentation>The subset keys</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="Incoming" type="xs:nonNegativeInteger">
+      <xs:element name="SendingEndUsers" type="xs:nonNegativeInteger">
         <xs:annotation>
-          <xs:documentation>Number of matching incoming/received datasets</xs:documentation>
+          <xs:documentation>Number of matching effective sending End Users</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="Outgoing" type="xs:nonNegativeInteger">
+      <xs:element name="ReceivingEndUsers" type="xs:nonNegativeInteger">
         <xs:annotation>
-          <xs:documentation>Number of matching outgoing/sent datasets</xs:documentation>
+          <xs:documentation>Number of matching effective receiving End Users</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SendingOrReceivingEndUsers" type="xs:nonNegativeInteger">
+        <xs:annotation>
+          <xs:documentation>Number of matching effective sending OR receiving End Users</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -170,10 +154,10 @@
     </xs:attribute>
   </xs:complexType>
 
-  <xs:complexType name="TransactionStatisticsReportType">
+  <xs:complexType name="EndUserStatisticsReportType">
     <xs:annotation>
       <xs:appinfo>
-        This type is used to represent a single Peppol Transaction Statistics Report.
+        This type is used to represent a single Peppol End User Statistics Report.
       </xs:appinfo>
     </xs:annotation>
     <xs:sequence>
@@ -198,27 +182,22 @@
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="Total" type="IncomingOutgoingType">
+      <xs:element name="FullSet" type="FullSetType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="Subset" type="SubsetType" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation>
-            Total number of exchanged datasets.
-          </xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="Subtotal" type="SubtotalType" minOccurs="0" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation>
-            Contains the number of exchanged datasets for different aggregations.
+            A subset representing the number of sending and/or receiving end users for
+            a particular combination of constraints.
           </xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
-  </xs:complexType>  
-    
-  <xs:element name="TransactionStatisticsReport" type="TransactionStatisticsReportType">
+  </xs:complexType>
+
+  <xs:element name="EndUserStatisticsReport" type="EndUserStatisticsReportType">
     <xs:annotation>
       <xs:documentation>
-        This is the root element for a single Peppol Transaction Statistics Report.
+        This is the root element for a single Peppol End User Statistics Report.
       </xs:documentation>
     </xs:annotation>
   </xs:element>

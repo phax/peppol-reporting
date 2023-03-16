@@ -31,25 +31,25 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 @NotThreadSafe
 public final class EndUserStatisticsReportValidator
 {
-  public static final String SCH_TSR_100_PATH = "schematron/peppol-end-user-statistics-reporting-1.0.0-RC2.sch";
+  public static final String SCH_TSR_100_PATH = "schematron/peppol-end-user-statistics-reporting-1.0.0.sch";
 
-  private static final ISchematronResource SCH_EUSR_100RC2 = SchematronResourceSCH.fromClassPath (SCH_TSR_100_PATH);
+  private static final ISchematronResource SCH_EUSR_100 = SchematronResourceSCH.fromClassPath (SCH_TSR_100_PATH);
 
   static
   {
-    if (!SCH_EUSR_100RC2.isValidSchematron ())
-      throw new InitializationException ("Schematron in " + SCH_EUSR_100RC2.getResource ().getPath () + " is invalid");
+    if (!SCH_EUSR_100.isValidSchematron ())
+      throw new InitializationException ("Schematron in " + SCH_EUSR_100.getResource ().getPath () + " is invalid");
   }
 
   private EndUserStatisticsReportValidator ()
   {}
 
   /**
-   * @return Schematron EUSR v1.0.0-RC2
+   * @return Schematron EUSR v1.0.0
    */
   @Nonnull
-  public static ISchematronResource getSchematronEUSR_100RC2 ()
+  public static ISchematronResource getSchematronEUSR_100 ()
   {
-    return SCH_EUSR_100RC2;
+    return SCH_EUSR_100;
   }
 }
