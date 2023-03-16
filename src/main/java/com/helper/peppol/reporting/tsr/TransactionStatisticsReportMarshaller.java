@@ -21,8 +21,8 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.jaxb.GenericJAXBMarshaller;
-import com.helger.peppol.reporting.jaxb.tsr.v100.ObjectFactory;
-import com.helger.peppol.reporting.jaxb.tsr.v100.TransactionStatisticsReportType;
+import com.helger.peppol.reporting.jaxb.tsr.v101.ObjectFactory;
+import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
 
 /**
  * XML marshaller for Peppol Transaction Statistics Reports, version 1.0.1 final
