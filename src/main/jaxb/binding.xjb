@@ -28,13 +28,13 @@
     <xjc:javaType name="com.helger.commons.datetime.XMLOffsetTime"     xmlType="xsd:time"     adapter="com.helger.jaxb.adapter.AdapterXMLOffsetTime" />
   </globalBindings>
   
-  <bindings schemaLocation="../resources/schemas/peppol-end-user-statistics-reporting-1.0.0.xsd">
+  <bindings schemaLocation="../resources/external/schemas/peppol-end-user-statistics-reporting-1.0.0.xsd">
     <schemaBindings>
       <package name="com.helger.peppol.reporting.jaxb.eusr.v100" />
     </schemaBindings>
   </bindings>
   
-  <bindings schemaLocation="../resources/schemas/peppol-transaction-statistics-reporting-1.0.1.xsd">
+  <bindings schemaLocation="../resources/external/schemas/peppol-transaction-statistics-reporting-1.0.1.xsd">
     <schemaBindings>
       <package name="com.helger.peppol.reporting.jaxb.tsr.v101" />
     </schemaBindings>

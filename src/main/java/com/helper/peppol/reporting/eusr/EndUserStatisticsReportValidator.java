@@ -31,7 +31,7 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 @NotThreadSafe
 public final class EndUserStatisticsReportValidator
 {
-  public static final String SCH_TSR_100_PATH = "schematron/peppol-end-user-statistics-reporting-1.0.0.sch";
+  public static final String SCH_TSR_100_PATH = "external/schematron/peppol-end-user-statistics-reporting-1.0.0.sch";
 
   private static final ISchematronResource SCH_EUSR_100 = SchematronResourceSCH.fromClassPath (SCH_TSR_100_PATH);
 

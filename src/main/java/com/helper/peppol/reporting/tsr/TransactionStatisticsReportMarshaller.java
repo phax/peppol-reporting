@@ -33,11 +33,13 @@ import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType
 @NotThreadSafe
 public class TransactionStatisticsReportMarshaller extends GenericJAXBMarshaller <TransactionStatisticsReportType>
 {
+  public static final ClassPathResource XSD_RES = new ClassPathResource ("external/schemas/peppol-transaction-statistics-reporting-1.0.1.xsd",
+                                                                         TransactionStatisticsReportMarshaller.class.getClassLoader ());
+
   public TransactionStatisticsReportMarshaller ()
   {
     super (TransactionStatisticsReportType.class,
-           new CommonsArrayList <> (new ClassPathResource ("schemas/peppol-transaction-statistics-reporting-1.0.1.xsd",
-                                                           TransactionStatisticsReportMarshaller.class.getClassLoader ())),
+           new CommonsArrayList <> (XSD_RES),
            new ObjectFactory ()::createTransactionStatisticsReport);
   }
 }

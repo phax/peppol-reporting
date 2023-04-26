@@ -32,11 +32,13 @@ import com.helger.peppol.reporting.jaxb.eusr.v100.ObjectFactory;
 @NotThreadSafe
 public class EndUserStatisticsReportMarshaller extends GenericJAXBMarshaller <EndUserStatisticsReportType>
 {
+  public static final ClassPathResource XSD_RES = new ClassPathResource ("external/schemas/peppol-end-user-statistics-reporting-1.0.0.xsd",
+                                                                         EndUserStatisticsReportMarshaller.class.getClassLoader ());
+
   public EndUserStatisticsReportMarshaller ()
   {
     super (EndUserStatisticsReportType.class,
-           new CommonsArrayList <> (new ClassPathResource ("schemas/peppol-end-user-statistics-reporting-1.0.0.xsd",
-                                                           EndUserStatisticsReportMarshaller.class.getClassLoader ())),
+           new CommonsArrayList <> (XSD_RES),
            new ObjectFactory ()::createEndUserStatisticsReport);
   }
 }

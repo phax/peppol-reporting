@@ -31,7 +31,7 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 @NotThreadSafe
 public final class TransactionStatisticsReportValidator
 {
-  public static final String SCH_TSR_101_PATH = "schematron/peppol-transaction-statistics-reporting-1.0.1.sch";
+  public static final String SCH_TSR_101_PATH = "external/schematron/peppol-transaction-statistics-reporting-1.0.1.sch";
 
   private static final ISchematronResource SCH_TSR_101 = SchematronResourceSCH.fromClassPath (SCH_TSR_101_PATH);
 
