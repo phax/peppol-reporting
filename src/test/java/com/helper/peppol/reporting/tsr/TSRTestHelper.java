@@ -40,7 +40,7 @@ public final class TSRTestHelper
     final ICommonsList <File> ret = new CommonsArrayList <> ();
     for (final String s : new String [] { "transaction-statistics-2.xml", "transaction-statistics-minimal.xml" })
     {
-      final File f = new File ("src/test/resources/tsr/good/" + s);
+      final File f = new File ("src/test/resources/external/tsr/good/" + s);
       assertTrue (f.isFile ());
       ret.add (f);
     }

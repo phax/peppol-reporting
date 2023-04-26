@@ -42,7 +42,7 @@ public final class EUSRTestHelper
                                           "end-user-statistics-reporting-empty.xml",
                                           "end-user-statistics-reporting-minimal.xml" })
     {
-      final File f = new File ("src/test/resources/eusr/good/" + s);
+      final File f = new File ("src/test/resources/external/eusr/good/" + s);
       assertTrue (f.isFile ());
       ret.add (f);
     }

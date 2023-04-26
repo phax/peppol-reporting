@@ -67,7 +67,7 @@ public final class EndUserStatisticsReportValidatorTest
   @Nonnull
   private static ICommonsSet <String> _getAllFailedIDs (@Nonnull final String sFilename) throws Exception
   {
-    final File f = new File ("src/test/resources/eusr/bad/" + sFilename);
+    final File f = new File ("src/test/resources/external/eusr/bad/" + sFilename);
 
     // Ensure correct according to XSD
     assertNotNull ("Failed to read " + sFilename, new EndUserStatisticsReportMarshaller ().read (f));
