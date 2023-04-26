@@ -68,7 +68,7 @@ public final class TransactionStatisticsReportValidatorTest
   private static ICommonsSet <String> _getAllFailedIDs (@Nonnull final String sFilename) throws Exception
   {
     final File f = new File ("src/test/resources/external/tsr/bad/" + sFilename);
-    assertNotNull ("The file is not XSD compliant", new TransactionStatisticsReportMarshaller ().read (f));
+    assertNotNull ("The file is not XSD compliant", new TransactionStatisticsReport101Marshaller ().read (f));
 
     final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
                                                                            .applySchematronValidationToSVRL (new FileSystemResource (f));

@@ -70,7 +70,7 @@ public final class EndUserStatisticsReportValidatorTest
     final File f = new File ("src/test/resources/external/eusr/bad/" + sFilename);
 
     // Ensure correct according to XSD
-    assertNotNull ("Failed to read " + sFilename, new EndUserStatisticsReportMarshaller ().read (f));
+    assertNotNull ("Failed to read " + sFilename, new EndUserStatisticsReport100Marshaller ().read (f));
 
     final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_100 ()
                                                                        .applySchematronValidationToSVRL (new FileSystemResource (f));

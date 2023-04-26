@@ -30,12 +30,12 @@ import com.helger.peppol.reporting.jaxb.eusr.v100.ObjectFactory;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class EndUserStatisticsReportMarshaller extends GenericJAXBMarshaller <EndUserStatisticsReportType>
+public class EndUserStatisticsReport100Marshaller extends GenericJAXBMarshaller <EndUserStatisticsReportType>
 {
   public static final ClassPathResource XSD_RES = new ClassPathResource ("external/schemas/peppol-end-user-statistics-reporting-1.0.0.xsd",
-                                                                         EndUserStatisticsReportMarshaller.class.getClassLoader ());
+                                                                         EndUserStatisticsReport100Marshaller.class.getClassLoader ());
 
-  public EndUserStatisticsReportMarshaller ()
+  public EndUserStatisticsReport100Marshaller ()
   {
     super (EndUserStatisticsReportType.class,
            new CommonsArrayList <> (XSD_RES),

@@ -31,12 +31,12 @@ import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType
  * @author Philip Helger
  */
 @NotThreadSafe
-public class TransactionStatisticsReportMarshaller extends GenericJAXBMarshaller <TransactionStatisticsReportType>
+public class TransactionStatisticsReport101Marshaller extends GenericJAXBMarshaller <TransactionStatisticsReportType>
 {
   public static final ClassPathResource XSD_RES = new ClassPathResource ("external/schemas/peppol-transaction-statistics-reporting-1.0.1.xsd",
-                                                                         TransactionStatisticsReportMarshaller.class.getClassLoader ());
+                                                                         TransactionStatisticsReport101Marshaller.class.getClassLoader ());
 
-  public TransactionStatisticsReportMarshaller ()
+  public TransactionStatisticsReport101Marshaller ()
   {
     super (TransactionStatisticsReportType.class,
            new CommonsArrayList <> (XSD_RES),

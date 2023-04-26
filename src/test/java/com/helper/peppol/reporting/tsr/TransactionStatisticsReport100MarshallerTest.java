@@ -22,12 +22,12 @@ import java.io.File;
 
 import org.junit.Test;
 
-public final class TransactionStatisticsReportMarshallerTest
+public final class TransactionStatisticsReport100MarshallerTest
 {
   @Test
   public void testTSRGoodCases () throws Exception
   {
-    final TransactionStatisticsReportMarshaller m = new TransactionStatisticsReportMarshaller ();
+    final TransactionStatisticsReport101Marshaller m = new TransactionStatisticsReport101Marshaller ();
     for (final File f : TSRTestHelper.getAllGoodFiles ())
     {
       // Read and XSD validate
