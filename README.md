@@ -46,3 +46,8 @@ Add the following to your pom.xml to use this artifact, replacing `x.y.z` with t
 * v1.0.0 - 2023-04-26
     * Initial Version
     * Supports EUSR 1.0.0 and TSR 1.0.1 
+
+---
+
+My personal [Coding Styleguide](https://github.com/phax/meta/blob/master/CodingStyleguide.md) |
+Kindly supported by [YourKit Java Profiler](https://www.yourkit.com)
