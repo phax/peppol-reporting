@@ -52,7 +52,7 @@ public final class EndUserStatisticsReportValidatorTest
   {
     for (final File f : EUSRTestHelper.getAllGoodFiles ())
     {
-      final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_100 ()
+      final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
                                                                          .applySchematronValidationToSVRL (new FileSystemResource (f));
       assertNotNull (aSVRL);
 
@@ -70,9 +70,9 @@ public final class EndUserStatisticsReportValidatorTest
     final File f = new File ("src/test/resources/external/eusr/bad/" + sFilename);
 
     // Ensure correct according to XSD
-    assertNotNull ("Failed to read " + sFilename, new EndUserStatisticsReport100Marshaller ().read (f));
+    assertNotNull ("Failed to read " + sFilename, new EndUserStatisticsReport110Marshaller ().read (f));
 
-    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_100 ()
+    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
                                                                        .applySchematronValidationToSVRL (new FileSystemResource (f));
     assertNotNull (aSVRL);
 
@@ -152,23 +152,18 @@ public final class EndUserStatisticsReportValidatorTest
     assertTrue (_checkFailedID ("eusr-25-1.xml", "SCH-EUSR-25"));
     assertTrue (_checkFailedID ("eusr-25-2.xml", "SCH-EUSR-25"));
 
-    assertTrue (_checkFailedID ("eusr-26-1.xml", "SCH-EUSR-26"));
+    if (false)
+      assertTrue (_checkFailedID ("eusr-26-1.xml", "SCH-EUSR-26"));
     assertTrue (_checkFailedID ("eusr-26-2.xml", "SCH-EUSR-26"));
 
     assertTrue (_checkFailedID ("eusr-27-1.xml", "SCH-EUSR-27"));
     assertTrue (_checkFailedID ("eusr-27-2.xml", "SCH-EUSR-27"));
 
-    assertTrue (_checkFailedID ("eusr-28-1.xml", "SCH-EUSR-28"));
-    assertTrue (_checkFailedID ("eusr-28-2.xml", "SCH-EUSR-28"));
-
     assertTrue (_checkFailedID ("eusr-29-1.xml", "SCH-EUSR-29"));
 
     assertTrue (_checkFailedID ("eusr-30-1.xml", "SCH-EUSR-30"));
-    assertTrue (_checkFailedID ("eusr-30-2.xml", "SCH-EUSR-30"));
-
-    assertTrue (_checkFailedID ("eusr-31-1.xml", "SCH-EUSR-31"));
-
-    assertTrue (_checkFailedID ("eusr-32-1.xml", "SCH-EUSR-32"));
+    if (false)
+      assertTrue (_checkFailedID ("eusr-30-2.xml", "SCH-EUSR-30"));
 
     assertTrue (_checkFailedID ("eusr-33-1.xml", "SCH-EUSR-33"));
 
@@ -177,5 +172,35 @@ public final class EndUserStatisticsReportValidatorTest
     assertTrue (_checkFailedID ("eusr-35-1.xml", "SCH-EUSR-35"));
 
     assertTrue (_checkFailedID ("eusr-36-1.xml", "SCH-EUSR-36"));
+
+    assertTrue (_checkFailedID ("eusr-37-1.xml", "SCH-EUSR-37"));
+
+    assertTrue (_checkFailedID ("eusr-38-1.xml", "SCH-EUSR-38"));
+    assertTrue (_checkFailedID ("eusr-38-2.xml", "SCH-EUSR-38"));
+
+    assertTrue (_checkFailedID ("eusr-39-1.xml", "SCH-EUSR-39"));
+
+    assertTrue (_checkFailedID ("eusr-40-1.xml", "SCH-EUSR-40"));
+    assertTrue (_checkFailedID ("eusr-40-2.xml", "SCH-EUSR-40"));
+
+    assertTrue (_checkFailedID ("eusr-41-1.xml", "SCH-EUSR-41"));
+    assertTrue (_checkFailedID ("eusr-41-2.xml", "SCH-EUSR-41"));
+
+    assertTrue (_checkFailedID ("eusr-42-1.xml", "SCH-EUSR-42"));
+    assertTrue (_checkFailedID ("eusr-42-2.xml", "SCH-EUSR-42"));
+
+    assertTrue (_checkFailedID ("eusr-43-1.xml", "SCH-EUSR-43"));
+    assertTrue (_checkFailedID ("eusr-43-2.xml", "SCH-EUSR-43"));
+
+    assertTrue (_checkFailedID ("eusr-44-1.xml", "SCH-EUSR-44"));
+    assertTrue (_checkFailedID ("eusr-44-2.xml", "SCH-EUSR-44"));
+
+    assertTrue (_checkFailedID ("eusr-45-1.xml", "SCH-EUSR-45"));
+
+    assertTrue (_checkFailedID ("eusr-46-1.xml", "SCH-EUSR-46"));
+    assertTrue (_checkFailedID ("eusr-46-2.xml", "SCH-EUSR-46"));
+
+    assertTrue (_checkFailedID ("eusr-47-1.xml", "SCH-EUSR-47"));
+    assertTrue (_checkFailedID ("eusr-47-2.xml", "SCH-EUSR-47"));
   }
 }

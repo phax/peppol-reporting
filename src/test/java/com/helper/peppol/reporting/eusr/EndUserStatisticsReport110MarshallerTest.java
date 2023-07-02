@@ -23,16 +23,16 @@ import java.io.File;
 import org.junit.Test;
 
 /**
- * Test class for class {@link EndUserStatisticsReport100Marshaller}.
+ * Test class for class {@link EndUserStatisticsReport110Marshaller}.
  *
  * @author Philip Helger
  */
-public final class EndUserStatisticsReport100MarshallerTest
+public final class EndUserStatisticsReport110MarshallerTest
 {
   @Test
   public void testEUSRGoodCases () throws Exception
   {
-    final EndUserStatisticsReport100Marshaller m = new EndUserStatisticsReport100Marshaller ();
+    final EndUserStatisticsReport110Marshaller m = new EndUserStatisticsReport110Marshaller ();
     for (final File f : EUSRTestHelper.getAllGoodFiles ())
     {
       // Read and XSD validate

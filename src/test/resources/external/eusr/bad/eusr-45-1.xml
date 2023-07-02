@@ -11,17 +11,24 @@
   </Header>
 
   <FullSet>
-    <SendingEndUsers>4</SendingEndUsers>
-    <ReceivingEndUsers>2</ReceivingEndUsers>
-    <SendingOrReceivingEndUsers>4</SendingOrReceivingEndUsers>
+    <SendingEndUsers>5</SendingEndUsers>
+    <ReceivingEndUsers>4</ReceivingEndUsers>
+    <SendingOrReceivingEndUsers>8</SendingOrReceivingEndUsers>
   </FullSet>
 
   <Subset type="PerDT-PR">
-    <!-- [SCH-EUSR-11] The subtotal per Dataset Type ID and Process ID MUST have one Key element with the meta scheme ID 'PR' -->
     <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
+    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
     <SendingEndUsers>4</SendingEndUsers>
     <ReceivingEndUsers>2</ReceivingEndUsers>
     <SendingOrReceivingEndUsers>4</SendingOrReceivingEndUsers>
+  </Subset>
+  <Subset type="PerDT-PR">
+    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
+    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
+    <SendingEndUsers>5</SendingEndUsers>
+    <ReceivingEndUsers>2</ReceivingEndUsers>
+    <SendingOrReceivingEndUsers>5</SendingOrReceivingEndUsers>
   </Subset>
   <Subset type="PerDT-EUC">
     <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
@@ -31,7 +38,9 @@
     <SendingOrReceivingEndUsers>1</SendingOrReceivingEndUsers>
   </Subset>
   <Subset type="PerEUC">
+    <!-- [SCH-EUSR-45] $name MUST have one Key element -->
     <Key metaSchemeID="CC" schemeID="EndUserCountry">PT</Key>
+    <Key metaSchemeID="CC" schemeID="OtherCountry">FI</Key>
     <SendingEndUsers>1</SendingEndUsers>
     <ReceivingEndUsers>0</ReceivingEndUsers>
     <SendingOrReceivingEndUsers>1</SendingOrReceivingEndUsers>

@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-
-    Copyright (C) 2022-2023 Philip Helger
-    philip[at]helger[dot]com
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-            http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
--->
-<EndUserStatisticsReport xmlns="urn:fdc:peppol:end-user-statistics-report:1.0">
-  <CustomizationID>urn:fdc:peppol.eu:edec:trns:end-user-statistics-report:1.0</CustomizationID>
+<EndUserStatisticsReport xmlns="urn:fdc:peppol:end-user-statistics-report:1.1">
+  <CustomizationID>urn:fdc:peppol.eu:edec:trns:end-user-statistics-report:1.1</CustomizationID>
   <ProfileID>urn:fdc:peppol.eu:edec:bis:reporting:1.0</ProfileID>
   <Header>
     <ReportPeriod>
@@ -30,8 +12,8 @@
 
   <FullSet>
     <SendingEndUsers>5</SendingEndUsers>
-    <ReceivingEndUsers>3</ReceivingEndUsers>
-    <SendingOrReceivingEndUsers>6</SendingOrReceivingEndUsers>
+    <ReceivingEndUsers>4</ReceivingEndUsers>
+    <SendingOrReceivingEndUsers>8</SendingOrReceivingEndUsers>
   </FullSet>
 
   <Subset type="PerDT-PR">
@@ -39,7 +21,7 @@
     <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
     <SendingEndUsers>4</SendingEndUsers>
     <ReceivingEndUsers>2</ReceivingEndUsers>
-    <SendingOrReceivingEndUsers>5</SendingOrReceivingEndUsers>
+    <SendingOrReceivingEndUsers>4</SendingOrReceivingEndUsers>
   </Subset>
   <Subset type="PerDT-PR">
     <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
@@ -48,15 +30,27 @@
     <ReceivingEndUsers>2</ReceivingEndUsers>
     <SendingOrReceivingEndUsers>5</SendingOrReceivingEndUsers>
   </Subset>
-
-  <Subset type="PerDT-PR-CC">
+  <Subset type="PerDT-EUC">
     <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
-    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
-    <Key metaSchemeID="CC" schemeID="SenderCountry">FI</Key>
-    <!-- [SCH-EUSR-28] $name MUST have one CC Key element with the scheme ID 'ReceiverCountry' -->
-    <Key metaSchemeID="CC" schemeID="ReceiverCountry2">PT</Key>
+    <Key metaSchemeID="CC" schemeID="EndUserCountry">PT</Key>
     <SendingEndUsers>1</SendingEndUsers>
-    <ReceivingEndUsers>1</ReceivingEndUsers>
+    <ReceivingEndUsers>0</ReceivingEndUsers>
+    <SendingOrReceivingEndUsers>1</SendingOrReceivingEndUsers>
+  </Subset>
+  <Subset type="PerDT-EUC">
+    <!--
+    [SCH-EUSR-38] Each combination of 'Dataset Type ID and End User Country' MUST occur only once. 
+     -->
+    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
+    <Key metaSchemeID="CC" schemeID="EndUserCountry">PT</Key>
+    <SendingEndUsers>1</SendingEndUsers>
+    <ReceivingEndUsers>0</ReceivingEndUsers>
+    <SendingOrReceivingEndUsers>1</SendingOrReceivingEndUsers>
+  </Subset>
+  <Subset type="PerEUC">
+    <Key metaSchemeID="CC" schemeID="EndUserCountry">PT</Key>
+    <SendingEndUsers>1</SendingEndUsers>
+    <ReceivingEndUsers>0</ReceivingEndUsers>
     <SendingOrReceivingEndUsers>1</SendingOrReceivingEndUsers>
   </Subset>
 </EndUserStatisticsReport>

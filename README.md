@@ -43,6 +43,8 @@ Add the following to your pom.xml to use this artifact, replacing `x.y.z` with t
 
 # News and Noteworthy
 
+* v1.1.0 - 2023-07-02
+    * Updated to support EUSR 1.1.0
 * v1.0.0 - 2023-04-26
     * Initial Version
     * Supports EUSR 1.0.0 and TSR 1.0.1 

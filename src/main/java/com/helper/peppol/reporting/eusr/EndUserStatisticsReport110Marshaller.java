@@ -21,21 +21,21 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.jaxb.GenericJAXBMarshaller;
-import com.helger.peppol.reporting.jaxb.eusr.v100.EndUserStatisticsReportType;
-import com.helger.peppol.reporting.jaxb.eusr.v100.ObjectFactory;
+import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
+import com.helger.peppol.reporting.jaxb.eusr.v110.ObjectFactory;
 
 /**
- * XML marshaller for Peppol End User Statistics Reports, version 1.0.0.
+ * XML marshaller for Peppol End User Statistics Reports, version 1.1.0.
  *
  * @author Philip Helger
  */
 @NotThreadSafe
-public class EndUserStatisticsReport100Marshaller extends GenericJAXBMarshaller <EndUserStatisticsReportType>
+public class EndUserStatisticsReport110Marshaller extends GenericJAXBMarshaller <EndUserStatisticsReportType>
 {
-  public static final ClassPathResource XSD_RES = new ClassPathResource ("external/schemas/peppol-end-user-statistics-reporting-1.0.0.xsd",
-                                                                         EndUserStatisticsReport100Marshaller.class.getClassLoader ());
+  public static final ClassPathResource XSD_RES = new ClassPathResource ("external/schemas/peppol-end-user-statistics-reporting-1.1.xsd",
+                                                                         EndUserStatisticsReport110Marshaller.class.getClassLoader ());
 
-  public EndUserStatisticsReport100Marshaller ()
+  public EndUserStatisticsReport110Marshaller ()
   {
     super (EndUserStatisticsReportType.class,
            new CommonsArrayList <> (XSD_RES),
