@@ -43,6 +43,8 @@ Add the following to your pom.xml to use this artifact, replacing `x.y.z` with t
 
 # News and Noteworthy
 
+* v1.2.0 - work in progress
+    * Added data models to easily build End User Statistics Reports v1.1.0
 * v1.1.0 - 2023-07-02
     * Updated to support EUSR 1.1.0
 * v1.0.0 - 2023-04-26
