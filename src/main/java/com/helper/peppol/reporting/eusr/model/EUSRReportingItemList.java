@@ -43,6 +43,7 @@ import com.helper.peppol.reporting.model.PeppolReportingItem;
  * single Reporting Period used to create EUSR reports.
  *
  * @author Philip Helger
+ * @since 1.2.0
  */
 public class EUSRReportingItemList
 {

@@ -50,6 +50,7 @@ public final class EndUserStatisticsReport
    * The main builder class for Peppol End User Statistics Reports v1.1.
    *
    * @author Philip Helger
+   * @since 1.2.0
    */
   public static class Builder11 implements IBuilder <EndUserStatisticsReportType>
   {

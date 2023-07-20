@@ -28,6 +28,7 @@ import com.helger.commons.string.ToStringGenerator;
  * Single Peppol EUSR Key for "Document Type ID and Process ID".
  *
  * @author Philip Helger
+ * @since 1.2.0
  */
 @MustImplementEqualsAndHashcode
 public final class SubsetKeyDT_PR implements IEUSRSubsetKey <SubsetKeyDT_PR>

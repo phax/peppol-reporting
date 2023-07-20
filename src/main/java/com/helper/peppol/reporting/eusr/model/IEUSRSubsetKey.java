@@ -22,6 +22,7 @@ import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
  * This is a marker interface for EUSR Subset keys
  *
  * @author Philip Helger
+ * @since 1.2.0
  */
 @MustImplementEqualsAndHashcode
 public interface IEUSRSubsetKey <T extends IEUSRSubsetKey <T>> extends Comparable <T>

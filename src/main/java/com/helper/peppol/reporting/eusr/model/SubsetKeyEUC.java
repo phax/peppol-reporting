@@ -28,6 +28,7 @@ import com.helger.commons.string.ToStringGenerator;
  * Single Peppol EUSR Key for "End User Country".
  *
  * @author Philip Helger
+ * @since 1.2.0
  */
 @MustImplementEqualsAndHashcode
 public final class SubsetKeyEUC implements IEUSRSubsetKey <SubsetKeyEUC>
