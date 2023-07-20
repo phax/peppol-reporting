@@ -31,7 +31,7 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  */
 @MustImplementEqualsAndHashcode
-public final class SubsetKeyDT_PR_EUC implements IEUSRSubsetKey, Comparable <SubsetKeyDT_PR_EUC>
+public final class SubsetKeyDT_PR_EUC implements IEUSRSubsetKey <SubsetKeyDT_PR_EUC>
 {
   public static final String TYPE = "PerDT-PR-EUC";
 

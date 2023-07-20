@@ -30,7 +30,7 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  */
 @MustImplementEqualsAndHashcode
-public final class SubsetKeyEUC implements IEUSRSubsetKey, Comparable <SubsetKeyEUC>
+public final class SubsetKeyEUC implements IEUSRSubsetKey <SubsetKeyEUC>
 {
   public static final String TYPE = "PerEUC";
 

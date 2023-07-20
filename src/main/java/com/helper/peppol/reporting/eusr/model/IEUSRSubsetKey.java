@@ -16,7 +16,6 @@
  */
 package com.helper.peppol.reporting.eusr.model;
 
-import com.helger.commons.annotation.MustImplementComparable;
 import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
 
 /**
@@ -25,8 +24,7 @@ import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
  * @author Philip Helger
  */
 @MustImplementEqualsAndHashcode
-@MustImplementComparable
-public interface IEUSRSubsetKey
+public interface IEUSRSubsetKey <T extends IEUSRSubsetKey <T>> extends Comparable <T>
 {
   /* empty */
 }
