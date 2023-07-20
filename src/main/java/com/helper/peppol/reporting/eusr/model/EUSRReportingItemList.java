@@ -142,9 +142,9 @@ public class EUSRReportingItemList
   }
 
   @Nonnull
-  private static SubsetKeyType _createEusrKeyType (@Nonnull @Nonempty final String sMetaSchemeID,
-                                                   @Nonnull @Nonempty final String sSchemeID,
-                                                   @Nonnull @Nonempty final String sValue)
+  private static SubsetKeyType _createSubsetKey (@Nonnull @Nonempty final String sMetaSchemeID,
+                                                 @Nonnull @Nonempty final String sSchemeID,
+                                                 @Nonnull @Nonempty final String sValue)
   {
     final SubsetKeyType ret = new SubsetKeyType ();
     ret.setMetaSchemeID (sMetaSchemeID);
@@ -193,8 +193,8 @@ public class EUSRReportingItemList
 
       final SubsetType aSubset = new SubsetType ();
       aSubset.setType (SubsetKeyDT_PR.TYPE);
-      aSubset.addKey (_createEusrKeyType ("DT", aKey.getDocTypeIDScheme (), aKey.getDocTypeIDValue ()));
-      aSubset.addKey (_createEusrKeyType ("PR", aKey.getProcessIDScheme (), aKey.getProcessIDValue ()));
+      aSubset.addKey (_createSubsetKey ("DT", aKey.getDocTypeIDScheme (), aKey.getDocTypeIDValue ()));
+      aSubset.addKey (_createSubsetKey ("PR", aKey.getProcessIDScheme (), aKey.getProcessIDValue ()));
       aSubset.setSendingEndUsers (aVal.getSendingEndUserCount ());
       aSubset.setReceivingEndUsers (aVal.getReceivingEndUserCount ());
       aSubset.setSendingOrReceivingEndUsers (aVal.getSendingOrReceivingEndUserCount ());
@@ -209,7 +209,7 @@ public class EUSRReportingItemList
 
       final SubsetType aSubset = new SubsetType ();
       aSubset.setType (SubsetKeyEUC.TYPE);
-      aSubset.addKey (_createEusrKeyType ("CC", "EndUserCountry", aKey.getEndUserCountryCode ()));
+      aSubset.addKey (_createSubsetKey ("CC", "EndUserCountry", aKey.getEndUserCountryCode ()));
       aSubset.setSendingEndUsers (aVal.getSendingEndUserCount ());
       aSubset.setReceivingEndUsers (aVal.getReceivingEndUserCount ());
       aSubset.setSendingOrReceivingEndUsers (aVal.getSendingOrReceivingEndUserCount ());
@@ -224,8 +224,8 @@ public class EUSRReportingItemList
 
       final SubsetType aSubset = new SubsetType ();
       aSubset.setType (SubsetKeyDT_EUC.TYPE);
-      aSubset.addKey (_createEusrKeyType ("DT", aKey.getDocTypeIDScheme (), aKey.getDocTypeIDValue ()));
-      aSubset.addKey (_createEusrKeyType ("CC", "EndUserCountry", aKey.getEndUserCountryCode ()));
+      aSubset.addKey (_createSubsetKey ("DT", aKey.getDocTypeIDScheme (), aKey.getDocTypeIDValue ()));
+      aSubset.addKey (_createSubsetKey ("CC", "EndUserCountry", aKey.getEndUserCountryCode ()));
       aSubset.setSendingEndUsers (aVal.getSendingEndUserCount ());
       aSubset.setReceivingEndUsers (aVal.getReceivingEndUserCount ());
       aSubset.setSendingOrReceivingEndUsers (aVal.getSendingOrReceivingEndUserCount ());
@@ -240,9 +240,9 @@ public class EUSRReportingItemList
 
       final SubsetType aSubset = new SubsetType ();
       aSubset.setType (SubsetKeyDT_PR_EUC.TYPE);
-      aSubset.addKey (_createEusrKeyType ("DT", aKey.getDocTypeIDScheme (), aKey.getDocTypeIDValue ()));
-      aSubset.addKey (_createEusrKeyType ("PR", aKey.getProcessIDScheme (), aKey.getProcessIDValue ()));
-      aSubset.addKey (_createEusrKeyType ("CC", "EndUserCountry", aKey.getEndUserCountryCode ()));
+      aSubset.addKey (_createSubsetKey ("DT", aKey.getDocTypeIDScheme (), aKey.getDocTypeIDValue ()));
+      aSubset.addKey (_createSubsetKey ("PR", aKey.getProcessIDScheme (), aKey.getProcessIDValue ()));
+      aSubset.addKey (_createSubsetKey ("CC", "EndUserCountry", aKey.getEndUserCountryCode ()));
       aSubset.setSendingEndUsers (aVal.getSendingEndUserCount ());
       aSubset.setReceivingEndUsers (aVal.getReceivingEndUserCount ());
       aSubset.setSendingOrReceivingEndUsers (aVal.getSendingOrReceivingEndUserCount ());
