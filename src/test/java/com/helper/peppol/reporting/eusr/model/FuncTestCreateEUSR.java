@@ -32,9 +32,9 @@ import com.helger.commons.datetime.XMLOffsetDate;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
-import com.helper.peppol.reporting.eusr.CEUSR;
 import com.helper.peppol.reporting.eusr.EndUserStatisticsReport;
 import com.helper.peppol.reporting.eusr.EndUserStatisticsReport110Marshaller;
+import com.helper.peppol.reporting.model.CPeppolReporting;
 import com.helper.peppol.reporting.model.PeppolReportingItem;
 
 public final class FuncTestCreateEUSR
@@ -66,8 +66,7 @@ public final class FuncTestCreateEUSR
                   aReport.getHeader ().getReportPeriod ().getEndDate ());
 
     assertNotNull (aReport.getHeader ().getReporterID ());
-    assertEquals (EndUserStatisticsReport.DEFAULT_REPORTER_ID_SCHEME,
-                  aReport.getHeader ().getReporterID ().getSchemeID ());
+    assertEquals (CPeppolReporting.SERVICE_PROVIDER_ID_SCHEME, aReport.getHeader ().getReporterID ().getSchemeID ());
     assertEquals (MY_SPID, aReport.getHeader ().getReporterIDValue ());
 
     // Full set
@@ -124,8 +123,7 @@ public final class FuncTestCreateEUSR
                   aReport.getHeader ().getReportPeriod ().getEndDate ());
 
     assertNotNull (aReport.getHeader ().getReporterID ());
-    assertEquals (EndUserStatisticsReport.DEFAULT_REPORTER_ID_SCHEME,
-                  aReport.getHeader ().getReporterID ().getSchemeID ());
+    assertEquals (CPeppolReporting.SERVICE_PROVIDER_ID_SCHEME, aReport.getHeader ().getReporterID ().getSchemeID ());
     assertEquals (MY_SPID, aReport.getHeader ().getReporterIDValue ());
 
     // Full set
@@ -227,8 +225,7 @@ public final class FuncTestCreateEUSR
                   aReport.getHeader ().getReportPeriod ().getEndDate ());
 
     assertNotNull (aReport.getHeader ().getReporterID ());
-    assertEquals (EndUserStatisticsReport.DEFAULT_REPORTER_ID_SCHEME,
-                  aReport.getHeader ().getReporterID ().getSchemeID ());
+    assertEquals (CPeppolReporting.SERVICE_PROVIDER_ID_SCHEME, aReport.getHeader ().getReporterID ().getSchemeID ());
     assertEquals (MY_SPID, aReport.getHeader ().getReporterIDValue ());
 
     // Full set

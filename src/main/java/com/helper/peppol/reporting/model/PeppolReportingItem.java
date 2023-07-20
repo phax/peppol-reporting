@@ -161,6 +161,22 @@ public final class PeppolReportingItem
   }
 
   /**
+   * @return The ID of the other service provider. So if this item is for a sent
+   *         message, this is the C3-ID otherwise it is the C2 ID. Neither
+   *         <code>null</code> nor empty.
+   * @see #isSending()
+   * @see #isReceiving()
+   * @see #getC2ID()
+   * @see #getC3ID()
+   */
+  @Nonnull
+  @Nonempty
+  public String getOtherServiceProviderID ()
+  {
+    return m_eDirection.isSending () ? m_sC3ID : m_sC2ID;
+  }
+
+  /**
    * @return The document type identifier scheme used. Neither <code>null</code>
    *         nor empty.
    * @see #getDocTypeIDValue()

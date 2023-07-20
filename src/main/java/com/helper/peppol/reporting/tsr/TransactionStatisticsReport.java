@@ -1,4 +1,4 @@
-package com.helper.peppol.reporting.eusr;
+package com.helper.peppol.reporting.tsr;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -16,45 +16,45 @@ import com.helger.commons.datetime.XMLOffsetDate;
 import com.helger.commons.log.ConditionalLogger;
 import com.helger.commons.math.MathHelper;
 import com.helger.commons.string.StringHelper;
-import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
-import com.helger.peppol.reporting.jaxb.eusr.v110.FullSetType;
-import com.helger.peppol.reporting.jaxb.eusr.v110.HeaderType;
-import com.helger.peppol.reporting.jaxb.eusr.v110.ReportPeriodType;
-import com.helper.peppol.reporting.eusr.model.CEUSR;
-import com.helper.peppol.reporting.eusr.model.EUSRReportingItemList;
+import com.helger.peppol.reporting.jaxb.tsr.v101.HeaderType;
+import com.helger.peppol.reporting.jaxb.tsr.v101.IncomingOutgoingType;
+import com.helger.peppol.reporting.jaxb.tsr.v101.ReportPeriodType;
+import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
 import com.helper.peppol.reporting.model.CPeppolReporting;
 import com.helper.peppol.reporting.model.PeppolReportingItem;
+import com.helper.peppol.reporting.tsr.model.CTSR;
+import com.helper.peppol.reporting.tsr.model.TSRReportingItemList;
 
 /**
- * Builder for Peppol End User Statistics Report objects.
+ * Builder for Peppol Transaction Statistics Report objects.
  *
  * @author Philip Helger
  * @since 1.2.0
  */
 @Immutable
-public final class EndUserStatisticsReport
+public final class TransactionStatisticsReport
 {
-  private EndUserStatisticsReport ()
+  private TransactionStatisticsReport ()
   {}
 
   /**
-   * @return A new builder for EUSR 1.1 reports and never <code>null</code>.
+   * @return A new builder for TSR 1.9 reports and never <code>null</code>.
    */
   @Nonnull
-  public static Builder11 builder ()
+  public static Builder10 builder ()
   {
-    return new Builder11 ();
+    return new Builder10 ();
   }
 
   /**
-   * The main builder class for Peppol End User Statistics Reports v1.1.
+   * The main builder class for Peppol Transaction Statistics Reports v1.0.
    *
    * @author Philip Helger
    * @since 1.2.0
    */
-  public static class Builder11 implements IBuilder <EndUserStatisticsReportType>
+  public static class Builder10 implements IBuilder <TransactionStatisticsReportType>
   {
-    private static final Logger LOGGER = LoggerFactory.getLogger (EndUserStatisticsReport.Builder11.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger (TransactionStatisticsReport.Builder10.class);
 
     private String m_sCustomizationID;
     private String m_sProfileID;
@@ -62,17 +62,17 @@ public final class EndUserStatisticsReport
     private LocalDate m_aEndDate;
     private String m_sReportingServiceProviderIDScheme;
     private String m_sReportingServiceProviderID;
-    private EUSRReportingItemList m_aList;
+    private TSRReportingItemList m_aList;
 
     /**
      * Constructor. Sets default values for: {@link #customizationID(String)},
      * {@link #profileID(String)} and
      * {@link #reportingServiceProviderIDScheme(String)}
      */
-    public Builder11 ()
+    public Builder10 ()
     {
-      customizationID (CEUSR.CUSTOMIZATION_ID_V11);
-      profileID (CEUSR.PROFILE_ID_V10);
+      customizationID (CTSR.CUSTOMIZATION_ID_V10);
+      profileID (CTSR.PROFILE_ID_V10);
       reportingServiceProviderIDScheme (CPeppolReporting.SERVICE_PROVIDER_ID_SCHEME);
     }
 
@@ -84,7 +84,7 @@ public final class EndUserStatisticsReport
      * @return this for chaining
      */
     @Nonnull
-    public Builder11 customizationID (@Nullable final String s)
+    public Builder10 customizationID (@Nullable final String s)
     {
       m_sCustomizationID = s;
       return this;
@@ -98,7 +98,7 @@ public final class EndUserStatisticsReport
      * @return this for chaining
      */
     @Nonnull
-    public Builder11 profileID (@Nullable final String s)
+    public Builder10 profileID (@Nullable final String s)
     {
       m_sProfileID = s;
       return this;
@@ -112,7 +112,7 @@ public final class EndUserStatisticsReport
      * @return this for chaining
      */
     @Nonnull
-    public Builder11 startDate (@Nullable final LocalDate a)
+    public Builder10 startDate (@Nullable final LocalDate a)
     {
       m_aStartDate = a;
       return this;
@@ -126,7 +126,7 @@ public final class EndUserStatisticsReport
      * @return this for chaining
      */
     @Nonnull
-    public Builder11 endDate (@Nullable final LocalDate a)
+    public Builder10 endDate (@Nullable final LocalDate a)
     {
       m_aEndDate = a;
       return this;
@@ -143,7 +143,7 @@ public final class EndUserStatisticsReport
      * @see #endDate(LocalDate)
      */
     @Nonnull
-    public Builder11 monthOf (@Nullable final LocalDate a)
+    public Builder10 monthOf (@Nullable final LocalDate a)
     {
       return startDate (a == null ? null : a.withDayOfMonth (1)).endDate (a == null ? null
                                                                                     : a.plusMonths (1)
@@ -162,7 +162,7 @@ public final class EndUserStatisticsReport
      * @see #endDate(LocalDate)
      */
     @Nonnull
-    public Builder11 monthOf (@Nullable final OffsetDate a)
+    public Builder10 monthOf (@Nullable final OffsetDate a)
     {
       return monthOf (a == null ? null : a.toLocalDate ());
     }
@@ -178,7 +178,7 @@ public final class EndUserStatisticsReport
      * @see #endDate(LocalDate)
      */
     @Nonnull
-    public Builder11 monthOf (@Nullable final OffsetDateTime a)
+    public Builder10 monthOf (@Nullable final OffsetDateTime a)
     {
       return monthOf (a == null ? null : a.toLocalDate ());
     }
@@ -194,7 +194,7 @@ public final class EndUserStatisticsReport
      * @see #endDate(LocalDate)
      */
     @Nonnull
-    public Builder11 monthOf (@Nullable final XMLOffsetDate a)
+    public Builder10 monthOf (@Nullable final XMLOffsetDate a)
     {
       return monthOf (a == null ? null : a.toLocalDate ());
     }
@@ -208,7 +208,7 @@ public final class EndUserStatisticsReport
      * @return this for chaining
      */
     @Nonnull
-    public Builder11 reportingServiceProviderIDScheme (@Nullable final String s)
+    public Builder10 reportingServiceProviderIDScheme (@Nullable final String s)
     {
       m_sReportingServiceProviderIDScheme = s;
       return this;
@@ -223,52 +223,52 @@ public final class EndUserStatisticsReport
      * @return this for chaining
      */
     @Nonnull
-    public Builder11 reportingServiceProviderID (@Nullable final String s)
+    public Builder10 reportingServiceProviderID (@Nullable final String s)
     {
       m_sReportingServiceProviderID = s;
       return this;
     }
 
     /**
-     * Set the EUSR reporting items based on which the report is to be created.
+     * Set the TSR reporting items based on which the report is to be created.
      *
      * @param a
      *        The list to be set. May be <code>null</code>.
      * @return this for chaining
      */
     @Nonnull
-    public Builder11 reportingItemList (@Nullable final EUSRReportingItemList a)
+    public Builder10 reportingItemList (@Nullable final TSRReportingItemList a)
     {
       m_aList = a;
       return this;
     }
 
     /**
-     * Set the EUSR reporting items based on which the report is to be created.
+     * Set the TSR reporting items based on which the report is to be created.
      *
      * @param aItems
-     *        The items of which a new {@link EUSRReportingItemList} is created
+     *        The items of which a new {@link TSRReportingItemList} is created
      *        and used. May be <code>null</code>.
      * @return this for chaining
      */
     @Nonnull
-    public Builder11 reportingItemList (@Nullable final PeppolReportingItem... aItems)
+    public Builder10 reportingItemList (@Nullable final PeppolReportingItem... aItems)
     {
-      return reportingItemList (aItems == null ? null : new EUSRReportingItemList (aItems));
+      return reportingItemList (aItems == null ? null : new TSRReportingItemList (aItems));
     }
 
     /**
-     * Set the EUSR reporting items based on which the report is to be created.
+     * Set the TSR reporting items based on which the report is to be created.
      *
      * @param aItems
-     *        The items of which a new {@link EUSRReportingItemList} is created
+     *        The items of which a new {@link TSRReportingItemList} is created
      *        and used. May be <code>null</code>.
      * @return this for chaining
      */
     @Nonnull
-    public Builder11 reportingItemList (@Nullable final Iterable <? extends PeppolReportingItem> aItems)
+    public Builder10 reportingItemList (@Nullable final Iterable <? extends PeppolReportingItem> aItems)
     {
-      return reportingItemList (aItems == null ? null : new EUSRReportingItemList (aItems));
+      return reportingItemList (aItems == null ? null : new TSRReportingItemList (aItems));
     }
 
     /**
@@ -336,18 +336,18 @@ public final class EndUserStatisticsReport
     }
 
     /**
-     * Build the main EUSR report. Use {@link #isComplete(boolean)} to check if
+     * Build the main TSR report. Use {@link #isComplete(boolean)} to check if
      * all mandatory fields are set or not.
      *
      * @see #isComplete(boolean)
      */
     @Nonnull
-    public EndUserStatisticsReportType build ()
+    public TransactionStatisticsReportType build ()
     {
       if (!isComplete (true))
-        throw new IllegalStateException ("The EUSR builder was not filled completely");
+        throw new IllegalStateException ("The TSR builder was not filled completely");
 
-      final EndUserStatisticsReportType aReport = new EndUserStatisticsReportType ();
+      final TransactionStatisticsReportType aReport = new TransactionStatisticsReportType ();
       aReport.setCustomizationID (m_sCustomizationID);
       aReport.setProfileID (m_sProfileID);
 
@@ -362,11 +362,10 @@ public final class EndUserStatisticsReport
       }
 
       {
-        final FullSetType aFullSet = new FullSetType ();
-        aFullSet.setSendingEndUsers (MathHelper.toBigInteger (m_aList.getSendingEndUserCount ()));
-        aFullSet.setReceivingEndUsers (MathHelper.toBigInteger (m_aList.getReceivingEndUserCount ()));
-        aFullSet.setSendingOrReceivingEndUsers (MathHelper.toBigInteger (m_aList.getSendingOrReceivingEndUserCount ()));
-        aReport.setFullSet (aFullSet);
+        final IncomingOutgoingType aFullSet = new IncomingOutgoingType ();
+        aFullSet.setIncoming (MathHelper.toBigInteger (m_aList.getTotalIncomingCount ()));
+        aFullSet.setOutgoing (MathHelper.toBigInteger (m_aList.getTotalOutgoingCount ()));
+        aReport.setTotal (aFullSet);
       }
 
       // Add all subsets

@@ -14,24 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helper.peppol.reporting.eusr;
+package com.helper.peppol.reporting.tsr.model;
 
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Constants for EUSR - End User Statistics Reporting
+ * Constants for TSR
  *
  * @author Philip Helger
  */
 @Immutable
-public final class CEUSR
+public final class CTSR
 {
-  /** The v1.1 Customization ID to be used */
-  public static final String CUSTOMIZATION_ID_V11 = "urn:fdc:peppol.eu:edec:trns:end-user-statistics-report:1.1";
+  /** The v1.0 Customization ID to be used */
+  public static final String CUSTOMIZATION_ID_V10 = "urn:fdc:peppol.eu:edec:trns:transaction-statistics-reporting:1.0";
 
   /** The v1.0 Profile ID to be used */
   public static final String PROFILE_ID_V10 = "urn:fdc:peppol.eu:edec:bis:reporting:1.0";
 
-  private CEUSR ()
+  public static final String TSR_METASCHEME_TP = "TP";
+  public static final String TSR_METASCHEME_SP = "SP";
+  public static final String TSR_METASCHEME_DT = "DT";
+  public static final String TSR_METASCHEME_PR = "PR";
+  public static final String TSR_METASCHEME_CC = "CC";
+
+  public static final String TSR_SCHEME_TP_PEPPOL = "Peppol";
+  public static final String TSR_SCHEME_CC_SENDER_COUNTRY = "SenderCountry";
+  public static final String TSR_SCHEME_CC_RECEIVER_COUNTRY = "ReceiverCountry";
+
+  private CTSR ()
   {}
 }
