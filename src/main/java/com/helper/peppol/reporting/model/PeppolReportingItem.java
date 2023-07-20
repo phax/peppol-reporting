@@ -25,9 +25,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.builder.IBuilder;
+import com.helger.commons.log.ConditionalLogger;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.peppol.smp.ESMPTransportProfile;
@@ -312,8 +316,10 @@ public final class PeppolReportingItem
    *
    * @author Philip Helger
    */
-  public static final class Builder implements IBuilder <PeppolReportingItem>
+  public static class Builder implements IBuilder <PeppolReportingItem>
   {
+    private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingItem.Builder.class);
+
     private OffsetDateTime m_aExchangeDT;
     private EReportingDirection m_eDirection;
     private String m_sC2ID;
@@ -462,44 +468,102 @@ public final class PeppolReportingItem
       return this;
     }
 
-    public boolean isComplete ()
+    /**
+     * Check if all mandatory fields are set or not.
+     *
+     * @param bLogFailures
+     *        <code>true</code> if missing fields should be logged,
+     *        <code>false</code> if not.
+     * @return <code>true</code> if all mandatory fields are set,
+     *         <code>false</code> if not.
+     */
+    public boolean isComplete (final boolean bLogFailures)
     {
+      final ConditionalLogger aCondLogger = new ConditionalLogger (LOGGER, bLogFailures);
+
       if (m_aExchangeDT == null)
+      {
+        aCondLogger.warn ("ExchangeDateTime is missing");
         return false;
+      }
 
       if (m_eDirection == null)
+      {
+        aCondLogger.warn ("Direction is missing");
         return false;
+      }
 
       if (StringHelper.hasNoText (m_sC2ID))
+      {
+        aCondLogger.warn ("C2 ID is missing");
         return false;
+      }
 
       if (StringHelper.hasNoText (m_sC3ID))
+      {
+        aCondLogger.warn ("C3 ID is missing");
         return false;
+      }
 
       if (StringHelper.hasNoText (m_sDocTypeIDScheme))
+      {
+        aCondLogger.warn ("Document Type ID Scheme is missing");
         return false;
+      }
 
       if (StringHelper.hasNoText (m_sDocTypeIDValue))
+      {
+        aCondLogger.warn ("Document Type ID Value is missing");
         return false;
+      }
 
       if (StringHelper.hasNoText (m_sProcessIDScheme))
+      {
+        aCondLogger.warn ("Process ID Scheme is missing");
         return false;
+      }
 
       if (StringHelper.hasNoText (m_sProcessIDValue))
+      {
+        aCondLogger.warn ("Process ID Value is missing");
         return false;
+      }
 
       if (StringHelper.hasNoText (m_sTransportProtocol))
+      {
+        aCondLogger.warn ("Transport Protocol is missing");
         return false;
+      }
 
       if (StringHelper.hasNoText (m_sC1CountryCode))
+      {
+        aCondLogger.warn ("C1 Country Code is missing");
         return false;
+      }
 
       // C4 is only mandatory for receivers
-      if (StringHelper.hasNoText (m_sC4CountryCode) && m_eDirection.isReceiving ())
-        return false;
+      if (StringHelper.hasNoText (m_sC4CountryCode))
+      {
+        if (m_eDirection.isReceiving ())
+        {
+          aCondLogger.warn ("C4 Country Code is missing");
+          return false;
+        }
+      }
+      else
+      {
+        if (m_eDirection.isSending ())
+        {
+          aCondLogger.warn ("C4 Country Code cannot be provided for outgoing/sent messages");
+          return false;
+        }
+      }
 
       if (StringHelper.hasNoText (m_sEndUserID))
+      {
+        aCondLogger.warn ("End User ID is missing");
         return false;
+      }
 
       return true;
     }
@@ -507,7 +571,7 @@ public final class PeppolReportingItem
     @Nonnull
     public PeppolReportingItem build ()
     {
-      if (!isComplete ())
+      if (!isComplete (true))
         throw new IllegalStateException ("The builder was not filled completely");
 
       return new PeppolReportingItem (m_aExchangeDT,
