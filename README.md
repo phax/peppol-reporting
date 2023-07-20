@@ -1,5 +1,7 @@
 # peppol-reporting
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.helger/peppol-reporting.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.helger%22%20AND%20a%3A%22peppol-reporting%22)
+
 Peppol Reporting support library.
 Peppol Reporting is the process of collecting, aggregating and transmitting Peppol Reports to OpenPeppol. 
 
@@ -63,7 +65,7 @@ Add the following to your pom.xml to use this artifact, replacing `x.y.z` with t
 
 # News and Noteworthy
 
-* v1.2.0 - work in progress
+* v1.2.0 - 2023-07-20
     * Added data models to easily build End User Statistics Reports v1.1.0 in code
     * Added data models to easily build Transaction Statistics Reports v1.0.1 in code
 * v1.1.0 - 2023-07-02
