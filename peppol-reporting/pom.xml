@@ -24,6 +24,7 @@
     <version>2.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>peppol-reporting</artifactId>
+  <packaging>bundle</packaging>
   <inceptionYear>2022</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting</url>
 
@@ -89,6 +90,28 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <instructions>
+            <Automatic-Module-Name>com.helger.peppol.reporting</Automatic-Module-Name>
+            <Export-Package>
+              com.helper.peppol.reporting.eusr.*,
+              com.helper.peppol.reporting.tsr.*
+            </Export-Package>
+            <Import-Package>!javax.annotation.*,*</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>${jaxb-plugin.group}</groupId>
         <artifactId>${jaxb-plugin.artifact}</artifactId>
