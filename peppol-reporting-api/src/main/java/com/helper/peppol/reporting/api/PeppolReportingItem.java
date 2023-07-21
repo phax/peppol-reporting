@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.builder.IBuilder;
+import com.helger.commons.equals.EqualsHelper;
+import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.log.ConditionalLogger;
 import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
@@ -315,6 +317,46 @@ public final class PeppolReportingItem
   public String getEndUserID ()
   {
     return m_sEndUserID;
+  }
+
+  @Override
+  public boolean equals (final Object o)
+  {
+    if (o == this)
+      return true;
+    if (o == null || !getClass ().equals (o.getClass ()))
+      return false;
+    final PeppolReportingItem rhs = (PeppolReportingItem) o;
+    return m_aExchangeDTUTC.equals (rhs.m_aExchangeDTUTC) &&
+           m_eDirection.equals (rhs.m_eDirection) &&
+           m_sC2ID.equals (rhs.m_sC2ID) &&
+           m_sC3ID.equals (rhs.m_sC3ID) &&
+           m_sDocTypeIDScheme.equals (rhs.m_sDocTypeIDScheme) &&
+           m_sDocTypeIDValue.equals (rhs.m_sDocTypeIDValue) &&
+           m_sProcessIDScheme.equals (rhs.m_sProcessIDScheme) &&
+           m_sProcessIDValue.equals (rhs.m_sProcessIDValue) &&
+           m_sTransportProtocol.equals (rhs.m_sTransportProtocol) &&
+           m_sC1CountryCode.equals (rhs.m_sC1CountryCode) &&
+           EqualsHelper.equals (m_sC4CountryCode, rhs.m_sC4CountryCode) &&
+           m_sEndUserID.equals (rhs.m_sEndUserID);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return new HashCodeGenerator (this).append (m_aExchangeDTUTC)
+                                       .append (m_eDirection)
+                                       .append (m_sC2ID)
+                                       .append (m_sC3ID)
+                                       .append (m_sDocTypeIDScheme)
+                                       .append (m_sDocTypeIDValue)
+                                       .append (m_sProcessIDScheme)
+                                       .append (m_sProcessIDValue)
+                                       .append (m_sTransportProtocol)
+                                       .append (m_sC1CountryCode)
+                                       .append (m_sC4CountryCode)
+                                       .append (m_sEndUserID)
+                                       .getHashCode ();
   }
 
   @Override
