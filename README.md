@@ -22,8 +22,12 @@ This library offers a Java domain model for EUSR and TSR reports.
 
 ## Data collection
 
+Data collection needs to happen into your Access Point instances.
+
 The data for reporting needs to be collected in instances of class `PeppolReportingItem`.
-For each sent or received Peppol transmission, such a `PeppolReportingItem` needs to be collected, and persisted. 
+For each sent or received Peppol transmission, such a `PeppolReportingItem` needs to be collected, and persisted.
+
+To facilitate this collection, the submodule `peppol-reporting-api` exists. 
 
 ## Data aggregation
 
@@ -42,6 +46,7 @@ This domain model can be read from and written to XML documents via the marshall
 ## Validation
 
 Additionally, the Schematron compatibility can be verified using the classes `EndUserStatisticsReportValidator` and `TransactionStatisticsReportValidator`.
+All checks are performed against the default Schematrons provided by OpenPeppol.
 
 # Glossary
 
@@ -57,7 +62,7 @@ Add the following to your pom.xml to use this artifact, replacing `x.y.z` with t
 
 ```xml
 <dependency>
-  <groupId>com.helger</groupId>
+  <groupId>com.helger.peppol</groupId>
   <artifactId>peppol-reporting</artifactId>
   <version>x.y.z</version>
 </dependency>
@@ -67,7 +72,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-* v2.0.0 - work in progress
+* v2.0.0 - 2023-07-21
     * Changed the Maven Group ID to be `com.helger.peppol` instead of `com.helger`
     * Introduced the new submodule `peppol-reporting-api`
 * v1.2.0 - 2023-07-20
