@@ -39,6 +39,7 @@ import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smp.ISMPTransportProfile;
 import com.helger.peppolid.IDocumentTypeIdentifier;
 import com.helger.peppolid.IProcessIdentifier;
+import com.helger.peppolid.peppol.PeppolIdentifierHelper;
 
 /**
  * This class represents a single Peppol Reporting raw data item. It contains
@@ -49,6 +50,18 @@ import com.helger.peppolid.IProcessIdentifier;
 @Immutable
 public final class PeppolReportingItem
 {
+  public static final int MAX_LEN_C2_ID = 64;
+  public static final int MAX_LEN_C3_ID = MAX_LEN_C2_ID;
+  public static final int MAX_LEN_DOCTYPE_SCHEME = 64;
+  public static final int MAX_LEN_DOCTYPE_VALUE = PeppolIdentifierHelper.MAX_DOCUMENT_TYPE_VALUE_LENGTH;
+  public static final int MAX_LEN_PROCESS_SCHEME = 64;
+  public static final int MAX_LEN_PROCESS_VALUE = PeppolIdentifierHelper.MAX_PROCESS_VALUE_LENGTH;
+  public static final int MAX_LEN_TRANSPORT_PROTOCOL = 64;
+  public static final int LEN_COUNTRY_CODE = 2;
+  public static final int MAX_LEN_C1_COUNTRY_CODE = LEN_COUNTRY_CODE;
+  public static final int MAX_LEN_C4_COUNTRY_CODE = LEN_COUNTRY_CODE;
+  public static final int MAX_LEN_END_USER_ID = 256;
+
   // TSR, EUSR
   private final OffsetDateTime m_aExchangeDTUTC;
   // TSR, EUSR
@@ -74,7 +87,7 @@ public final class PeppolReportingItem
 
   public static boolean isValidCountryCode (@Nullable final String s)
   {
-    return s != null && s.length () == 2 && RegExHelper.stringMatchesPattern ("[0-9A-Z]{2}", s);
+    return s != null && s.length () == LEN_COUNTRY_CODE && RegExHelper.stringMatchesPattern ("[0-9A-Z]{2}", s);
   }
 
   public PeppolReportingItem (@Nonnull final OffsetDateTime aExchangeDT,
@@ -515,10 +528,20 @@ public final class PeppolReportingItem
         aCondLogger.warn ("C2 ID is missing");
         return false;
       }
+      if (m_sC2ID.length () > MAX_LEN_C2_ID)
+      {
+        aCondLogger.warn ( () -> "C2 ID exceeds the maximium length of " + MAX_LEN_C2_ID);
+        return false;
+      }
 
       if (StringHelper.hasNoText (m_sC3ID))
       {
         aCondLogger.warn ("C3 ID is missing");
+        return false;
+      }
+      if (m_sC3ID.length () > MAX_LEN_C3_ID)
+      {
+        aCondLogger.warn ( () -> "C3 ID exceeds the maximium length of " + MAX_LEN_C3_ID);
         return false;
       }
 
@@ -527,10 +550,20 @@ public final class PeppolReportingItem
         aCondLogger.warn ("Document Type ID Scheme is missing");
         return false;
       }
+      if (m_sDocTypeIDScheme.length () > MAX_LEN_DOCTYPE_SCHEME)
+      {
+        aCondLogger.warn ( () -> "Document Type ID Scheme exceeds the maximium length of " + MAX_LEN_DOCTYPE_SCHEME);
+        return false;
+      }
 
       if (StringHelper.hasNoText (m_sDocTypeIDValue))
       {
         aCondLogger.warn ("Document Type ID Value is missing");
+        return false;
+      }
+      if (m_sDocTypeIDValue.length () > MAX_LEN_DOCTYPE_VALUE)
+      {
+        aCondLogger.warn ( () -> "Document Type ID Value exceeds the maximium length of " + MAX_LEN_DOCTYPE_VALUE);
         return false;
       }
 
@@ -539,16 +572,31 @@ public final class PeppolReportingItem
         aCondLogger.warn ("Process ID Scheme is missing");
         return false;
       }
+      if (m_sProcessIDScheme.length () > MAX_LEN_PROCESS_SCHEME)
+      {
+        aCondLogger.warn ( () -> "Process ID Scheme exceeds the maximium length of " + MAX_LEN_PROCESS_SCHEME);
+        return false;
+      }
 
       if (StringHelper.hasNoText (m_sProcessIDValue))
       {
         aCondLogger.warn ("Process ID Value is missing");
         return false;
       }
+      if (m_sProcessIDValue.length () > MAX_LEN_PROCESS_VALUE)
+      {
+        aCondLogger.warn ( () -> "Process ID Value exceeds the maximium length of " + MAX_LEN_PROCESS_VALUE);
+        return false;
+      }
 
       if (StringHelper.hasNoText (m_sTransportProtocol))
       {
         aCondLogger.warn ("Transport Protocol is missing");
+        return false;
+      }
+      if (m_sTransportProtocol.length () > MAX_LEN_TRANSPORT_PROTOCOL)
+      {
+        aCondLogger.warn ( () -> "Transport Protocol exceeds the maximium length of " + MAX_LEN_TRANSPORT_PROTOCOL);
         return false;
       }
 
@@ -590,6 +638,11 @@ public final class PeppolReportingItem
       if (StringHelper.hasNoText (m_sEndUserID))
       {
         aCondLogger.warn ("End User ID is missing");
+        return false;
+      }
+      if (m_sEndUserID.length () > MAX_LEN_END_USER_ID)
+      {
+        aCondLogger.warn ( () -> "End User ID exceeds the maximium length of " + MAX_LEN_END_USER_ID);
         return false;
       }
 

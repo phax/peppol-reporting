@@ -59,4 +59,43 @@ public final class PeppolReportingItemTest
     assertEquals ("FI", aItem.getEndUserCountryCode ());
     assertEquals ("abc", aItem.getEndUserID ());
   }
+
+  @Test
+  public void testBasicReceiving ()
+  {
+    final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
+    final String sMySPID = "PAT000001";
+    final String sOtherSPID = "POP000002";
+
+    final PeppolReportingItem aItem = PeppolReportingItem.builder ()
+                                                         .exchangeDateTime (aNow)
+                                                         .directionReceiving ()
+                                                         .c2ID (sOtherSPID)
+                                                         .c3ID (sMySPID)
+                                                         .docTypeID (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30)
+                                                         .processID (EPredefinedProcessIdentifier.BIS3_BILLING)
+                                                         .transportProtocolPeppolAS4v2 ()
+                                                         .c1CountryCode ("FI")
+                                                         .c4CountryCode ("AT")
+                                                         .endUserID ("abc")
+                                                         .build ();
+    assertNotNull (aItem);
+    assertEquals (aNow.atZoneSameInstant (ZoneOffset.UTC).toOffsetDateTime (), aItem.getExchangeDTUTC ());
+    assertEquals (EReportingDirection.RECEIVING, aItem.getDirection ());
+    assertFalse (aItem.isSending ());
+    assertTrue (aItem.isReceiving ());
+    assertEquals (sOtherSPID, aItem.getC2ID ());
+    assertEquals (sMySPID, aItem.getC3ID ());
+    assertEquals (sOtherSPID, aItem.getOtherServiceProviderID ());
+    assertEquals (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getScheme (),
+                  aItem.getDocTypeIDScheme ());
+    assertEquals (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getValue (), aItem.getDocTypeIDValue ());
+    assertEquals (EPredefinedProcessIdentifier.BIS3_BILLING.getScheme (), aItem.getProcessIDScheme ());
+    assertEquals (EPredefinedProcessIdentifier.BIS3_BILLING.getValue (), aItem.getProcessIDValue ());
+    assertEquals ("peppol-transport-as4-v2_0", aItem.getTransportProtocol ());
+    assertEquals ("FI", aItem.getC1CountryCode ());
+    assertEquals ("AT", aItem.getC4CountryCode ());
+    assertEquals ("AT", aItem.getEndUserCountryCode ());
+    assertEquals ("abc", aItem.getEndUserID ());
+  }
 }

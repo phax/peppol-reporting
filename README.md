@@ -63,6 +63,8 @@ Add the following to your pom.xml to use this artifact, replacing `x.y.z` with t
 </dependency>
 ```
 
+Note: all v1.x releases used the group ID `com.helger` only.
+
 # News and Noteworthy
 
 * v2.0.0 - work in progress
