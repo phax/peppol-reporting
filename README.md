@@ -65,6 +65,8 @@ Add the following to your pom.xml to use this artifact, replacing `x.y.z` with t
 
 # News and Noteworthy
 
+* v2.0.0 - work in progress
+    * Changed the Maven Group ID to be `com.helger.peppol` instead of `com.helger`
 * v1.2.0 - 2023-07-20
     * Added data models to easily build End User Statistics Reports v1.1.0 in code
     * Added data models to easily build Transaction Statistics Reports v1.0.1 in code
