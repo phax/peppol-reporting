@@ -71,7 +71,40 @@
   </dependencies>
 
   <build>
+    <resources>
+      <!-- Don't specify the targetPath because this leads to a broken JAR file 
+        in combination with the bundle plugin (absolute file paths in ZIP file) -->
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/*.properties</exclude>
+        </excludes>  
+      </resource>
+    </resources>
+    
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Automatic-Module-Name>com.helger.peppol.reporting.api</Automatic-Module-Name>
+            <Export-Package>com.helper.peppol.reporting.api.*</Export-Package>
+            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <!-- The latter one has precedence -->
+            <Include-Resource>{maven-resources},peppol-reporting-api-version.properties=target/classes/peppol-reporting-api-version.properties</Include-Resource>
+          </instructions>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
