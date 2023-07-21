@@ -59,10 +59,6 @@
       <artifactId>ph-jaxb-adapter</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.helger.commons</groupId>
-      <artifactId>ph-datetime</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-xslt</artifactId>
     </dependency>
@@ -77,13 +73,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.helger.web</groupId>
-      <artifactId>ph-httpclient</artifactId>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
