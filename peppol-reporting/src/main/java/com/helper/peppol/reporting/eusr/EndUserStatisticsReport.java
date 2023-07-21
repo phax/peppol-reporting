@@ -36,10 +36,9 @@ import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.FullSetType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.HeaderType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.ReportPeriodType;
-import com.helper.peppol.reporting.eusr.model.CEUSR;
+import com.helper.peppol.reporting.api.CPeppolReporting;
+import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.eusr.model.EUSRReportingItemList;
-import com.helper.peppol.reporting.model.CPeppolReporting;
-import com.helper.peppol.reporting.model.PeppolReportingItem;
 
 /**
  * Builder for Peppol End User Statistics Report objects.
@@ -87,8 +86,8 @@ public final class EndUserStatisticsReport
      */
     public Builder11 ()
     {
-      customizationID (CEUSR.CUSTOMIZATION_ID_V11);
-      profileID (CEUSR.PROFILE_ID_V10);
+      customizationID (CPeppolReporting.EUSR_CUSTOMIZATION_ID_V11);
+      profileID (CPeppolReporting.EUSR_PROFILE_ID_V10);
       reportingServiceProviderIDScheme (CPeppolReporting.SERVICE_PROVIDER_ID_SCHEME);
     }
 

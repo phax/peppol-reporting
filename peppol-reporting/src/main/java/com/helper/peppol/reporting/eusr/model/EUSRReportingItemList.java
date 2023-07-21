@@ -35,7 +35,7 @@ import com.helger.commons.math.MathHelper;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetKeyType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetType;
-import com.helper.peppol.reporting.model.PeppolReportingItem;
+import com.helper.peppol.reporting.api.PeppolReportingItem;
 
 /**
  * This class represents a set of {@link PeppolReportingItem} objects for a

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helper.peppol.reporting.model;
+package com.helper.peppol.reporting.api;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -32,6 +32,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.builder.IBuilder;
 import com.helger.commons.log.ConditionalLogger;
+import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.peppol.smp.ESMPTransportProfile;
@@ -70,6 +71,11 @@ public final class PeppolReportingItem
   private final String m_sC4CountryCode;
   // EUSR
   private final String m_sEndUserID;
+
+  public static boolean isValidCountryCode (@Nullable final String s)
+  {
+    return s != null && s.length () == 2 && RegExHelper.stringMatchesPattern ("[0-9A-Z]{2}", s);
+  }
 
   public PeppolReportingItem (@Nonnull final OffsetDateTime aExchangeDT,
                               @Nonnull final EReportingDirection eDirection,
@@ -114,12 +120,23 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The exchange date time in UTC.
+   * @return The exchange date time in UTC. Never <code>null</code>.
    */
   @Nonnull
   public OffsetDateTime getExchangeDTUTC ()
   {
     return m_aExchangeDTUTC;
+  }
+
+  /**
+   * @return The direction of the reporting item. Never <code>null</code>.
+   * @see #isSending()
+   * @see #isReceiving()
+   */
+  @Nonnull
+  public EReportingDirection getDirection ()
+  {
+    return m_eDirection;
   }
 
   /**
@@ -540,6 +557,11 @@ public final class PeppolReportingItem
         aCondLogger.warn ("C1 Country Code is missing");
         return false;
       }
+      if (!isValidCountryCode (m_sC1CountryCode))
+      {
+        aCondLogger.error ("C1 Country Code has an invalid layout");
+        return false;
+      }
 
       // C4 is only mandatory for receivers
       if (StringHelper.hasNoText (m_sC4CountryCode))
@@ -555,6 +577,12 @@ public final class PeppolReportingItem
         if (m_eDirection.isSending ())
         {
           aCondLogger.warn ("C4 Country Code cannot be provided for outgoing/sent messages");
+          return false;
+        }
+
+        if (!isValidCountryCode (m_sC4CountryCode))
+        {
+          aCondLogger.error ("C4 Country Code has an invalid layout");
           return false;
         }
       }

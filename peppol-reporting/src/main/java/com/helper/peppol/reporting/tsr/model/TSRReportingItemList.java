@@ -33,8 +33,8 @@ import com.helger.commons.math.MathHelper;
 import com.helger.peppol.reporting.jaxb.tsr.v101.SubtotalKeyType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.SubtotalType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
-import com.helper.peppol.reporting.model.CPeppolReporting;
-import com.helper.peppol.reporting.model.PeppolReportingItem;
+import com.helper.peppol.reporting.api.CPeppolReporting;
+import com.helper.peppol.reporting.api.PeppolReportingItem;
 
 /**
  * This class represents a set of {@link PeppolReportingItem} objects for a

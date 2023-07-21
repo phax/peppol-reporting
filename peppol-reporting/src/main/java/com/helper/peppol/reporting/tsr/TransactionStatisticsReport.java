@@ -36,9 +36,8 @@ import com.helger.peppol.reporting.jaxb.tsr.v101.HeaderType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.IncomingOutgoingType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.ReportPeriodType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
-import com.helper.peppol.reporting.model.CPeppolReporting;
-import com.helper.peppol.reporting.model.PeppolReportingItem;
-import com.helper.peppol.reporting.tsr.model.CTSR;
+import com.helper.peppol.reporting.api.CPeppolReporting;
+import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.tsr.model.TSRReportingItemList;
 
 /**
@@ -87,8 +86,8 @@ public final class TransactionStatisticsReport
      */
     public Builder10 ()
     {
-      customizationID (CTSR.CUSTOMIZATION_ID_V10);
-      profileID (CTSR.PROFILE_ID_V10);
+      customizationID (CPeppolReporting.TSR_CUSTOMIZATION_ID_V10);
+      profileID (CPeppolReporting.TSR_PROFILE_ID_V10);
       reportingServiceProviderIDScheme (CPeppolReporting.SERVICE_PROVIDER_ID_SCHEME);
     }
 

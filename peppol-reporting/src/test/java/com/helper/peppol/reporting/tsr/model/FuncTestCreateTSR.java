@@ -32,8 +32,8 @@ import com.helger.commons.datetime.XMLOffsetDate;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
-import com.helper.peppol.reporting.model.CPeppolReporting;
-import com.helper.peppol.reporting.model.PeppolReportingItem;
+import com.helper.peppol.reporting.api.CPeppolReporting;
+import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.tsr.TransactionStatisticsReport;
 import com.helper.peppol.reporting.tsr.TransactionStatisticsReport101Marshaller;
 
@@ -55,8 +55,8 @@ public final class FuncTestCreateTSR
                                                                                .build ();
 
     // Check content
-    assertEquals (CTSR.CUSTOMIZATION_ID_V10, aReport.getCustomizationIDValue ());
-    assertEquals (CTSR.PROFILE_ID_V10, aReport.getProfileIDValue ());
+    assertEquals (CPeppolReporting.TSR_CUSTOMIZATION_ID_V10, aReport.getCustomizationIDValue ());
+    assertEquals (CPeppolReporting.TSR_PROFILE_ID_V10, aReport.getProfileIDValue ());
     assertNotNull (aReport.getHeader ());
 
     assertNotNull (aReport.getHeader ().getReportPeriod ());
@@ -111,8 +111,8 @@ public final class FuncTestCreateTSR
                                                                                .build ();
 
     // Check content
-    assertEquals (CTSR.CUSTOMIZATION_ID_V10, aReport.getCustomizationIDValue ());
-    assertEquals (CTSR.PROFILE_ID_V10, aReport.getProfileIDValue ());
+    assertEquals (CPeppolReporting.TSR_CUSTOMIZATION_ID_V10, aReport.getCustomizationIDValue ());
+    assertEquals (CPeppolReporting.TSR_PROFILE_ID_V10, aReport.getProfileIDValue ());
     assertNotNull (aReport.getHeader ());
 
     assertNotNull (aReport.getHeader ().getReportPeriod ());
@@ -180,8 +180,8 @@ public final class FuncTestCreateTSR
                                                                                .build ();
 
     // Check content
-    assertEquals (CTSR.CUSTOMIZATION_ID_V10, aReport.getCustomizationIDValue ());
-    assertEquals (CTSR.PROFILE_ID_V10, aReport.getProfileIDValue ());
+    assertEquals (CPeppolReporting.TSR_CUSTOMIZATION_ID_V10, aReport.getCustomizationIDValue ());
+    assertEquals (CPeppolReporting.TSR_PROFILE_ID_V10, aReport.getProfileIDValue ());
     assertNotNull (aReport.getHeader ());
 
     assertNotNull (aReport.getHeader ().getReportPeriod ());
@@ -287,8 +287,8 @@ public final class FuncTestCreateTSR
                                                                                .build ();
 
     // Check content
-    assertEquals (CTSR.CUSTOMIZATION_ID_V10, aReport.getCustomizationIDValue ());
-    assertEquals (CTSR.PROFILE_ID_V10, aReport.getProfileIDValue ());
+    assertEquals (CPeppolReporting.TSR_CUSTOMIZATION_ID_V10, aReport.getCustomizationIDValue ());
+    assertEquals (CPeppolReporting.TSR_PROFILE_ID_V10, aReport.getProfileIDValue ());
     assertNotNull (aReport.getHeader ());
 
     assertNotNull (aReport.getHeader ().getReportPeriod ());

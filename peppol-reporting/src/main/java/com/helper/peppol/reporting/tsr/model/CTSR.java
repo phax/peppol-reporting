@@ -26,12 +26,6 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public final class CTSR
 {
-  /** The v1.0 Customization ID to be used */
-  public static final String CUSTOMIZATION_ID_V10 = "urn:fdc:peppol.eu:edec:trns:transaction-statistics-reporting:1.0";
-
-  /** The v1.0 Profile ID to be used */
-  public static final String PROFILE_ID_V10 = "urn:fdc:peppol.eu:edec:bis:reporting:1.0";
-
   public static final String TSR_METASCHEME_TP = "TP";
   public static final String TSR_METASCHEME_SP = "SP";
   public static final String TSR_METASCHEME_DT = "DT";

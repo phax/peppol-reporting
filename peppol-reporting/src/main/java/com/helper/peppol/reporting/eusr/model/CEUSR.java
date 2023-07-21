@@ -26,11 +26,6 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public final class CEUSR
 {
-  /** The v1.1 Customization ID to be used */
-  public static final String CUSTOMIZATION_ID_V11 = "urn:fdc:peppol.eu:edec:trns:end-user-statistics-report:1.1";
-
-  /** The v1.0 Profile ID to be used */
-  public static final String PROFILE_ID_V10 = "urn:fdc:peppol.eu:edec:bis:reporting:1.0";
 
   public static final String EUSR_METASCHEME_DT = "DT";
   public static final String EUSR_METASCHEME_PR = "PR";

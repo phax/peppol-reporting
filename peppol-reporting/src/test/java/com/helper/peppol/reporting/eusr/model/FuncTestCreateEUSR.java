@@ -32,10 +32,10 @@ import com.helger.commons.datetime.XMLOffsetDate;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
+import com.helper.peppol.reporting.api.CPeppolReporting;
+import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.eusr.EndUserStatisticsReport;
 import com.helper.peppol.reporting.eusr.EndUserStatisticsReport110Marshaller;
-import com.helper.peppol.reporting.model.CPeppolReporting;
-import com.helper.peppol.reporting.model.PeppolReportingItem;
 
 public final class FuncTestCreateEUSR
 {
@@ -55,8 +55,8 @@ public final class FuncTestCreateEUSR
                                                                        .build ();
 
     // Check content
-    assertEquals (CEUSR.CUSTOMIZATION_ID_V11, aReport.getCustomizationIDValue ());
-    assertEquals (CEUSR.PROFILE_ID_V10, aReport.getProfileIDValue ());
+    assertEquals (CPeppolReporting.EUSR_CUSTOMIZATION_ID_V11, aReport.getCustomizationIDValue ());
+    assertEquals (CPeppolReporting.EUSR_PROFILE_ID_V10, aReport.getProfileIDValue ());
     assertNotNull (aReport.getHeader ());
 
     assertNotNull (aReport.getHeader ().getReportPeriod ());
@@ -112,8 +112,8 @@ public final class FuncTestCreateEUSR
                                                                        .build ();
 
     // Check content
-    assertEquals (CEUSR.CUSTOMIZATION_ID_V11, aReport.getCustomizationIDValue ());
-    assertEquals (CEUSR.PROFILE_ID_V10, aReport.getProfileIDValue ());
+    assertEquals (CPeppolReporting.EUSR_CUSTOMIZATION_ID_V11, aReport.getCustomizationIDValue ());
+    assertEquals (CPeppolReporting.EUSR_PROFILE_ID_V10, aReport.getProfileIDValue ());
     assertNotNull (aReport.getHeader ());
 
     assertNotNull (aReport.getHeader ().getReportPeriod ());
@@ -214,8 +214,8 @@ public final class FuncTestCreateEUSR
                                                                        .build ();
 
     // Check content
-    assertEquals (CEUSR.CUSTOMIZATION_ID_V11, aReport.getCustomizationIDValue ());
-    assertEquals (CEUSR.PROFILE_ID_V10, aReport.getProfileIDValue ());
+    assertEquals (CPeppolReporting.EUSR_CUSTOMIZATION_ID_V11, aReport.getCustomizationIDValue ());
+    assertEquals (CPeppolReporting.EUSR_PROFILE_ID_V10, aReport.getProfileIDValue ());
     assertNotNull (aReport.getHeader ());
 
     assertNotNull (aReport.getHeader ().getReportPeriod ());

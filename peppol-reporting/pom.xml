@@ -66,19 +66,10 @@
       <artifactId>ph-schematron-xslt</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.helger.peppol</groupId>
-      <artifactId>peppol-id</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.peppol</groupId>
-      <artifactId>peppol-commons</artifactId>
+      <groupId>com.helger</groupId>
+      <artifactId>peppol-reporting-api</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
-    </dependency>
-    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -90,8 +81,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
