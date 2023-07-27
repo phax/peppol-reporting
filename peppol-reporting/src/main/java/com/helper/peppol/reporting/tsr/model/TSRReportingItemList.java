@@ -145,6 +145,7 @@ public class TSRReportingItemList
       final boolean bIncoming = aItem.isReceiving ();
       m_aMapTP.computeIfAbsent (aKeyTP, x -> new TransactionCounter ()).inc (bIncoming);
       m_aMapSP_DT_PR.computeIfAbsent (aKeySP_DT_PR, x -> new TransactionCounter ()).inc (bIncoming);
+
       if (bIncoming)
       {
         // This can only be counted for incoming messages, as senders never have

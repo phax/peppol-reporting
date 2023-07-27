@@ -26,16 +26,20 @@ import java.util.function.IntFunction;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.datetime.XMLOffsetDate;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
+import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helper.peppol.reporting.api.CPeppolReporting;
 import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.tsr.TransactionStatisticsReport;
 import com.helper.peppol.reporting.tsr.TransactionStatisticsReport101Marshaller;
+import com.helper.peppol.reporting.tsr.TransactionStatisticsReportValidator;
 
 public final class FuncTestCreateTSR
 {
@@ -43,7 +47,7 @@ public final class FuncTestCreateTSR
   private static final String MY_SPID = "PDE000001";
 
   @Test
-  public void testCreateEmpty ()
+  public void testCreateEmpty () throws Exception
   {
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
 
@@ -81,11 +85,17 @@ public final class FuncTestCreateTSR
     if (false)
       LOGGER.info (new TransactionStatisticsReport101Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
-    assertNotNull (new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport));
+    final Document aDoc = new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport);
+    assertNotNull (aDoc);
+
+    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
+                                                                           .applySchematronValidationToSVRL (aDoc,
+                                                                                                             null);
+    assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test
-  public void testCreateForOneSendingTransmission ()
+  public void testCreateForOneSendingTransmission () throws Exception
   {
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
     final String sOtherSPID = "POP000002";
@@ -149,11 +159,17 @@ public final class FuncTestCreateTSR
     if (false)
       LOGGER.info (new TransactionStatisticsReport101Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
-    assertNotNull (new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport));
+    final Document aDoc = new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport);
+    assertNotNull (aDoc);
+
+    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
+                                                                           .applySchematronValidationToSVRL (aDoc,
+                                                                                                             null);
+    assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test
-  public void testCreateForOneReceivingTransmission ()
+  public void testCreateForOneReceivingTransmission () throws Exception
   {
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
     final String sOtherSPID = "POP000002";
@@ -217,11 +233,17 @@ public final class FuncTestCreateTSR
     if (false)
       LOGGER.info (new TransactionStatisticsReport101Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
-    assertNotNull (new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport));
+    final Document aDoc = new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport);
+    assertNotNull (aDoc);
+
+    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
+                                                                           .applySchematronValidationToSVRL (aDoc,
+                                                                                                             null);
+    assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test
-  public void testCreateReport ()
+  public void testCreateReport () throws Exception
   {
     final String sOtherSPID = "POP000002";
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
@@ -330,6 +352,12 @@ public final class FuncTestCreateTSR
     if (false)
       LOGGER.info (new TransactionStatisticsReport101Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
-    assertNotNull (new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport));
+    final Document aDoc = new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport);
+    assertNotNull (aDoc);
+
+    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
+                                                                           .applySchematronValidationToSVRL (aDoc,
+                                                                                                             null);
+    assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 }

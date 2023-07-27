@@ -26,16 +26,20 @@ import java.util.function.IntFunction;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.datetime.XMLOffsetDate;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
+import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helper.peppol.reporting.api.CPeppolReporting;
 import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.eusr.EndUserStatisticsReport;
 import com.helper.peppol.reporting.eusr.EndUserStatisticsReport110Marshaller;
+import com.helper.peppol.reporting.eusr.EndUserStatisticsReportValidator;
 
 public final class FuncTestCreateEUSR
 {
@@ -43,7 +47,7 @@ public final class FuncTestCreateEUSR
   private static final String MY_SPID = "PDE000001";
 
   @Test
-  public void testCreateEmpty ()
+  public void testCreateEmpty () throws Exception
   {
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
 
@@ -82,11 +86,16 @@ public final class FuncTestCreateEUSR
     if (false)
       LOGGER.info (new EndUserStatisticsReport110Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
-    assertNotNull (new EndUserStatisticsReport110Marshaller ().getAsDocument (aReport));
+    final Document aDoc = new EndUserStatisticsReport110Marshaller ().getAsDocument (aReport);
+    assertNotNull (aDoc);
+
+    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
+                                                                       .applySchematronValidationToSVRL (aDoc, null);
+    assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test
-  public void testCreateForOneTransmission ()
+  public void testCreateForOneTransmission () throws Exception
   {
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
     final String sOtherSPID = "POP000002";
@@ -144,11 +153,16 @@ public final class FuncTestCreateEUSR
     if (false)
       LOGGER.info (new EndUserStatisticsReport110Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
-    assertNotNull (new EndUserStatisticsReport110Marshaller ().getAsDocument (aReport));
+    final Document aDoc = new EndUserStatisticsReport110Marshaller ().getAsDocument (aReport);
+    assertNotNull (aDoc);
+
+    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
+                                                                       .applySchematronValidationToSVRL (aDoc, null);
+    assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test
-  public void testCreateReport ()
+  public void testCreateReport () throws Exception
   {
     final String sOtherSPID = "POP000002";
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
@@ -238,6 +252,11 @@ public final class FuncTestCreateEUSR
     if (false)
       LOGGER.info (new EndUserStatisticsReport110Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
-    assertNotNull (new EndUserStatisticsReport110Marshaller ().getAsDocument (aReport));
+    final Document aDoc = new EndUserStatisticsReport110Marshaller ().getAsDocument (aReport);
+    assertNotNull (aDoc);
+
+    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
+                                                                       .applySchematronValidationToSVRL (aDoc, null);
+    assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 }
