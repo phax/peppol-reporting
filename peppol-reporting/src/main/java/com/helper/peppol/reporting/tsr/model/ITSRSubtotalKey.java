@@ -22,6 +22,8 @@ import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
  * This is a marker interface for TSR Subtotal keys
  *
  * @author Philip Helger
+ * @param <T>
+ *        The implementation type
  * @since 1.2.0
  */
 @MustImplementEqualsAndHashcode
