@@ -1,5 +1,6 @@
 # peppol-reporting
 
+[![javadoc](https://javadoc.io/badge2/com.helger/peppol-reporting/javadoc.svg)](https://javadoc.io/doc/com.helger/peppol-reporting-parent-pom)
 [![Maven Central](https://img.shields.io/maven-central/v/com.helger/peppol-reporting.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.helger%22%20AND%20a%3A%22peppol-reporting%22)
 
 Peppol Reporting support library.
