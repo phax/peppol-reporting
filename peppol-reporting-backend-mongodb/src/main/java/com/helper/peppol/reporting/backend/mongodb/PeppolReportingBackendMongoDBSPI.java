@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
 import org.bson.Document;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.IsSPIImplementation;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.mutable.MutableInt;
 import com.helger.commons.state.ESuccess;
@@ -68,38 +70,48 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
     return "MongoDB";
   }
 
+  @Nullable
+  @OverrideOnDemand
+  protected MongoClientWrapper createClientWrapper (@Nonnull final IConfig aConfig)
+  {
+    final String sConnectionString = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING);
+    if (StringHelper.hasNoText (sConnectionString))
+    {
+      LOGGER.error ("The MongoDB connection string is missing in the configuration. See property '" +
+                    CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING +
+                    "'");
+      return null;
+    }
+
+    final String sDBName = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME);
+    if (StringHelper.hasNoText (sDBName))
+    {
+      LOGGER.error ("The MongoDB database name is missing in the configuration. See property '" +
+                    CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME +
+                    "'");
+      return null;
+    }
+
+    LOGGER.info ("Using Peppol Reporting MongoDB database name '" + sDBName + "'");
+    return new MongoClientWrapper (sConnectionString, sDBName);
+  }
+
   @Nonnull
   public ESuccess initBackend (@Nonnull final IConfig aConfig)
   {
-    if (m_aRWLock.writeLockedGet ( () -> {
+    m_aRWLock.writeLocked ( () -> {
       if (m_aClientWrapper != null)
         throw new IllegalStateException ("The Peppol Reporting MongoDB backend was already initialized");
 
-      final String sConnectionString = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING);
-      if (StringHelper.hasNoText (sConnectionString))
-      {
-        LOGGER.error ("The MongoDB connection string is missing in the configuration. See property '" +
-                      CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING +
-                      "'");
-        return ESuccess.FAILURE;
-      }
-      final String sDBName = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME);
-      if (StringHelper.hasNoText (sDBName))
-      {
-        LOGGER.error ("The MongoDB database name is missing in the configuration. See property '" +
-                      CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME +
-                      "'");
-        return ESuccess.FAILURE;
-      }
-
-      LOGGER.info ("Using Peppol Reporting MongoDB database name '" + sDBName + "'");
-      m_aClientWrapper = new MongoClientWrapper (sConnectionString, sDBName);
-
+      m_aClientWrapper = createClientWrapper (aConfig);
       // It may take some time, until the "DB writable" field returns true
+    });
 
-      return ESuccess.SUCCESS;
-    }).isFailure ())
+    if (!isInitialized ())
+    {
+      // Error was already logged
       return ESuccess.FAILURE;
+    }
 
     try
     {
