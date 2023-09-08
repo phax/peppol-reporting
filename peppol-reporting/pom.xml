@@ -101,9 +101,12 @@
           <instructions>
             <Automatic-Module-Name>com.helger.peppol.reporting</Automatic-Module-Name>
             <Export-Package>
-              com.helper.peppol.reporting.jaxb.*,
+              com.helper.peppol.reporting.jaxb.eusr.v110.*,
+              com.helper.peppol.reporting.jaxb.tsr.v101.*,
               com.helper.peppol.reporting.eusr.*,
-              com.helper.peppol.reporting.tsr.*
+              com.helper.peppol.reporting.eusr.model.*,
+              com.helper.peppol.reporting.tsr.*,
+              com.helper.peppol.reporting.tsr.model.*
             </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
