@@ -17,6 +17,7 @@
 package com.helper.peppol.reporting.api.backend;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import org.slf4j.Logger;
@@ -43,22 +44,18 @@ public class PeppolReportingBackend
 
   private static final IPeppolReportingBackendSPI BACKEND_SERVICE = _loadBackendService ();
 
-  private PeppolReportingBackend ()
-  {}
-
-  @Nonnull
+  @Nullable
   private static IPeppolReportingBackendSPI _loadBackendService ()
   {
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Loading IPeppolReportingBackendSPI implementations");
+      LOGGER.debug ("Loading IPeppolReportingBackendSPI implementation");
 
     final ICommonsList <IPeppolReportingBackendSPI> aBackends = ServiceLoaderHelper.getAllSPIImplementations (IPeppolReportingBackendSPI.class);
     final int nBackends = aBackends.size ();
     if (nBackends != 1)
     {
-      throw new IllegalStateException ("Failed to find exactly one backend SPI implementations, but " +
-                                       nBackends +
-                                       " instances");
+      LOGGER.error ("Failed to find exactly one backend SPI implementations, but " + nBackends + " instances");
+      return null;
     }
 
     if (LOGGER.isDebugEnabled ())
@@ -66,7 +63,14 @@ public class PeppolReportingBackend
     return aBackends.getFirst ();
   }
 
-  @Nonnull
+  private PeppolReportingBackend ()
+  {}
+
+  /**
+   * @return The loaded reporting backend implementation. May be
+   *         <code>null</code> if no SPI implementation is registered.
+   */
+  @Nullable
   public static IPeppolReportingBackendSPI getBackendService ()
   {
     return BACKEND_SERVICE;
@@ -98,6 +102,8 @@ public class PeppolReportingBackend
     ValueEnforcer.notNull (aBackendConsumer, "BackendConsumer");
 
     final IPeppolReportingBackendSPI aBackend = getBackendService ();
+    if (aBackend == null)
+      return ESuccess.FAILURE;
 
     if (aBackend.isInitialized ())
     {
