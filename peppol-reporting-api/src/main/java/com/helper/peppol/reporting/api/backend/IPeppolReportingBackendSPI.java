@@ -17,6 +17,7 @@
 package com.helper.peppol.reporting.api.backend;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
@@ -57,6 +58,15 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
   ESuccess initBackend (@Nonnull IConfig aConfig);
 
   /**
+   * This method indicates if {@link #initBackend(IConfig)} was called and
+   * delivered success and {@link #shutdownBackend()} was not yet called.
+   *
+   * @return <code>true</code> if this backend is already successfully
+   *         initialized, <code>false</code> if not.
+   */
+  boolean isInitialized ();
+
+  /**
    * Shutdown the backend. This may only be called if backend initialization was
    * successful.
    */
@@ -91,4 +101,23 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
   void forEachReportingItem (@Nonnull LocalDate aStartDateIncl,
                              @Nonnull LocalDate aEndDateIncl,
                              @Nonnull Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException;
+
+  /**
+   * Iterate all {@link PeppolReportingItem} objects in the provided month, in
+   * the correct order.
+   *
+   * @param aYearMonth
+   *        The year and month to iterate. May not be <code>null</code>.
+   * @param aConsumer
+   *        The consumer to be invoked for each {@link PeppolReportingItem}
+   *        object found.
+   * @throws PeppolReportingBackendException
+   *         In case of an unrecoverable error
+   * @see #forEachReportingItem(LocalDate, LocalDate, Consumer)
+   */
+  default void forEachReportingItem (@Nonnull final YearMonth aYearMonth,
+                                     @Nonnull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
+  {
+    forEachReportingItem (aYearMonth.atDay (1), aYearMonth.atEndOfMonth (), aConsumer);
+  }
 }

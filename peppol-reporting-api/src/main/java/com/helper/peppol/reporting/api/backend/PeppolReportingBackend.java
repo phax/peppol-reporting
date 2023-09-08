@@ -98,17 +98,27 @@ public class PeppolReportingBackend
     ValueEnforcer.notNull (aBackendConsumer, "BackendConsumer");
 
     final IPeppolReportingBackendSPI aBackend = getBackendService ();
-    if (aBackend.initBackend (aConfig).isFailure ())
-      return ESuccess.FAILURE;
 
-    try
+    if (aBackend.isInitialized ())
     {
-      // Do something with the backend
+      // Immediately do something with the backend
       aBackendConsumer.accept (aBackend);
     }
-    finally
+    else
     {
-      aBackend.shutdownBackend ();
+      // Init, run, shutdown
+      if (aBackend.initBackend (aConfig).isFailure ())
+        return ESuccess.FAILURE;
+
+      try
+      {
+        // Do something with the backend
+        aBackendConsumer.accept (aBackend);
+      }
+      finally
+      {
+        aBackend.shutdownBackend ();
+      }
     }
     return ESuccess.SUCCESS;
   }
