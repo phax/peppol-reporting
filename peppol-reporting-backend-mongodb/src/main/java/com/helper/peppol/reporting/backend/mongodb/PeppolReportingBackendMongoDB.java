@@ -1,16 +1,35 @@
+/*
+ * Copyright (C) 2022-2023 Philip Helger
+ * philip[at]helger[dot]com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.helper.peppol.reporting.backend.mongodb;
 
 import java.time.LocalDate;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.GuardedBy;
 
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.IsSPIImplementation;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
@@ -18,6 +37,9 @@ import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helper.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Sorts;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for MongoDB.
@@ -32,6 +54,8 @@ public class PeppolReportingBackendMongoDB implements IPeppolReportingBackendSPI
 
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendMongoDB.class);
 
+  private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
+  @GuardedBy ("m_aRWLock")
   private MongoClientWrapper m_aClientWrapper;
 
   @Nonnull
@@ -44,61 +68,102 @@ public class PeppolReportingBackendMongoDB implements IPeppolReportingBackendSPI
   @Nonnull
   public ESuccess initBackend (@Nonnull final IConfig aConfig)
   {
-    if (m_aClientWrapper != null)
-      throw new IllegalStateException ("The Peppol Reporting MongoDB backend was already initialized");
+    if (m_aRWLock.writeLockedGet ( () -> {
+      if (m_aClientWrapper != null)
+        throw new IllegalStateException ("The Peppol Reporting MongoDB backend was already initialized");
 
-    final String sConnectionString = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING);
-    if (StringHelper.hasNoText (sConnectionString))
-    {
-      LOGGER.error ("The MongoDB connection string is missing in the configuration. See property '" +
-                    CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING +
-                    "'");
-      return ESuccess.FAILURE;
-    }
-    final String sDBName = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME);
-    if (StringHelper.hasNoText (sDBName))
-    {
-      LOGGER.error ("The MongoDB database name is missing in the configuration. See property '" +
-                    CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME +
-                    "'");
-      return ESuccess.FAILURE;
-    }
+      final String sConnectionString = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING);
+      if (StringHelper.hasNoText (sConnectionString))
+      {
+        LOGGER.error ("The MongoDB connection string is missing in the configuration. See property '" +
+                      CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING +
+                      "'");
+        return ESuccess.FAILURE;
+      }
+      final String sDBName = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME);
+      if (StringHelper.hasNoText (sDBName))
+      {
+        LOGGER.error ("The MongoDB database name is missing in the configuration. See property '" +
+                      CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME +
+                      "'");
+        return ESuccess.FAILURE;
+      }
 
-    LOGGER.info ("Using Peppol Reporting Mongo DB database name '" + sDBName + "'");
-    m_aClientWrapper = new MongoClientWrapper (sConnectionString, sDBName);
+      LOGGER.info ("Using Peppol Reporting MongoDB database name '" + sDBName + "'");
+      m_aClientWrapper = new MongoClientWrapper (sConnectionString, sDBName);
+
+      return ESuccess.SUCCESS;
+    }).isFailure ())
+      return ESuccess.FAILURE;
+
+    // Make sure indexes are present
+    _getCollection ().createIndex (Indexes.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDT,
+                                                      PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE));
 
     return ESuccess.SUCCESS;
   }
 
+  public boolean isInitialized ()
+  {
+    return m_aRWLock.readLockedBoolean ( () -> m_aClientWrapper != null);
+  }
+
   public void shutdownBackend ()
   {
-    if (m_aClientWrapper != null)
+    if (isInitialized ())
     {
-      LOGGER.info ("Shutting down Peppol Reporting Mongo DB client");
-      m_aClientWrapper.close ();
-      m_aClientWrapper = null;
+      m_aRWLock.writeLocked ( () -> {
+        LOGGER.info ("Shutting down Peppol Reporting MongoDB client");
+        m_aClientWrapper.close ();
+        m_aClientWrapper = null;
+      });
     }
     else
-      LOGGER.warn ("The Peppol Reporting Mongo DB backend cannot be shutdown, because it was never properly initialized");
+      LOGGER.warn ("The Peppol Reporting MongoDB backend cannot be shutdown, because it was never properly initialized");
   }
 
   @Nonnull
   private MongoCollection <Document> _getCollection ()
   {
-    return m_aClientWrapper.getCollection ("peppol-reporting");
+    return m_aRWLock.readLockedGet ( () -> m_aClientWrapper.getCollection ("reporting-items"));
   }
 
   public void storeReportingItem (@Nonnull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
-    // TODO
-    _getCollection ();
+    ValueEnforcer.notNull (aReportingItem, "ReportingItem");
+
+    if (!isInitialized ())
+      throw new IllegalStateException ("The Peppol Reporting MongoDB backend is not initialized");
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Trying to store Peppol Reporting Item in MongoDB");
+
+    // Write to collection
+    if (!_getCollection ().insertOne (PeppolReportingMongoDBHelper.toBson (aReportingItem)).wasAcknowledged ())
+      throw new IllegalStateException ("Failed to insert into Peppol Reporting MongoDB Collection");
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Successfully stored Peppol Reporting Item in MongoDB");
   }
 
   public void forEachReportingItem (@Nonnull final LocalDate aStartDateIncl,
                                     @Nonnull final LocalDate aEndDateIncl,
                                     @Nonnull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
   {
-    // TODO
+    ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
+    ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
+    ValueEnforcer.notNull (aConsumer, "Consumer");
 
+    if (!isInitialized ())
+      throw new IllegalStateException ("The Peppol Reporting MongoDB backend is not initialized");
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Querying Peppol Reporting Items from MongoDB between " + aStartDateIncl + " and " + aEndDateIncl);
+
+    // Find between date, but order by exchange date and time
+    _getCollection ().find (Filters.and (Filters.gte (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE, aStartDateIncl),
+                                         Filters.lte (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE, aEndDateIncl)))
+                     .sort (Sorts.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDT))
+                     .forEach (x -> aConsumer.accept (PeppolReportingMongoDBHelper.toDomain (x)));
   }
 }
