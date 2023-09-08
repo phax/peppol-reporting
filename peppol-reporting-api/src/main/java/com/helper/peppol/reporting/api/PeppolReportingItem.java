@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.builder.IBuilder;
+import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.log.ConditionalLogger;
@@ -141,6 +142,16 @@ public final class PeppolReportingItem
   public OffsetDateTime getExchangeDTUTC ()
   {
     return m_aExchangeDTUTC;
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getReportingPeriodIDMonthly ()
+  {
+    // The reporting period ID is (currently) a month, so we can extract that
+    // data easily for separate storing and indexation
+    return StringHelper.getLeadingZero (m_aExchangeDTUTC.getYear (), 4) +
+           StringHelper.getLeadingZero (m_aExchangeDTUTC.getMonthValue (), 2);
   }
 
   /**
@@ -411,7 +422,8 @@ public final class PeppolReportingItem
     @Nonnull
     public Builder exchangeDateTime (@Nullable final OffsetDateTime a)
     {
-      m_aExchangeDT = a;
+      // For representation in a java.util.Date and in XSD this is necessary
+      m_aExchangeDT = PDTFactory.getWithMillisOnly (a);
       return this;
     }
 
