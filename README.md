@@ -75,6 +75,9 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+* v2.1.0 - work in progress
+    * Added new API package `com.helper.peppol.reporting.api.backend` to define a generic backend API
+    * Added new submodule `peppol-reporting-backend-mongodb` that uses MongoDB as the backend to store reporting items
 * v2.0.0 - 2023-07-21
     * Changed the Maven Group ID to be `com.helger.peppol` instead of `com.helger`
     * Introduced the new submodule `peppol-reporting-api`

@@ -75,7 +75,11 @@ public class PeppolReportingBackend
   /**
    * This is a helper method that ensures that all activities with an
    * {@link IPeppolReportingBackendSPI} are wrapped in the proper init and
-   * shutdown method calls.
+   * shutdown method calls. Make sure to not call this method in a nested
+   * fashion or in multiple threads. This method is primarily helpful for tests
+   * and single-threaded applications. To use the reporting backend in a multi
+   * threaded environment, it is highly recommended that you extract the init
+   * and shutdown calls into your application framework.
    *
    * @param aConfig
    *        The configuration required to start the backend. May not be
