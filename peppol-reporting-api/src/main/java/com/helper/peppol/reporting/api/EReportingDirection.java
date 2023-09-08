@@ -16,21 +16,42 @@
  */
 package com.helper.peppol.reporting.api;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.id.IHasID;
+import com.helger.commons.lang.EnumHelper;
+
 /**
  * This enum defines the overall reporting direction
  *
  * @author Philip Helger
  */
-public enum EReportingDirection
+public enum EReportingDirection implements IHasID <String>
 {
   /**
    * For an outgoing, outbound or sent message.
    */
-  SENDING,
+  SENDING ("send"),
   /**
    * For an incoming, inbound or received message.
    */
-  RECEIVING;
+  RECEIVING ("recv");
+
+  private final String m_sID;
+
+  EReportingDirection (@Nonnull @Nonempty final String sID)
+  {
+    m_sID = sID;
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getID ()
+  {
+    return m_sID;
+  }
 
   public boolean isSending ()
   {
@@ -40,5 +61,17 @@ public enum EReportingDirection
   public boolean isReceiving ()
   {
     return this == RECEIVING;
+  }
+
+  @Nullable
+  public static EReportingDirection getFromIDOrNull (@Nullable final String sID)
+  {
+    return EnumHelper.getFromIDOrNull (EReportingDirection.class, sID);
+  }
+
+  @Nonnull
+  public static EReportingDirection getFromIDOrThrow (@Nullable final String sID)
+  {
+    return EnumHelper.getFromIDOrThrow (EReportingDirection.class, sID);
   }
 }
