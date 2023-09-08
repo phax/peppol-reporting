@@ -1,0 +1,23 @@
+version: '3.9'
+
+# This Docker compose file starts up local database instances for SMP building
+# Run like this:
+# docker compose -f unittest-db-docker-compose.yml up
+# docker compose -f unittest-db-docker-compose.yml down
+services:
+  mongodb:
+    image: mongo:6
+    environment:
+      MONGO_INITDB_DATABASE: peppol-reporting-test
+    ports:
+      - "27017:27017"
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: peppol-reporting
+      MYSQL_USER: reporting
+      MYSQL_PASSWORD: reporting
+    ports:
+      - "3306:3306"
