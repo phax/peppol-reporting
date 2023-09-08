@@ -110,6 +110,7 @@
   <modules>
     <module>peppol-reporting-api</module>
     <module>peppol-reporting</module>
+    <module>peppol-reporting-backend-mongodb</module>
   </modules>
 
   <build>

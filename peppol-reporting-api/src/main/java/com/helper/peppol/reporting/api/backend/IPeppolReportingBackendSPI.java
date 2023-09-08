@@ -24,6 +24,8 @@ import javax.annotation.Nonnull;
 import com.helger.commons.annotation.IsSPIInterface;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.name.IHasDisplayName;
+import com.helger.commons.state.ESuccess;
+import com.helger.config.IConfig;
 import com.helper.peppol.reporting.api.PeppolReportingItem;
 
 /**
@@ -42,6 +44,23 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
   @Nonnull
   @Nonempty
   String getDisplayName ();
+
+  /**
+   * Initialize the backend using the provided configuration data.
+   *
+   * @param aConfig
+   *        The configuration value provider to be used. Never
+   *        <code>null</code>.
+   * @return {@link ESuccess}
+   */
+  @Nonnull
+  ESuccess initBackend (@Nonnull IConfig aConfig);
+
+  /**
+   * Shutdown the backend. This may only be called if backend initialization was
+   * successful.
+   */
+  void shutdownBackend ();
 
   /**
    * Write a new {@link PeppolReportingItem} to the data storage.

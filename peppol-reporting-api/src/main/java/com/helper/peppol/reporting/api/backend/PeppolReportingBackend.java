@@ -22,8 +22,12 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.functional.IThrowingConsumer;
 import com.helger.commons.lang.ServiceLoaderHelper;
+import com.helger.commons.state.ESuccess;
+import com.helger.config.IConfig;
 
 /**
  * This is the entry class for the reporting backend. It uses the SPI mechanism
@@ -66,5 +70,42 @@ public class PeppolReportingBackend
   public static IPeppolReportingBackendSPI getBackendService ()
   {
     return BACKEND_SERVICE;
+  }
+
+  /**
+   * This is a helper method that ensures that all activities with an
+   * {@link IPeppolReportingBackendSPI} are wrapped in the proper init and
+   * shutdown method calls.
+   *
+   * @param aConfig
+   *        The configuration required to start the backend. May not be
+   *        <code>null</code>.
+   * @param aBackendConsumer
+   *        The consumer for the backend. May not be <code>null</code>.
+   * @return {@link ESuccess} if it was successful or not.
+   * @throws PeppolReportingBackendException
+   *         if the backend consumer throws an exception
+   */
+  @Nonnull
+  public static ESuccess withBackendDo (@Nonnull final IConfig aConfig,
+                                        @Nonnull final IThrowingConsumer <? super IPeppolReportingBackendSPI, PeppolReportingBackendException> aBackendConsumer) throws PeppolReportingBackendException
+  {
+    ValueEnforcer.notNull (aConfig, "Config");
+    ValueEnforcer.notNull (aBackendConsumer, "BackendConsumer");
+
+    final IPeppolReportingBackendSPI aBackend = getBackendService ();
+    if (aBackend.initBackend (aConfig).isFailure ())
+      return ESuccess.FAILURE;
+
+    try
+    {
+      // Do something with the backend
+      aBackendConsumer.accept (aBackend);
+    }
+    finally
+    {
+      aBackend.shutdownBackend ();
+    }
+    return ESuccess.SUCCESS;
   }
 }

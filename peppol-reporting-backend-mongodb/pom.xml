@@ -23,10 +23,10 @@
     <artifactId>peppol-reporting-parent-pom</artifactId>
     <version>2.1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>peppol-reporting-api</artifactId>
+  <artifactId>peppol-reporting-backend-mongodb</artifactId>
   <packaging>bundle</packaging>
   <inceptionYear>2023</inceptionYear>
-  <url>https://github.com/phax/peppol-reporting/peppol-reporting-api</url>
+  <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-mongodb</url>
 
   <licenses>
     <license>
@@ -44,6 +44,16 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver-sync</artifactId>
+        <version>4.10.2</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
  
   <dependencies>
     <dependency>
@@ -51,16 +61,13 @@
       <artifactId>ph-commons</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.helger.commons</groupId>
-      <artifactId>ph-config</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.helger.peppol</groupId>
-      <artifactId>peppol-commons</artifactId>
+      <artifactId>peppol-reporting-api</artifactId>
     </dependency>
+
     <dependency>
-      <groupId>com.helger.peppol</groupId>
-      <artifactId>peppol-id</artifactId>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-sync</artifactId>
     </dependency>
     
     <dependency>
@@ -76,25 +83,6 @@
   </dependencies>
 
   <build>
-    <resources>
-      <!-- Don't specify the targetPath because this leads to a broken JAR file 
-        in combination with the bundle plugin (absolute file paths in ZIP file) -->
-      <resource>
-        <directory>${basedir}/src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*.properties</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>${basedir}/src/main/resources</directory>
-        <filtering>false</filtering>
-        <excludes>
-          <exclude>**/*.properties</exclude>
-        </excludes>  
-      </resource>
-    </resources>
-    
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -109,11 +97,9 @@
         </executions>
         <configuration>
           <instructions>
-            <Automatic-Module-Name>com.helger.peppol.reporting.api</Automatic-Module-Name>
-            <Export-Package>com.helper.peppol.reporting.api.*</Export-Package>
+            <Automatic-Module-Name>com.helger.peppol.reporting.backend.mongodb</Automatic-Module-Name>
+            <Export-Package>com.helper.peppol.reporting.backend.mongodb.*</Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
-            <!-- The latter one has precedence -->
-            <Include-Resource>{maven-resources},peppol-reporting-api-version.properties=target/classes/peppol-reporting-api-version.properties</Include-Resource>
           </instructions>
         </configuration>
       </plugin>
