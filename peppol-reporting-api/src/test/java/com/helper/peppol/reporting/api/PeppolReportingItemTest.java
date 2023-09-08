@@ -44,7 +44,7 @@ public final class PeppolReportingItemTest
   @Test
   public void testBasicSending ()
   {
-    final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
+    final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTimeMillisOnly ();
     final String sMySPID = "PAT000001";
     final String sOtherSPID = "POP000002";
 
@@ -86,7 +86,7 @@ public final class PeppolReportingItemTest
   @Test
   public void testBasicReceiving ()
   {
-    final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
+    final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTimeMillisOnly ();
     final String sMySPID = "PAT000001";
     final String sOtherSPID = "POP000002";
 

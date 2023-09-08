@@ -16,6 +16,7 @@
  */
 package com.helper.peppol.reporting.backend.mongodb;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
@@ -28,6 +29,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mutable.MutableInt;
 import com.mongodb.ConnectionString;
@@ -77,11 +79,11 @@ public class MongoClientWrapper implements AutoCloseable
     private final AtomicBoolean m_aIsWritable = new AtomicBoolean (false);
 
     @Override
-    public void clusterDescriptionChanged (final ClusterDescriptionChangedEvent event)
+    public void clusterDescriptionChanged (final ClusterDescriptionChangedEvent aEvent)
     {
       if (!m_aIsWritable.get ())
       {
-        if (event.getNewDescription ().hasWritableServer ())
+        if (aEvent.getNewDescription ().hasWritableServer ())
         {
           m_aIsWritable.set (true);
           LOGGER.info ("Able to write to server");
@@ -89,7 +91,7 @@ public class MongoClientWrapper implements AutoCloseable
       }
       else
       {
-        if (!event.getNewDescription ().hasWritableServer ())
+        if (!aEvent.getNewDescription ().hasWritableServer ())
         {
           m_aIsWritable.set (false);
           LOGGER.error ("Unable to write to server");
@@ -116,7 +118,18 @@ public class MongoClientWrapper implements AutoCloseable
                                                                    .applicationName ("Peppol Reporting Backend")
                                                                    .applyConnectionString (new ConnectionString (sConnectionString))
                                                                    .addCommandListener (new LoggingCommandListener ())
-                                                                   .applyToClusterSettings (x -> x.addClusterListener (m_aClusterListener))
+                                                                   .applyToClusterSettings (x -> {
+                                                                     x.addClusterListener (m_aClusterListener);
+                                                                     if (GlobalDebug.isDebugMode ())
+                                                                     {
+                                                                       /*
+                                                                        * Less
+                                                                        * waiting
+                                                                        * time
+                                                                        */
+                                                                       x.serverSelectionTimeout (10, TimeUnit.SECONDS);
+                                                                     }
+                                                                   })
                                                                    .build ();
     m_aMongoClient = MongoClients.create (aClientSettings);
     m_aDatabase = m_aMongoClient.getDatabase (sDBName);

@@ -38,6 +38,7 @@ import com.helger.config.IConfig;
 import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helper.peppol.reporting.api.backend.PeppolReportingBackendException;
+import com.mongodb.MongoClientException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
@@ -49,12 +50,12 @@ import com.mongodb.client.model.Sorts;
  * @author Philip Helger
  */
 @IsSPIImplementation
-public class PeppolReportingBackendMongoDB implements IPeppolReportingBackendSPI
+public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackendSPI
 {
   public static final String CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING = "peppol.reporting.mongodb.connectionstring";
   public static final String CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME = "peppol.reporting.mongodb.dbname";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendMongoDB.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendMongoDBSPI.class);
 
   private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("m_aRWLock")
@@ -94,14 +95,25 @@ public class PeppolReportingBackendMongoDB implements IPeppolReportingBackendSPI
       LOGGER.info ("Using Peppol Reporting MongoDB database name '" + sDBName + "'");
       m_aClientWrapper = new MongoClientWrapper (sConnectionString, sDBName);
 
+      // It may take some time, until the "DB writable" field returns true
+
       return ESuccess.SUCCESS;
     }).isFailure ())
       return ESuccess.FAILURE;
 
-    // Make sure indexes are present
-    _getCollection ().createIndex (Indexes.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE,
-                                                      PeppolReportingMongoDBHelper.BSON_EXCHANGEDT));
-    _getCollection ().createIndex (Indexes.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE));
+    try
+    {
+      // Make sure indexes are present
+      _getCollection ().createIndex (Indexes.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE,
+                                                        PeppolReportingMongoDBHelper.BSON_EXCHANGEDT));
+      _getCollection ().createIndex (Indexes.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE));
+    }
+    catch (final MongoClientException ex)
+    {
+      // E.g. MongoTimeoutException if MongoDB server is not reachable
+      LOGGER.error ("Failed to create indeces in Peppol Reporting MongoDB", ex);
+      return ESuccess.FAILURE;
+    }
 
     return ESuccess.SUCCESS;
   }
@@ -131,15 +143,23 @@ public class PeppolReportingBackendMongoDB implements IPeppolReportingBackendSPI
     return m_aRWLock.readLockedGet ( () -> m_aClientWrapper.getCollection ("reporting-items"));
   }
 
+  private boolean _isDBWritable ()
+  {
+    return m_aRWLock.readLockedBoolean ( () -> m_aClientWrapper.isDBWritable ());
+  }
+
   public void storeReportingItem (@Nonnull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Trying to store Peppol Reporting Item in MongoDB");
+
     if (!isInitialized ())
       throw new IllegalStateException ("The Peppol Reporting MongoDB backend is not initialized");
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Trying to store Peppol Reporting Item in MongoDB");
+    if (!_isDBWritable ())
+      throw new IllegalStateException ("The Peppol Reporting MongoDB is not writable");
 
     // Write to collection
     if (!_getCollection ().insertOne (PeppolReportingMongoDBHelper.toBson (aReportingItem)).wasAcknowledged ())
@@ -157,11 +177,11 @@ public class PeppolReportingBackendMongoDB implements IPeppolReportingBackendSPI
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
     ValueEnforcer.notNull (aConsumer, "Consumer");
 
-    if (!isInitialized ())
-      throw new IllegalStateException ("The Peppol Reporting MongoDB backend is not initialized");
-
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Querying Peppol Reporting Items from MongoDB between " + aStartDateIncl + " and " + aEndDateIncl);
+
+    if (!isInitialized ())
+      throw new IllegalStateException ("The Peppol Reporting MongoDB backend is not initialized");
 
     // Find between date, but order by exchange date and time
     final Bson aFilter = Filters.and (Filters.gte (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE, aStartDateIncl),
