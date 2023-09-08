@@ -23,7 +23,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
-import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,16 +31,14 @@ import com.helger.commons.annotation.IsSPIImplementation;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.mutable.MutableInt;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
 import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helper.peppol.reporting.api.backend.PeppolReportingBackendException;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
 
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 /**
@@ -142,12 +139,16 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
 
     if (!isInitialized ())
       throw new IllegalStateException ("The Peppol Reporting Redis backend is not initialized");
-    // Write to collection
-    if (!_getCollection ().insertOne (PeppolReportingMongoDBHelper.toBson (aReportingItem)).wasAcknowledged ())
-      throw new IllegalStateException ("Failed to insert into Peppol Reporting MongoDB Collection");
+
+    try (Jedis jedis = m_aPool.getResource ())
+    {
+      final long nID = jedis.incr ("reportingitem");
+    }
+
+    // TODO
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Successfully stored Peppol Reporting Item in MongoDB");
+      LOGGER.debug ("Successfully stored Peppol Reporting Item in Redis");
   }
 
   public void forEachReportingItem (@Nonnull final LocalDate aStartDateIncl,
@@ -159,27 +160,12 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
     ValueEnforcer.notNull (aConsumer, "Consumer");
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Querying Peppol Reporting Items from MongoDB between " + aStartDateIncl + " and " + aEndDateIncl);
+      LOGGER.debug ("Querying Peppol Reporting Items from Redis between " + aStartDateIncl + " and " + aEndDateIncl);
 
     if (!isInitialized ())
-      throw new IllegalStateException ("The Peppol Reporting MongoDB backend is not initialized");
+      throw new IllegalStateException ("The Peppol Reporting Redis backend is not initialized");
 
     // Find between date, but order by exchange date and time
-    final Bson aFilter = Filters.and (Filters.gte (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE, aStartDateIncl),
-                                      Filters.lte (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE, aEndDateIncl));
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Using MongoDB filter '" + aFilter.toBsonDocument ().toJson () + "'");
-
-    final MutableInt aCounter = new MutableInt (0);
-    _getCollection ().find (aFilter)
-                     .sort (Sorts.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDT))
-                     .forEach (x -> {
-                       aCounter.inc ();
-                       aConsumer.accept (PeppolReportingMongoDBHelper.toDomain (x));
-                     });
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Found a total of " + aCounter.intValue () + " matching documents in MongoDB");
+    // TODO
   }
 }

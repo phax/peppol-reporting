@@ -1,1 +1,1 @@
-com.helper.peppol.reporting.backend.mongodb.PeppolReportingBackendMongoDBSPI
+com.helper.peppol.reporting.backend.redis.PeppolReportingBackendRedisSPI

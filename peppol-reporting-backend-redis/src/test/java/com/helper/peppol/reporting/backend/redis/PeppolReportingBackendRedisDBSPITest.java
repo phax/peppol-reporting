@@ -34,16 +34,15 @@ import com.helper.peppol.reporting.api.EReportingDirection;
 import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.api.backend.PeppolReportingBackend;
 import com.helper.peppol.reporting.api.backend.PeppolReportingBackendException;
-import com.helper.peppol.reporting.backend.redis.PeppolReportingBackendRedisSPI;
 
 /**
  * Test class for class {@link PeppolReportingBackendRedisSPI}.
  *
  * @author Philip Helger
  */
-public final class PeppolReportingBackendMongoDBSPITest
+public final class PeppolReportingBackendRedisDBSPITest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendMongoDBSPITest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendRedisDBSPITest.class);
 
   @Test
   public void testBasic () throws PeppolReportingBackendException
