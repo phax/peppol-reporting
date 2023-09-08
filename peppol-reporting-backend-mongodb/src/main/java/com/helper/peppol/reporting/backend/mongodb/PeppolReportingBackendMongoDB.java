@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.GuardedBy;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.IsSPIImplementation;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
+import com.helger.commons.mutable.MutableInt;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
@@ -97,8 +99,9 @@ public class PeppolReportingBackendMongoDB implements IPeppolReportingBackendSPI
       return ESuccess.FAILURE;
 
     // Make sure indexes are present
-    _getCollection ().createIndex (Indexes.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDT,
-                                                      PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE));
+    _getCollection ().createIndex (Indexes.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE,
+                                                      PeppolReportingMongoDBHelper.BSON_EXCHANGEDT));
+    _getCollection ().createIndex (Indexes.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE));
 
     return ESuccess.SUCCESS;
   }
@@ -161,9 +164,21 @@ public class PeppolReportingBackendMongoDB implements IPeppolReportingBackendSPI
       LOGGER.debug ("Querying Peppol Reporting Items from MongoDB between " + aStartDateIncl + " and " + aEndDateIncl);
 
     // Find between date, but order by exchange date and time
-    _getCollection ().find (Filters.and (Filters.gte (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE, aStartDateIncl),
-                                         Filters.lte (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE, aEndDateIncl)))
+    final Bson aFilter = Filters.and (Filters.gte (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE, aStartDateIncl),
+                                      Filters.lte (PeppolReportingMongoDBHelper.BSON_EXCHANGEDATE, aEndDateIncl));
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Using MongoDB filter '" + aFilter.toBsonDocument ().toJson () + "'");
+
+    final MutableInt aCounter = new MutableInt (0);
+    _getCollection ().find (aFilter)
                      .sort (Sorts.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDT))
-                     .forEach (x -> aConsumer.accept (PeppolReportingMongoDBHelper.toDomain (x)));
+                     .forEach (x -> {
+                       aCounter.inc ();
+                       aConsumer.accept (PeppolReportingMongoDBHelper.toDomain (x));
+                     });
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Found a total of " + aCounter.intValue () + " matching documents in MongoDB");
   }
 }

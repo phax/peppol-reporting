@@ -21,6 +21,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.mutable.MutableInt;
@@ -28,6 +30,7 @@ import com.helger.commons.state.ESuccess;
 import com.helger.config.ConfigFactory;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
+import com.helper.peppol.reporting.api.EReportingDirection;
 import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.api.backend.PeppolReportingBackend;
 import com.helper.peppol.reporting.api.backend.PeppolReportingBackendException;
@@ -39,32 +42,41 @@ import com.helper.peppol.reporting.api.backend.PeppolReportingBackendException;
  */
 public final class PeppolReportingBackendMongoDBTest
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendMongoDBTest.class);
+
   @Test
   public void testBasic () throws PeppolReportingBackendException
   {
     // The default configuration uses e.g.
     // src/test/resources/application.properties for the configuration
     final ESuccess eSuccess = PeppolReportingBackend.withBackendDo (ConfigFactory.getDefaultConfig (), aBackend -> {
+      final ThreadLocalRandom aTLR = ThreadLocalRandom.current ();
+      final int nReportItems = aTLR.nextInt (100);
+      LOGGER.info ("Creating " + nReportItems + " test reporting items");
 
-      final int nReportItems = ThreadLocalRandom.current ().nextInt (100);
-
+      boolean bSending = true;
       for (int i = 0; i < nReportItems; ++i)
       {
         final PeppolReportingItem aItem = PeppolReportingItem.builder ()
                                                              .exchangeDateTime (PDTFactory.getCurrentOffsetDateTime ())
-                                                             .directionSending ()
+                                                             .direction (bSending ? EReportingDirection.SENDING
+                                                                                  : EReportingDirection.RECEIVING)
                                                              .c2ID ("pop000001")
                                                              .c3ID ("pop000002")
                                                              .docTypeID (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30)
                                                              .processID (EPredefinedProcessIdentifier.BIS3_BILLING)
                                                              .transportProtocolPeppolAS4v2 ()
                                                              .c1CountryCode ("FI")
-                                                             .endUserID ("12345")
+                                                             .c4CountryCode (bSending ? null : "DE")
+                                                             .endUserID ("eu" + Integer.toString (aTLR.nextInt (10)))
                                                              .build ();
 
         aBackend.storeReportingItem (aItem);
+
+        bSending = !bSending;
       }
 
+      // At least the amount of written entries must be available
       final MutableInt aCounter = new MutableInt (0);
       aBackend.forEachReportingItem (PDTFactory.getCurrentYearMonth (), aLoadedItem -> {
         aCounter.inc ();

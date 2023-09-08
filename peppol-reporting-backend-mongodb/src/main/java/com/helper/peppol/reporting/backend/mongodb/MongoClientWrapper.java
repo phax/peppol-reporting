@@ -59,7 +59,9 @@ public class MongoClientWrapper implements AutoCloseable
     {
       final String sCommandName = event.getCommandName ();
       final int nCount = m_aCommands.computeIfAbsent (sCommandName, k -> new MutableInt (0)).inc ();
-      LOGGER.info ("Successfully executed '" + sCommandName + "' [" + nCount + "]");
+
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Successfully executed '" + sCommandName + "' [" + nCount + "]");
     }
 
     @Override
@@ -101,15 +103,11 @@ public class MongoClientWrapper implements AutoCloseable
     }
   }
 
-  public static final Integer SORT_ASCENDING = Integer.valueOf (1);
-  public static final Integer SORT_DESCENDING = Integer.valueOf (-1);
-
   private final MongoClient m_aMongoClient;
   private final MongoDatabase m_aDatabase;
   private final IsWriteable m_aClusterListener = new IsWriteable ();
 
-  public MongoClientWrapper (@Nonnull @Nonempty final String sConnectionString,
-                              @Nonnull @Nonempty final String sDBName)
+  public MongoClientWrapper (@Nonnull @Nonempty final String sConnectionString, @Nonnull @Nonempty final String sDBName)
   {
     ValueEnforcer.notEmpty (sConnectionString, "ConnectionString");
     ValueEnforcer.notEmpty (sDBName, "DBName");

@@ -52,11 +52,15 @@ public final class PeppolReportingMongoDBHelperTest
                                                          .endUserID ("12345")
                                                          .build ();
 
+    // To BSON
     final Document aDoc = PeppolReportingMongoDBHelper.toBson (aItem);
     assertNotNull (aDoc);
 
+    // And back
     final PeppolReportingItem aItem2 = PeppolReportingMongoDBHelper.toDomain (aDoc);
     assertNotNull (aItem2);
+
+    // Should be identical
     assertEquals (aItem, aItem2);
   }
 }
