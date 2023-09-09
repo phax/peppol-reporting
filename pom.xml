@@ -111,6 +111,7 @@
     <module>peppol-reporting-api</module>
     <module>peppol-reporting</module>
     <module>peppol-reporting-backend-mongodb</module>
+    <module>peppol-reporting-backend-redis</module>
   </modules>
 
   <build>
