@@ -40,7 +40,10 @@ This project comes with different backends for storing `PeppolReportingItem` obj
 Each submodule is described below.
 
 To choose a submodule, it needs to be added as a Maven dependency. The main logic is loaded via SPI.
-Please make sure to only use **1** submodule at a time - storing to multiple backends is currently not supported out of the box. 
+Please make sure to only use **1** submodule at a time - storing to multiple backends is currently not supported out of the box.
+
+Alternatively you can implement your own Reporting backend implementation, by implementing the  SPI interface
+`com.helper.peppol.reporting.api.backend.IPeppolReportingBackendSPI` defined in the `peppol-reporting-api` submodule. 
 
 ### Storage in MongoDB
 
