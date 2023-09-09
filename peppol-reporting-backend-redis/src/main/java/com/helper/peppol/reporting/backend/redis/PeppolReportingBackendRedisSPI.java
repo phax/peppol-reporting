@@ -177,16 +177,16 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
     try (final Jedis aJedis = m_aPool.getResource ())
     {
       // Get new unique ID
-      final long nID = aJedis.incr ("reportingitem:idx");
+      final long nID = aJedis.incr ("peppol:reporting:itemidx");
 
       final Transaction t = aJedis.multi ();
 
       // Store main data
-      final String sMapKey = "reportingitem:" + nID;
+      final String sMapKey = "peppol:reporting:item:" + nID;
       t.hset (sMapKey, PeppolReportingRedisHelper.toMap (aReportingItem));
 
       // add reference to list of entries per day
-      t.lpush ("reporting:" + _getDayKey (aReportingItem.getExchangeDTUTC ().toLocalDate ()), sMapKey);
+      t.lpush ("peppol:reporting:" + _getDayKey (aReportingItem.getExchangeDTUTC ().toLocalDate ()), sMapKey);
       t.exec ();
     }
     catch (final JedisException ex)
@@ -221,7 +221,7 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
       LocalDate aCurDate = aStartDateIncl;
       while (aCurDate.compareTo (aEndDateIncl) <= 0)
       {
-        final String sListKey = "reporting:" + _getDayKey (aCurDate);
+        final String sListKey = "peppol:reporting:" + _getDayKey (aCurDate);
         final List <String> aAllHashKeys = aJedis.lrange (sListKey, 0, -1);
         for (final String sKey : aAllHashKeys)
         {
