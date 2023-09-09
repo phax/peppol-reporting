@@ -97,8 +97,8 @@
         </executions>
         <configuration>
           <instructions>
-            <Automatic-Module-Name>com.helger.peppol.reporting.backend.mongodb</Automatic-Module-Name>
-            <Export-Package>com.helper.peppol.reporting.backend.mongodb.*</Export-Package>
+            <Automatic-Module-Name>com.helger.peppol.reporting.backend.redis</Automatic-Module-Name>
+            <Export-Package>com.helper.peppol.reporting.backend.redis.*</Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
         </configuration>

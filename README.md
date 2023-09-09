@@ -23,6 +23,8 @@ This library requires Java 11 and Maven to build.
 
 This library offers a Java domain model for EUSR and TSR reports.
 
+*Note*: phase4 v2.2.2 and onwards has support for this project. 
+
 ## Data collection
 
 Data collection needs to happen into your Access Point instances.
@@ -30,7 +32,7 @@ Data collection needs to happen into your Access Point instances.
 The data for reporting needs to be collected in instances of class `PeppolReportingItem`.
 For each sent or received Peppol transmission, such a `PeppolReportingItem` needs to be collected, and persisted.
 
-To facilitate this collection, the submodule `peppol-reporting-api` exists. 
+To facilitate this collection, the submodule `peppol-reporting-api` exists.
 
 ## Data storage
 
