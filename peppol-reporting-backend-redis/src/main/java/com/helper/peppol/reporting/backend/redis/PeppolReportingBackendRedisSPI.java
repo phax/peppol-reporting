@@ -17,6 +17,8 @@
 package com.helper.peppol.reporting.backend.redis;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
@@ -40,6 +42,7 @@ import com.helper.peppol.reporting.api.backend.PeppolReportingBackendException;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Transaction;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for Redis.
@@ -130,6 +133,15 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
       LOGGER.warn ("The Peppol Reporting Redis backend cannot be shutdown, because it was never properly initialized");
   }
 
+  @Nonnull
+  @Nonempty
+  private static String _getDayKey (@Nonnull final LocalDate aDate)
+  {
+    return StringHelper.getLeadingZero (aDate.getYear (), 4) +
+           StringHelper.getLeadingZero (aDate.getMonthValue (), 2) +
+           StringHelper.getLeadingZero (aDate.getDayOfMonth (), 2);
+  }
+
   public void storeReportingItem (@Nonnull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
@@ -140,12 +152,21 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
     if (!isInitialized ())
       throw new IllegalStateException ("The Peppol Reporting Redis backend is not initialized");
 
-    try (Jedis jedis = m_aPool.getResource ())
+    try (final Jedis aJedis = m_aPool.getResource ())
     {
-      final long nID = jedis.incr ("reportingitem");
-    }
+      // Get new unique ID
+      final long nID = aJedis.incr ("reportingitem:idx");
 
-    // TODO
+      final Transaction t = aJedis.multi ();
+
+      // Store main data
+      final String sMapKey = "reportingitem:" + nID;
+      t.hset (sMapKey, PeppolReportingRedisHelper.toMap (aReportingItem));
+
+      // add reference to list of entries per day
+      t.lpush ("reporting:" + _getDayKey (aReportingItem.getExchangeDTUTC ().toLocalDate ()), sMapKey);
+      t.exec ();
+    }
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Successfully stored Peppol Reporting Item in Redis");
@@ -157,6 +178,7 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
+    ValueEnforcer.isTrue ( () -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
     ValueEnforcer.notNull (aConsumer, "Consumer");
 
     if (LOGGER.isDebugEnabled ())
@@ -166,6 +188,22 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
       throw new IllegalStateException ("The Peppol Reporting Redis backend is not initialized");
 
     // Find between date, but order by exchange date and time
-    // TODO
+    try (final Jedis aJedis = m_aPool.getResource ())
+    {
+      LocalDate aCurDate = aStartDateIncl;
+      while (aCurDate.compareTo (aEndDateIncl) <= 0)
+      {
+        final String sListKey = "reporting:" + _getDayKey (aCurDate);
+        final List <String> aAllHashKeys = aJedis.lrange (sListKey, 0, -1);
+        for (final String sKey : aAllHashKeys)
+        {
+          final Map <String, String> aHashMap = aJedis.hgetAll (sKey);
+          final PeppolReportingItem aReportingItem = PeppolReportingRedisHelper.toDomain (aHashMap);
+          aConsumer.accept (aReportingItem);
+        }
+
+        aCurDate = aCurDate.plusDays (1);
+      }
+    }
   }
 }
