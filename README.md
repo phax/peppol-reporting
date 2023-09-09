@@ -32,6 +32,41 @@ For each sent or received Peppol transmission, such a `PeppolReportingItem` need
 
 To facilitate this collection, the submodule `peppol-reporting-api` exists. 
 
+## Data storage
+
+The created reporting item must be stored somewhere, to be able to retrieve them later.
+
+This project comes with different backends for storing `PeppolReportingItem` objects, each in a separate submodule.
+Each submodule is described below.
+
+To choose a submodule, it needs to be added as a Maven dependency. The main logic is loaded via SPI.
+Please make sure to only use **1** submodule at a time - storing to multiple backends is currently not supported out of the box. 
+
+### Storage in MongoDB
+
+Submodule `peppol-reporting-backend-mongodb` stores data in a MongoDB.
+This submodule was introduced in version 2.1.0.
+
+It creates one collection called: `reporting-items`
+
+It supports the following configuration properties:
+* **`peppol.reporting.mongodb.connectionstring`**: the connection string to use to connect to MongoDB  
+* **`peppol.reporting.mongodb.dbname`**: the MongoDB database name to use  
+
+### Storage in Redis
+
+Submodule `peppol-reporting-backend-redis` stores data in Redis. Make sure you use persistent storage for this one.
+This submodule was introduced in version 2.1.0.
+
+The used Redis keys are:
+* `peppol:reporting:itemidx` - counter for unique IDs
+* `peppol:reporting:item:*` - represents a single reporting item hash map
+* `peppol:reporting:*` - contains a list of reporting item keys of a single day
+
+It supports the following configuration properties:
+* **`peppol.reporting.redis.host`**: the Redis host to connect to  
+* **`peppol.reporting.redis.port`**: the Redis port to connect to  
+
 ## Data aggregation
 
 To aggregate data for a single Reporting Period, all the matching `PeppolReportingItem` objects need to be collected first.
