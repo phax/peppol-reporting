@@ -144,16 +144,6 @@ public final class PeppolReportingItem
     return m_aExchangeDTUTC;
   }
 
-  @Nonnull
-  @Nonempty
-  public String getReportingPeriodIDMonthly ()
-  {
-    // The reporting period ID is (currently) a month, so we can extract that
-    // data easily for separate storing and indexation
-    return StringHelper.getLeadingZero (m_aExchangeDTUTC.getYear (), 4) +
-           StringHelper.getLeadingZero (m_aExchangeDTUTC.getMonthValue (), 2);
-  }
-
   /**
    * @return The direction of the reporting item. Never <code>null</code>.
    * @see #isSending()
@@ -292,6 +282,16 @@ public final class PeppolReportingItem
   public String getC4CountryCode ()
   {
     return m_sC4CountryCode;
+  }
+
+  /**
+   * @return <code>true</code> if a C4 country code is present,
+   *         <code>false</code> if not.
+   * @since 2.1.0
+   */
+  public boolean hasC4CountryCode ()
+  {
+    return m_sC4CountryCode != null;
   }
 
   /**
