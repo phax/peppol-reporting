@@ -29,7 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.ELockType;
 import com.helger.commons.annotation.IsSPIImplementation;
+import com.helger.commons.annotation.MustBeLocked;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
@@ -43,6 +45,7 @@ import com.helper.peppol.reporting.api.backend.PeppolReportingBackendException;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Transaction;
+import redis.clients.jedis.exceptions.JedisException;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for Redis.
@@ -105,6 +108,19 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
       m_aPool = createJedisPool (aConfig);
     });
 
+    // Check connectivity
+    try (final Jedis aJedis = m_aPool.getResource ())
+    {
+      aJedis.ping ();
+    }
+    catch (final JedisException ex)
+    {
+      LOGGER.error ("Failed to connect to the Peppol Reporting Redis backend", ex);
+      // Reset pool in case of error
+      m_aRWLock.writeLocked (this::_shutdown);
+      return ESuccess.FAILURE;
+    }
+
     if (!isInitialized ())
     {
       // Error was already logged
@@ -119,14 +135,20 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
     return m_aRWLock.readLockedBoolean ( () -> m_aPool != null);
   }
 
+  @MustBeLocked (ELockType.WRITE)
+  private void _shutdown ()
+  {
+    m_aPool.close ();
+    m_aPool = null;
+  }
+
   public void shutdownBackend ()
   {
     if (isInitialized ())
     {
       m_aRWLock.writeLocked ( () -> {
         LOGGER.info ("Shutting down Peppol Reporting Redis client");
-        m_aPool.close ();
-        m_aPool = null;
+        _shutdown ();
       });
     }
     else
@@ -166,6 +188,11 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
       // add reference to list of entries per day
       t.lpush ("reporting:" + _getDayKey (aReportingItem.getExchangeDTUTC ().toLocalDate ()), sMapKey);
       t.exec ();
+    }
+    catch (final JedisException ex)
+    {
+      LOGGER.error ("Failed to store Peppol Reporting Item in Redis: " + ex.getMessage ());
+      throw new PeppolReportingBackendException ("Failed to store Peppol Reporting Item in Redis", ex);
     }
 
     if (LOGGER.isDebugEnabled ())
