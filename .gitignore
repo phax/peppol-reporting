@@ -1,6 +1,7 @@
 .settings/
 target/
+bin/
 
 .project
 .classpath
-/bin/
+zz
