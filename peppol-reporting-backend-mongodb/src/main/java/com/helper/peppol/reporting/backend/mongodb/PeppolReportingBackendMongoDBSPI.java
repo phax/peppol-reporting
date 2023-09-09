@@ -187,6 +187,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
+    ValueEnforcer.isTrue ( () -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
     ValueEnforcer.notNull (aConsumer, "Consumer");
 
     if (LOGGER.isDebugEnabled ())

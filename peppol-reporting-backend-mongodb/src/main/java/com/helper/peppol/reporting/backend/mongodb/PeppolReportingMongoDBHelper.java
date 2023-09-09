@@ -23,6 +23,7 @@ import javax.annotation.concurrent.Immutable;
 
 import org.bson.Document;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.typeconvert.TypeConverter;
 import com.helper.peppol.reporting.api.EReportingDirection;
 import com.helper.peppol.reporting.api.PeppolReportingItem;
@@ -32,7 +33,6 @@ public final class PeppolReportingMongoDBHelper
 {
   public static final String BSON_EXCHANGEDT = "exchangedt";
   public static final String BSON_EXCHANGEDATE = "exchangedate";
-  public static final String BSON_REPORTINGMONTH = "reportingmonth";
   public static final String BSON_DIRECTION = "direction";
   public static final String BSON_C2ID = "c2id";
   public static final String BSON_C3ID = "c3id";
@@ -58,10 +58,11 @@ public final class PeppolReportingMongoDBHelper
   @Nonnull
   public static Document toBson (@Nonnull final PeppolReportingItem aValue)
   {
+    ValueEnforcer.notNull (aValue, "Value");
+
     return new Document ().append (BSON_EXCHANGEDT, aValue.getExchangeDTUTC ().toLocalDateTime ())
                           // For selection only
                           .append (BSON_EXCHANGEDATE, aValue.getExchangeDTUTC ().toLocalDate ())
-                          .append (BSON_REPORTINGMONTH, aValue.getReportingPeriodIDMonthly ())
                           .append (BSON_DIRECTION, aValue.getDirection ().getID ())
                           .append (BSON_C2ID, aValue.getC2ID ())
                           .append (BSON_C3ID, aValue.getC3ID ())
@@ -79,7 +80,7 @@ public final class PeppolReportingMongoDBHelper
    * Convert a BSON document back to a {@link PeppolReportingItem}.
    *
    * @param aDoc
-   *        The document to be converted
+   *        The document to be converted. May not be <code>null</code>.
    * @return The restored Peppol reporting item
    * @throws IllegalStateException
    *         if the Peppol reporting item is not complete
@@ -87,6 +88,8 @@ public final class PeppolReportingMongoDBHelper
   @Nonnull
   public static PeppolReportingItem toDomain (@Nonnull final Document aDoc)
   {
+    ValueEnforcer.notNull (aDoc, "Doc");
+
     return PeppolReportingItem.builder ()
                               .exchangeDateTimeInUTC (TypeConverter.convert (aDoc.get (BSON_EXCHANGEDT),
                                                                              LocalDateTime.class))
