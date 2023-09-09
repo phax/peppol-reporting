@@ -214,9 +214,10 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
     if (!isInitialized ())
       throw new IllegalStateException ("The Peppol Reporting Redis backend is not initialized");
 
-    // Find between date, but order by exchange date and time
+    int nCounter = 0;
     try (final Jedis aJedis = m_aPool.getResource ())
     {
+      // Find between date, but order by exchange date and time
       LocalDate aCurDate = aStartDateIncl;
       while (aCurDate.compareTo (aEndDateIncl) <= 0)
       {
@@ -227,10 +228,15 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
           final Map <String, String> aHashMap = aJedis.hgetAll (sKey);
           final PeppolReportingItem aReportingItem = PeppolReportingRedisHelper.toDomain (aHashMap);
           aConsumer.accept (aReportingItem);
+
+          nCounter++;
         }
 
         aCurDate = aCurDate.plusDays (1);
       }
     }
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Found a total of " + nCounter + " matching documents in MongoDB");
   }
 }
