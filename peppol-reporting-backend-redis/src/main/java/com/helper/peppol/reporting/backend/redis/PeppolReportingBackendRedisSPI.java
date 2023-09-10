@@ -237,6 +237,6 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
     }
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Found a total of " + nCounter + " matching documents in MongoDB");
+      LOGGER.debug ("Found a total of " + nCounter + " matching documents in Redis");
   }
 }
