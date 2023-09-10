@@ -77,6 +77,16 @@ public class PeppolReportingBackend
   }
 
   /**
+   * @return <code>true</code> if a backend service is configured,
+   *         <code>false</code> if not.
+   * @since 2.1.1
+   */
+  public static boolean isBackendServiceConfigured ()
+  {
+    return getBackendService () != null;
+  }
+
+  /**
    * This is a helper method that ensures that all activities with an
    * {@link IPeppolReportingBackendSPI} are wrapped in the proper init and
    * shutdown method calls. Make sure to not call this method in a nested
