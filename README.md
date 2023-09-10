@@ -134,8 +134,10 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-* v2.1.1 - work in progress
+* v2.1.1 - 2023-09-10
     * Added new submodule `peppol-reporting-backend-inmemory` that uses memory persistence as the backend to store reporting items
+    * Added third party module descriptors
+    * Fixed the date time offset when storing to MongoDB
 * v2.1.0 - 2023-09-10
     * Added new API package `com.helper.peppol.reporting.api.backend` to define a generic backend API
     * Added new submodule `peppol-reporting-backend-mongodb` that uses MongoDB as the backend to store reporting items
