@@ -108,8 +108,12 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
       m_aPool = createJedisPool (aConfig);
     });
 
+    final JedisPool aPool = m_aRWLock.readLockedGet ( () -> m_aPool);
+    if (aPool == null)
+      return ESuccess.FAILURE;
+
     // Check connectivity
-    try (final Jedis aJedis = m_aPool.getResource ())
+    try (final Jedis aJedis = aPool.getResource ())
     {
       aJedis.ping ();
     }
