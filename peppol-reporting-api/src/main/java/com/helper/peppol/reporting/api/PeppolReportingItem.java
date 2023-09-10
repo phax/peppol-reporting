@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,7 +33,6 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.builder.IBuilder;
-import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.log.ConditionalLogger;
@@ -123,7 +123,10 @@ public final class PeppolReportingItem
     ValueEnforcer.notEmpty (sEndUserID, "EndUserID");
 
     // Make sure it is UTC
-    m_aExchangeDTUTC = aExchangeDT.atZoneSameInstant (ZoneOffset.UTC).toOffsetDateTime ();
+    // For representation in a java.util.Date and in XSD this is necessary
+    m_aExchangeDTUTC = aExchangeDT.atZoneSameInstant (ZoneOffset.UTC)
+                                  .toOffsetDateTime ()
+                                  .truncatedTo (ChronoUnit.MILLIS);
     m_eDirection = eDirection;
     m_sC2ID = sC2ID;
     m_sC3ID = sC3ID;
@@ -424,8 +427,7 @@ public final class PeppolReportingItem
     @Nonnull
     public Builder exchangeDateTime (@Nullable final OffsetDateTime a)
     {
-      // For representation in a java.util.Date and in XSD this is necessary
-      m_aExchangeDT = PDTFactory.getWithMillisOnly (a);
+      m_aExchangeDT = a;
       return this;
     }
 

@@ -84,7 +84,8 @@ public final class PeppolReportingBackendInMemoryDBSPITest
       final MutableInt aCounter = new MutableInt (0);
       aBackend.forEachReportingItem (PDTFactory.getCurrentYearMonth (), aLoadedItem -> {
         aCounter.inc ();
-        aStoredItems.remove (aLoadedItem);
+        if (!aStoredItems.remove (aLoadedItem))
+          LOGGER.info (aLoadedItem + " not in " + aStoredItems);
       });
       assertTrue (aCounter.intValue () >= nReportItems);
       assertTrue (aStoredItems.isEmpty ());

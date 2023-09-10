@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helper.peppol.reporting.backend.redis.config;
+package com.helper.peppol.reporting.backend.mongodb.config;
 
 import javax.annotation.Nullable;
 
@@ -32,17 +32,17 @@ import com.helger.commons.version.Version;
  * @author Philip Helger
  */
 @IsSPIImplementation
-public final class ThirdPartyModuleProvider_prb_redis implements IThirdPartyModuleProviderSPI
+public final class ThirdPartyModuleProvider_prb_mongodb implements IThirdPartyModuleProviderSPI
 {
-  private static final IThirdPartyModule JEDIS = new ThirdPartyModule ("Jedis",
-                                                                       "Redis",
-                                                                       ELicense.MIT,
-                                                                       new Version (5, 0, 0),
-                                                                       "https://github.com/redis/jedis");
+  private static final IThirdPartyModule MONGODB_JAVA_DRIVERS = new ThirdPartyModule ("MongoDB Java Drivers",
+                                                                                      "MongoDB, Inc.",
+                                                                                      ELicense.APACHE2,
+                                                                                      new Version (4, 10, 0),
+                                                                                      "https://www.mongodb.com/docs/drivers/java/sync/current/");
 
   @Nullable
   public IThirdPartyModule [] getAllThirdPartyModules ()
   {
-    return new IThirdPartyModule [] { JEDIS };
+    return new IThirdPartyModule [] { MONGODB_JAVA_DRIVERS };
   }
 }

@@ -84,11 +84,11 @@ public final class PeppolReportingBackendMongoDBSPITest
       final MutableInt aCounter = new MutableInt (0);
       aBackend.forEachReportingItem (PDTFactory.getCurrentYearMonth (), aLoadedItem -> {
         aCounter.inc ();
-        assertTrue (aStoredItems.contains (aLoadedItem));
-        aStoredItems.remove (aLoadedItem);
+        if (!aStoredItems.remove (aLoadedItem))
+          LOGGER.info (aLoadedItem + " not in " + aStoredItems);
       });
       assertTrue (aCounter.intValue () >= nReportItems);
-      assertTrue (aStoredItems.isEmpty ());
+      assertTrue (aStoredItems.size () + " remaining of " + nReportItems, aStoredItems.isEmpty ());
     });
 
     // May fail if MongoDB server is not running

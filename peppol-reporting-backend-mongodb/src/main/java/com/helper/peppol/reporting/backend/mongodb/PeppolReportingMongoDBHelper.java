@@ -16,7 +16,8 @@
  */
 package com.helper.peppol.reporting.backend.mongodb;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.Date;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -60,7 +61,7 @@ public final class PeppolReportingMongoDBHelper
   {
     ValueEnforcer.notNull (aValue, "Value");
 
-    return new Document ().append (BSON_EXCHANGEDT, aValue.getExchangeDTUTC ().toLocalDateTime ())
+    return new Document ().append (BSON_EXCHANGEDT, TypeConverter.convert (aValue.getExchangeDTUTC (), Date.class))
                           // For selection only
                           .append (BSON_EXCHANGEDATE, aValue.getExchangeDTUTC ().toLocalDate ())
                           .append (BSON_DIRECTION, aValue.getDirection ().getID ())
@@ -91,8 +92,8 @@ public final class PeppolReportingMongoDBHelper
     ValueEnforcer.notNull (aDoc, "Doc");
 
     return PeppolReportingItem.builder ()
-                              .exchangeDateTimeInUTC (TypeConverter.convert (aDoc.get (BSON_EXCHANGEDT),
-                                                                             LocalDateTime.class))
+                              .exchangeDateTime (TypeConverter.convert (aDoc.get (BSON_EXCHANGEDT),
+                                                                        OffsetDateTime.class))
                               .direction (EReportingDirection.getFromIDOrThrow (aDoc.getString (BSON_DIRECTION)))
                               .c2ID (aDoc.getString (BSON_C2ID))
                               .c3ID (aDoc.getString (BSON_C3ID))
