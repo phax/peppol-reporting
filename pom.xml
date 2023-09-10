@@ -112,6 +112,7 @@
     <module>peppol-reporting</module>
     <module>peppol-reporting-backend-mongodb</module>
     <module>peppol-reporting-backend-redis</module>
+    <module>peppol-reporting-backend-inmemory</module>
   </modules>
 
   <build>
