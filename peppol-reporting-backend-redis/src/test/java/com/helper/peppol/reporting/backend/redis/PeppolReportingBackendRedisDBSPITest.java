@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.mutable.MutableInt;
 import com.helger.commons.state.ESuccess;
@@ -54,6 +56,7 @@ public final class PeppolReportingBackendRedisDBSPITest
       final int nReportItems = aTLR.nextInt (100);
       LOGGER.info ("Creating " + nReportItems + " test reporting items");
 
+      final ICommonsList <PeppolReportingItem> aStoredItems = new CommonsArrayList <> ();
       boolean bSending = true;
       for (int i = 0; i < nReportItems; ++i)
       {
@@ -72,6 +75,7 @@ public final class PeppolReportingBackendRedisDBSPITest
                                                              .build ();
 
         aBackend.storeReportingItem (aItem);
+        aStoredItems.add (aItem);
 
         bSending = !bSending;
       }
@@ -80,8 +84,10 @@ public final class PeppolReportingBackendRedisDBSPITest
       final MutableInt aCounter = new MutableInt (0);
       aBackend.forEachReportingItem (PDTFactory.getCurrentYearMonth (), aLoadedItem -> {
         aCounter.inc ();
+        aStoredItems.remove (aLoadedItem);
       });
       assertTrue (aCounter.intValue () >= nReportItems);
+      assertTrue (aStoredItems.isEmpty ());
     });
 
     // May fail if MongoDB server is not running

@@ -42,7 +42,7 @@ This project comes with different backends for storing `PeppolReportingItem` obj
 Each submodule is described below.
 
 To choose a submodule, it needs to be added as a Maven dependency. The main logic is loaded via SPI.
-Please make sure to only use **1** submodule at a time - storing to multiple backends is currently not supported out of the box.
+Please make sure to only use **one** submodule at a time - storing to multiple backends is currently not supported out of the box.
 
 Alternatively you can implement your own Reporting backend implementation, by implementing the  SPI interface
 `com.helper.peppol.reporting.api.backend.IPeppolReportingBackendSPI` defined in the `peppol-reporting-api` submodule. 
@@ -72,6 +72,13 @@ It supports the following configuration properties:
 * **`peppol.reporting.redis.host`**: the Redis host to connect to  
 * **`peppol.reporting.redis.port`**: the Redis port to connect to  
 
+### Storage in memory
+
+Submodule `peppol-reporting-backend-inmemory` stores data in memory only and is **not persistent**.
+This submodule was introduced in version 2.1.1.
+
+This module is mainly meant for testing purposes.
+
 ## Data aggregation
 
 To aggregate data for a single Reporting Period, all the matching `PeppolReportingItem` objects need to be collected first.
@@ -81,12 +88,12 @@ Via the builder `EndUserStatisticsReport.builder ()`, the report of type `EndUse
 
 Via the builder `TransactionStatisticsReport.builder ()`, the report of type `TransactionStatisticsReportType` can be created.
 
-## XML Serialization
+## Report XML Serialization
 
 The JAXB generated domain model classes reside in the packages `com.helger.peppol.reporting.jaxb.eusr.v110` and `com.helger.peppol.reporting.jaxb.tsr.v101`.
 This domain model can be read from and written to XML documents via the marshaller classes `EndUserStatisticsReport110Marshaller` and `TransactionStatisticsReport101Marshaller`.
 
-## Validation
+## Report Validation
 
 Additionally, the Schematron compatibility can be verified using the classes `EndUserStatisticsReportValidator` and `TransactionStatisticsReportValidator`.
 All checks are performed against the default Schematrons provided by OpenPeppol.
@@ -127,6 +134,8 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+* v2.1.1 - work in progress
+    * Added new submodule `peppol-reporting-backend-inmemory` that uses memory persistence as the backend to store reporting items
 * v2.1.0 - 2023-09-10
     * Added new API package `com.helper.peppol.reporting.api.backend` to define a generic backend API
     * Added new submodule `peppol-reporting-backend-mongodb` that uses MongoDB as the backend to store reporting items

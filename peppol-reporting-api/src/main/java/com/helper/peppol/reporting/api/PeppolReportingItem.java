@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.builder.IBuilder;
 import com.helger.commons.datetime.PDTFactory;
@@ -51,6 +52,7 @@ import com.helger.peppolid.peppol.PeppolIdentifierHelper;
  * @author Philip Helger
  */
 @Immutable
+@MustImplementEqualsAndHashcode
 public final class PeppolReportingItem
 {
   public static final int MAX_LEN_C2_ID = 64;
