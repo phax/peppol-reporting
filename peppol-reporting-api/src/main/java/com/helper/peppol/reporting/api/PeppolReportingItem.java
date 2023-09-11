@@ -192,7 +192,7 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The receiving Service Provider (C2) ID. Neither <code>null</code>
+   * @return The receiving Service Provider (C3) ID. Neither <code>null</code>
    *         nor empty.
    */
   @Nonnull
