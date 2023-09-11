@@ -51,7 +51,7 @@ public final class FuncTestCreateEUSR
   {
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
 
-    // Create report
+    // Create report without any transaction
     final EndUserStatisticsReportType aReport = EndUserStatisticsReport.builder ()
                                                                        .monthOf (aNow)
                                                                        .reportingServiceProviderID (MY_SPID)
@@ -82,13 +82,15 @@ public final class FuncTestCreateEUSR
     // Subset
     assertEquals (0, aReport.getSubsetCount ());
 
-    // Ensure it is valid XML
+    // Avoid bloating the logs
     if (false)
       LOGGER.info (new EndUserStatisticsReport110Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
+    // Ensure it is valid XML
     final Document aDoc = new EndUserStatisticsReport110Marshaller ().getAsDocument (aReport);
     assertNotNull (aDoc);
 
+    // Perform Schematron verification
     final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
                                                                        .applySchematronValidationToSVRL (aDoc, null);
     assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
@@ -113,7 +115,7 @@ public final class FuncTestCreateEUSR
                                                          .endUserID (sEndUserID)
                                                          .build ();
 
-    // Create report
+    // Create report with exactly one transaction
     final EndUserStatisticsReportType aReport = EndUserStatisticsReport.builder ()
                                                                        .monthOf (aNow)
                                                                        .reportingServiceProviderID (MY_SPID)
@@ -149,13 +151,15 @@ public final class FuncTestCreateEUSR
                   aReport.getSubset ().stream ().filter (x -> x.getType ().equals (SubsetKeyDT_PR_EUC.TYPE)).count ());
     assertEquals (1, aReport.getSubset ().stream ().filter (x -> x.getType ().equals (SubsetKeyDT_PR.TYPE)).count ());
 
-    // Ensure it is valid XML
+    // Avoid bloating the logs
     if (false)
       LOGGER.info (new EndUserStatisticsReport110Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
+    // Ensure it is valid XML
     final Document aDoc = new EndUserStatisticsReport110Marshaller ().getAsDocument (aReport);
     assertNotNull (aDoc);
 
+    // Perform Schematron verification
     final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
                                                                        .applySchematronValidationToSVRL (aDoc, null);
     assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
@@ -220,7 +224,7 @@ public final class FuncTestCreateEUSR
                                     .endUserID (fctGetEndUser.apply (i + 4))
                                     .build ());
 
-    // Create report
+    // Create report with many transactions
     final EndUserStatisticsReportType aReport = EndUserStatisticsReport.builder ()
                                                                        .monthOf (aNow)
                                                                        .reportingServiceProviderID (MY_SPID)
@@ -248,13 +252,15 @@ public final class FuncTestCreateEUSR
     assertEquals (2, aReport.getFullSet ().getReceivingEndUsers ().intValueExact ());
     assertEquals (6, aReport.getFullSet ().getSendingOrReceivingEndUsers ().intValueExact ());
 
-    // Ensure it is valid XML
+    // Avoid bloating the logs
     if (false)
       LOGGER.info (new EndUserStatisticsReport110Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
+    // Ensure it is valid XML
     final Document aDoc = new EndUserStatisticsReport110Marshaller ().getAsDocument (aReport);
     assertNotNull (aDoc);
 
+    // Perform Schematron verification
     final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
                                                                        .applySchematronValidationToSVRL (aDoc, null);
     assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());

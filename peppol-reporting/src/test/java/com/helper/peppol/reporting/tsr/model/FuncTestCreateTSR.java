@@ -51,7 +51,7 @@ public final class FuncTestCreateTSR
   {
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
 
-    // Create report
+    // Create report without any transaction
     final TransactionStatisticsReportType aReport = TransactionStatisticsReport.builder ()
                                                                                .monthOf (aNow)
                                                                                .reportingServiceProviderID (MY_SPID)
@@ -81,13 +81,15 @@ public final class FuncTestCreateTSR
     // Subset
     assertEquals (0, aReport.getSubtotalCount ());
 
-    // Ensure it is valid XML
+    // Avoid bloating the logs
     if (false)
       LOGGER.info (new TransactionStatisticsReport101Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
+    // Ensure it is valid XML
     final Document aDoc = new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport);
     assertNotNull (aDoc);
 
+    // Perform Schematron verification
     final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
                                                                            .applySchematronValidationToSVRL (aDoc,
                                                                                                              null);
@@ -113,7 +115,7 @@ public final class FuncTestCreateTSR
                                                          .endUserID (sEndUserID)
                                                          .build ();
 
-    // Create report
+    // Create report with exactly one transaction
     final TransactionStatisticsReportType aReport = TransactionStatisticsReport.builder ()
                                                                                .monthOf (aNow)
                                                                                .reportingServiceProviderID (MY_SPID)
@@ -155,13 +157,15 @@ public final class FuncTestCreateTSR
                          .filter (x -> x.getType ().equals (SubtotalKeySP_DT_PR_CC.TYPE))
                          .count ());
 
-    // Ensure it is valid XML
+    // Avoid bloating the logs
     if (false)
       LOGGER.info (new TransactionStatisticsReport101Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
+    // Ensure it is valid XML
     final Document aDoc = new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport);
     assertNotNull (aDoc);
 
+    // Perform Schematron verification
     final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
                                                                            .applySchematronValidationToSVRL (aDoc,
                                                                                                              null);
@@ -188,7 +192,7 @@ public final class FuncTestCreateTSR
                                                          .endUserID (sEndUserID)
                                                          .build ();
 
-    // Create report
+    // Create report with exactly one transaction
     final TransactionStatisticsReportType aReport = TransactionStatisticsReport.builder ()
                                                                                .monthOf (aNow)
                                                                                .reportingServiceProviderID (MY_SPID)
@@ -229,13 +233,15 @@ public final class FuncTestCreateTSR
                          .filter (x -> x.getType ().equals (SubtotalKeySP_DT_PR_CC.TYPE))
                          .count ());
 
-    // Ensure it is valid XML
+    // Avoid bloating the logs
     if (false)
       LOGGER.info (new TransactionStatisticsReport101Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
+    // Ensure it is valid XML
     final Document aDoc = new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport);
     assertNotNull (aDoc);
 
+    // Perform Schematron verification
     final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
                                                                            .applySchematronValidationToSVRL (aDoc,
                                                                                                              null);
@@ -301,7 +307,7 @@ public final class FuncTestCreateTSR
                                     .endUserID (fctGetEndUser.apply (i + 4))
                                     .build ());
 
-    // Create report
+    // Create report with many transactions
     final TransactionStatisticsReportType aReport = TransactionStatisticsReport.builder ()
                                                                                .monthOf (aNow)
                                                                                .reportingServiceProviderID (MY_SPID)
@@ -348,13 +354,15 @@ public final class FuncTestCreateTSR
                          .filter (x -> x.getType ().equals (SubtotalKeySP_DT_PR_CC.TYPE))
                          .count ());
 
-    // Ensure it is valid XML
+    // Avoid bloating the logs
     if (false)
       LOGGER.info (new TransactionStatisticsReport101Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
+    // Ensure it is valid XML
     final Document aDoc = new TransactionStatisticsReport101Marshaller ().getAsDocument (aReport);
     assertNotNull (aDoc);
 
+    // Perform Schematron verification
     final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
                                                                            .applySchematronValidationToSVRL (aDoc,
                                                                                                              null);
