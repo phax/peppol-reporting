@@ -23,7 +23,15 @@ This library requires Java 11 and Maven to build.
 
 This library offers a Java domain model for EUSR and TSR reports.
 
-*Note*: phase4 v2.2.2 and onwards has support for this project. 
+*Note*: phase4 v2.2.2 and onwards has support for this project.
+
+## Overview images
+
+![Data collection on sending](https://github.com/phax/peppol-reporting/blob/main/docs/collection-sending.png)
+
+![Data collection on receiving](https://github.com/phax/peppol-reporting/blob/main/docs/collection-receiving.png)
+
+![Report creation and transmission](https://github.com/phax/peppol-reporting/blob/main/docs/creation-and-transmission.png)
 
 ## Data collection
 
