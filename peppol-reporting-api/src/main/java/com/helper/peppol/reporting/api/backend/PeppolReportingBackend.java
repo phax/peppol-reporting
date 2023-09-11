@@ -29,6 +29,7 @@ import com.helger.commons.functional.IThrowingConsumer;
 import com.helger.commons.lang.ServiceLoaderHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.config.IConfig;
+import com.helper.peppol.reporting.api.PeppolReportingAPIVersion;
 
 /**
  * This is the entry class for the reporting backend. It uses the SPI mechanism
@@ -54,13 +55,22 @@ public class PeppolReportingBackend
     final int nBackends = aBackends.size ();
     if (nBackends != 1)
     {
-      LOGGER.error ("Failed to find exactly one backend SPI implementations, but " + nBackends + " instances");
+      if (nBackends == 0)
+        LOGGER.error ("Failed to find any Peppol Reporting backend SPI implementation");
+      else
+        LOGGER.error ("Failed to find exactly one Peppol Reporting backend SPI implementations, but " +
+                      nBackends +
+                      " instances");
       return null;
     }
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Found exactly one IPeppolReportingBackendSPI implementation");
-    return aBackends.getFirst ();
+    final IPeppolReportingBackendSPI ret = aBackends.getFirst ();
+    LOGGER.info ("Using IPeppolReportingBackendSPI implementation '" +
+                 ret.getDisplayName () +
+                 "/" +
+                 PeppolReportingAPIVersion.BUILD_VERSION +
+                 "'");
+    return ret;
   }
 
   private PeppolReportingBackend ()
