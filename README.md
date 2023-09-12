@@ -142,7 +142,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-* v2.1.2 - work in progress
+* v2.1.2 - 2023-09-12
     * Added class `PeppolReportingHelper` with some generic helper methods
 * v2.1.1 - 2023-09-10
     * Added new submodule `peppol-reporting-backend-inmemory` that uses memory persistence as the backend to store reporting items
