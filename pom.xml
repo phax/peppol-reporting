@@ -104,15 +104,30 @@
         <artifactId>peppol-reporting</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.helger.peppol</groupId>
+        <artifactId>peppol-reporting-backend-inmemory</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.peppol</groupId>
+        <artifactId>peppol-reporting-backend-mongodb</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.peppol</groupId>
+        <artifactId>peppol-reporting-backend-redis</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <modules>
     <module>peppol-reporting-api</module>
     <module>peppol-reporting</module>
+    <module>peppol-reporting-backend-inmemory</module>
     <module>peppol-reporting-backend-mongodb</module>
     <module>peppol-reporting-backend-redis</module>
-    <module>peppol-reporting-backend-inmemory</module>
   </modules>
 
   <build>
