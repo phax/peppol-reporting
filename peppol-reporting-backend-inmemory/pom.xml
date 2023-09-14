@@ -44,16 +44,6 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
-  
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>redis.clients</groupId>
-        <artifactId>jedis</artifactId>
-        <version>5.0.0</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
  
   <dependencies>
     <dependency>
