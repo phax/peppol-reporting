@@ -91,7 +91,7 @@ public final class FuncTestCreateEUSR
     assertNotNull (aDoc);
 
     // Perform Schematron verification
-    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
+    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
                                                                        .applySchematronValidationToSVRL (aDoc, null);
     assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
@@ -160,7 +160,7 @@ public final class FuncTestCreateEUSR
     assertNotNull (aDoc);
 
     // Perform Schematron verification
-    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
+    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
                                                                        .applySchematronValidationToSVRL (aDoc, null);
     assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
@@ -261,7 +261,7 @@ public final class FuncTestCreateEUSR
     assertNotNull (aDoc);
 
     // Perform Schematron verification
-    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
+    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
                                                                        .applySchematronValidationToSVRL (aDoc, null);
     assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }

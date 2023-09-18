@@ -58,8 +58,8 @@
   <!-- Subsets per End User Country -->
   <Subset type="PerEUC">
     <Key metaSchemeID="CC" schemeID="EndUserCountry">PT</Key>
-    <SendingEndUsers>12</SendingEndUsers>
-    <ReceivingEndUsers>23</ReceivingEndUsers>
-    <SendingOrReceivingEndUsers>26</SendingOrReceivingEndUsers>
+    <SendingEndUsers>1</SendingEndUsers>
+    <ReceivingEndUsers>2</ReceivingEndUsers>
+    <SendingOrReceivingEndUsers>3</SendingOrReceivingEndUsers>
   </Subset>
 </EndUserStatisticsReport>

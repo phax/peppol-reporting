@@ -52,7 +52,7 @@ public final class EndUserStatisticsReportValidatorTest
   {
     for (final File f : EUSRTestHelper.getAllGoodFiles ())
     {
-      final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
+      final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
                                                                          .applySchematronValidationToSVRL (new FileSystemResource (f));
       assertNotNull (aSVRL);
 
@@ -64,6 +64,23 @@ public final class EndUserStatisticsReportValidatorTest
     }
   }
 
+  @Test
+  public void testSpecificEUSRGoodCase () throws Exception
+  {
+    final File f = EUSRTestHelper.getAllGoodFiles ()
+                                 .findFirst (x -> x.getAbsolutePath ().endsWith ("eusr-in-the-wild-1.xml"));
+
+    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
+                                                                       .applySchematronValidationToSVRL (new FileSystemResource (f));
+    assertNotNull (aSVRL);
+
+    if (false)
+      LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
+
+    final ICommonsList <AbstractSVRLMessage> aList = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL);
+    assertEquals ("Found errors: " + aList.toString (), 0, aList.size ());
+  }
+
   @Nonnull
   private static ICommonsSet <String> _getAllFailedIDs (@Nonnull final String sFilename) throws Exception
   {
@@ -72,7 +89,7 @@ public final class EndUserStatisticsReportValidatorTest
     // Ensure correct according to XSD
     assertNotNull ("Failed to read " + sFilename, new EndUserStatisticsReport110Marshaller ().read (f));
 
-    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_110 ()
+    final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
                                                                        .applySchematronValidationToSVRL (new FileSystemResource (f));
     assertNotNull (aSVRL);
 

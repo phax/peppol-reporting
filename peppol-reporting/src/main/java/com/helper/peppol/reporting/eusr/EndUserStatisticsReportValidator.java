@@ -32,12 +32,14 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 public final class EndUserStatisticsReportValidator
 {
   public static final String SCH_EUSR_110_PATH = "external/schematron/peppol-end-user-statistics-reporting-1.1.0.sch";
+  public static final String SCH_EUSR_111_PATH = "external/schematron/peppol-end-user-statistics-reporting-1.1.1.sch";
 
   private static final ISchematronResource SCH_EUSR_110 = SchematronResourceSCH.fromClassPath (SCH_EUSR_110_PATH);
+  private static final ISchematronResource SCH_EUSR_111 = SchematronResourceSCH.fromClassPath (SCH_EUSR_111_PATH);
 
   static
   {
-    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_EUSR_110 })
+    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_EUSR_110, SCH_EUSR_111 })
       if (!aSch.isValidSchematron ())
         throw new InitializationException ("Schematron in " + aSch.getResource ().getPath () + " is invalid");
   }
@@ -49,8 +51,29 @@ public final class EndUserStatisticsReportValidator
    * @return Schematron EUSR v1.1.0
    */
   @Nonnull
+  @Deprecated (forRemoval = true, since = "2.1.3")
   public static ISchematronResource getSchematronEUSR_110 ()
   {
     return SCH_EUSR_110;
+  }
+
+  /**
+   * @return Schematron EUSR v1.1.1
+   * @since 2.1.3
+   */
+  @Nonnull
+  public static ISchematronResource getSchematronEUSR_111 ()
+  {
+    return SCH_EUSR_111;
+  }
+
+  /**
+   * @return Schematron EUSR v1.1 latest micro version
+   * @since 2.1.3
+   */
+  @Nonnull
+  public static ISchematronResource getSchematronEUSR_11 ()
+  {
+    return SCH_EUSR_111;
   }
 }
