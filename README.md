@@ -16,6 +16,7 @@ This library supports the following reports:
 
 This library does not deal with the transmission of Reports.
 That needs to be done with [phase4](https://github.com/phax/phase4) or another AS4 solution.
+See the [phase4 Wiki](https://github.com/phax/phase4/wiki/Profile-Peppol#special-handling-for-peppol-reporting) for detailed guidance on integration with this project. 
 
 This library requires Java 11 and Maven to build.
 
