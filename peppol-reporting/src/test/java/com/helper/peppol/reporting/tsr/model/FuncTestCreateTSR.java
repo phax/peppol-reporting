@@ -90,7 +90,7 @@ public final class FuncTestCreateTSR
     assertNotNull (aDoc);
 
     // Perform Schematron verification
-    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
+    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_10 ()
                                                                            .applySchematronValidationToSVRL (aDoc,
                                                                                                              null);
     assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
@@ -166,7 +166,7 @@ public final class FuncTestCreateTSR
     assertNotNull (aDoc);
 
     // Perform Schematron verification
-    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
+    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_10 ()
                                                                            .applySchematronValidationToSVRL (aDoc,
                                                                                                              null);
     assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
@@ -242,7 +242,7 @@ public final class FuncTestCreateTSR
     assertNotNull (aDoc);
 
     // Perform Schematron verification
-    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
+    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_10 ()
                                                                            .applySchematronValidationToSVRL (aDoc,
                                                                                                              null);
     assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
@@ -363,7 +363,7 @@ public final class FuncTestCreateTSR
     assertNotNull (aDoc);
 
     // Perform Schematron verification
-    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
+    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_10 ()
                                                                            .applySchematronValidationToSVRL (aDoc,
                                                                                                              null);
     assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());

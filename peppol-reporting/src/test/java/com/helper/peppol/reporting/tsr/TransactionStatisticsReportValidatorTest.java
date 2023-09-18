@@ -52,7 +52,7 @@ public final class TransactionStatisticsReportValidatorTest
   {
     for (final File f : TSRTestHelper.getAllGoodFiles ())
     {
-      final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
+      final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_10 ()
                                                                              .applySchematronValidationToSVRL (new FileSystemResource (f));
       assertNotNull (aSVRL);
 
@@ -70,7 +70,7 @@ public final class TransactionStatisticsReportValidatorTest
     final File f = new File ("src/test/resources/external/tsr/bad/" + sFilename);
     assertNotNull ("The file is not XSD compliant", new TransactionStatisticsReport101Marshaller ().read (f));
 
-    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_101 ()
+    final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_10 ()
                                                                            .applySchematronValidationToSVRL (new FileSystemResource (f));
     assertNotNull (aSVRL);
 
@@ -206,5 +206,7 @@ public final class TransactionStatisticsReportValidatorTest
     assertTrue (_checkFailedID ("tsr-42-1.xml", "SCH-TSR-42"));
 
     assertTrue (_checkFailedID ("tsr-43-1.xml", "SCH-TSR-43"));
+
+    assertTrue (_checkFailedID ("tsr-in-the-wild-1.xml", "SCH-TSR-11"));
   }
 }
