@@ -41,6 +41,18 @@ Data collection needs to happen into your Access Point instances.
 The data for reporting needs to be collected in instances of class `PeppolReportingItem`.
 For each sent or received Peppol transmission, such a `PeppolReportingItem` needs to be collected, and persisted.
 
+Each `PeppolReportingItem` consists of the following elements:
+* `OffsetDateTime m_aExchangeDTUTC` - timing of the exchange in UTC; for TSR and EUSR
+* `EReportingDirection m_eDirection` - direction of the exchange; for TSR and EUSR
+* `String m_sC2ID` - Peppol Seat ID of C2; for TSR only
+* `String m_sC3ID` - Peppol Seat ID of C3; for TSR only
+* `String m_sDocTypeIDScheme` and `String m_sDocTypeIDValue` - Document Type ID of the exchange; for TSR and EUSR 
+* `String m_sProcessIDScheme` and `String m_sProcessIDValue` - Process ID of the exchange; for TSR and EUSR
+* `String m_sTransportProtocol` - the transport protocol used; for TSR only
+* `String m_sC1CountryCode` - the country code of C1; for TSR and EUSR
+* `String m_sC4CountryCode` - the country code of C4 - only required for received messages; for TSR and EUSR
+* `String m_sEndUserID` - the end user ID to aggregate on; for EUSR only
+
 To facilitate this collection, the submodule `peppol-reporting-api` exists.
 
 ## Data storage
