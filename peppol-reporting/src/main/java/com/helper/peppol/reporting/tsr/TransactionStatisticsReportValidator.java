@@ -31,17 +31,13 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 @NotThreadSafe
 public final class TransactionStatisticsReportValidator
 {
-  @Deprecated (forRemoval = true, since = "2.1.3")
-  public static final String SCH_TSR_101_PATH = "external/schematron/peppol-transaction-statistics-reporting-1.0.1.sch";
   public static final String SCH_TSR_102_PATH = "external/schematron/peppol-transaction-statistics-reporting-1.0.2.sch";
 
-  @Deprecated (forRemoval = true, since = "2.1.3")
-  private static final ISchematronResource SCH_TSR_101 = SchematronResourceSCH.fromClassPath (SCH_TSR_101_PATH);
   private static final ISchematronResource SCH_TSR_102 = SchematronResourceSCH.fromClassPath (SCH_TSR_102_PATH);
 
   static
   {
-    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_TSR_101, SCH_TSR_102 })
+    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_TSR_102 })
       if (!aSch.isValidSchematron ())
         throw new InitializationException ("Schematron in " + aSch.getResource ().getPath () + " is invalid");
   }
@@ -51,12 +47,13 @@ public final class TransactionStatisticsReportValidator
 
   /**
    * @return Schematron TSR v1.0.1
+   * @deprecated Use latest version instead
    */
   @Nonnull
   @Deprecated (forRemoval = true, since = "2.1.3")
   public static ISchematronResource getSchematronTSR_101 ()
   {
-    return SCH_TSR_101;
+    return SCH_TSR_102;
   }
 
   /**
@@ -75,6 +72,16 @@ public final class TransactionStatisticsReportValidator
    */
   @Nonnull
   public static ISchematronResource getSchematronTSR_10 ()
+  {
+    return SCH_TSR_102;
+  }
+
+  /**
+   * @return Schematron TSR v1 latest minor and micro version
+   * @since 2.1.3
+   */
+  @Nonnull
+  public static ISchematronResource getSchematronTSR_1 ()
   {
     return SCH_TSR_102;
   }

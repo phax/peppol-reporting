@@ -155,6 +155,8 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+* v2.1.3 - 2023-09-21
+    * Updated EUSR Schematron to v1.1.1 and TSR Schematron to v1.0.2
 * v2.1.2 - 2023-09-12
     * Added class `PeppolReportingHelper` with some generic helper methods
 * v2.1.1 - 2023-09-10
