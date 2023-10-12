@@ -31,13 +31,13 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 @NotThreadSafe
 public final class EndUserStatisticsReportValidator
 {
-  public static final String SCH_EUSR_111_PATH = "external/schematron/peppol-end-user-statistics-reporting-1.1.1.sch";
+  public static final String SCH_EUSR_112_PATH = "external/schematron/peppol-end-user-statistics-reporting-1.1.2.sch";
 
-  private static final ISchematronResource SCH_EUSR_111 = SchematronResourceSCH.fromClassPath (SCH_EUSR_111_PATH);
+  private static final ISchematronResource SCH_EUSR_112 = SchematronResourceSCH.fromClassPath (SCH_EUSR_112_PATH);
 
   static
   {
-    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_EUSR_111 })
+    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_EUSR_112 })
       if (!aSch.isValidSchematron ())
         throw new InitializationException ("Schematron in " + aSch.getResource ().getPath () + " is invalid");
   }
@@ -53,7 +53,7 @@ public final class EndUserStatisticsReportValidator
   @Deprecated (forRemoval = true, since = "2.1.3")
   public static ISchematronResource getSchematronEUSR_110 ()
   {
-    return SCH_EUSR_111;
+    return SCH_EUSR_112;
   }
 
   /**
@@ -61,9 +61,20 @@ public final class EndUserStatisticsReportValidator
    * @since 2.1.3
    */
   @Nonnull
+  @Deprecated (forRemoval = true, since = "2.1.4")
   public static ISchematronResource getSchematronEUSR_111 ()
   {
-    return SCH_EUSR_111;
+    return SCH_EUSR_112;
+  }
+
+  /**
+   * @return Schematron EUSR v1.1.2
+   * @since 2.1.4
+   */
+  @Nonnull
+  public static ISchematronResource getSchematronEUSR_112 ()
+  {
+    return SCH_EUSR_112;
   }
 
   /**
@@ -73,7 +84,7 @@ public final class EndUserStatisticsReportValidator
   @Nonnull
   public static ISchematronResource getSchematronEUSR_11 ()
   {
-    return SCH_EUSR_111;
+    return SCH_EUSR_112;
   }
 
   /**
@@ -83,6 +94,6 @@ public final class EndUserStatisticsReportValidator
   @Nonnull
   public static ISchematronResource getSchematronEUSR_1 ()
   {
-    return SCH_EUSR_111;
+    return SCH_EUSR_112;
   }
 }

@@ -14,6 +14,8 @@
       Muhammet Yildiz
 
     History
+      EUSR 1.1.2
+      * 2023-10-12, Muhammet Yildiz - Replaced $xyz values with `value-of select ="$xyz"` in the messages
       EUSR 1.1.0
       * 2023-09-18, Philip Helger - Using function "max" in rules 03, 04, 22 to fix an issue if the same value appears more then once
                                     Explicitly added "xs:integer" casts where necessary
@@ -183,11 +185,11 @@
       <let name="name" value="'The subset per Dataset Type ID and Process ID'"/>
       
       <assert id="SCH-EUSR-09" flag="fatal" test="count(eusr:Key) = 2"
-      >[SCH-EUSR-09] $name MUST have two Key elements</assert>
+      >[SCH-EUSR-09] <value-of select ="$name" /> MUST have two Key elements</assert>
       <assert id="SCH-EUSR-10" flag="fatal" test="count(eusr:Key[normalize-space(@metaSchemeID) = 'DT']) = 1"
-      >[SCH-EUSR-10] $name MUST have one Key element with the meta scheme ID 'DT'</assert>
+      >[SCH-EUSR-10] <value-of select ="$name" /> MUST have one Key element with the meta scheme ID 'DT'</assert>
       <assert id="SCH-EUSR-11" flag="fatal" test="count(eusr:Key[normalize-space(@metaSchemeID) = 'PR']) = 1"
-      >[SCH-EUSR-11] $name MUST have one Key element with the meta scheme ID 'PR'</assert>
+      >[SCH-EUSR-11] <value-of select ="$name" /> MUST have one Key element with the meta scheme ID 'PR'</assert>
     </rule>
 
     <!-- Per Dataset Type, Process ID and End User Country aggregation -->
@@ -195,15 +197,15 @@
       <let name="name" value="'The subset per Dataset Type ID, Process ID and End User Country'"/>
       
       <assert id="SCH-EUSR-23" flag="fatal" test="count(eusr:Key) = 3"
-      >[SCH-EUSR-23] $name MUST have three Key elements</assert>
+      >[SCH-EUSR-23] <value-of select ="$name" /> MUST have three Key elements</assert>
       <assert id="SCH-EUSR-24" flag="fatal" test="count(eusr:Key[normalize-space(@metaSchemeID) = 'DT']) = 1"
-      >[SCH-EUSR-24] $name MUST have one Key element with the meta scheme ID 'DT'</assert>
+      >[SCH-EUSR-24] <value-of select ="$name" /> MUST have one Key element with the meta scheme ID 'DT'</assert>
       <assert id="SCH-EUSR-25" flag="fatal" test="count(eusr:Key[normalize-space(@metaSchemeID) = 'PR']) = 1"
-      >[SCH-EUSR-25] $name MUST have one Key element with the meta scheme ID 'PR'</assert>
+      >[SCH-EUSR-25] <value-of select ="$name" /> MUST have one Key element with the meta scheme ID 'PR'</assert>
       <assert id="SCH-EUSR-26" flag="fatal" test="count(eusr:Key[normalize-space(@metaSchemeID) = 'CC']) = 1"
-      >[SCH-EUSR-26] $name MUST have one Key element with the meta scheme ID 'CC'</assert>
+      >[SCH-EUSR-26] <value-of select ="$name" /> MUST have one Key element with the meta scheme ID 'CC'</assert>
       <assert id="SCH-EUSR-27" flag="fatal" test="count(eusr:Key[normalize-space(@metaSchemeID) = 'CC'][normalize-space(@schemeID) = 'EndUserCountry']) = 1"
-      >[SCH-EUSR-27] $name MUST have one CC Key element with the scheme ID 'EndUserCountry'</assert>
+      >[SCH-EUSR-27] <value-of select ="$name" /> MUST have one CC Key element with the scheme ID 'EndUserCountry'</assert>
     </rule>
 
     <!-- Per Dataset Type and End User Country aggregation -->
@@ -211,13 +213,13 @@
       <let name="name" value="'The subset per Dataset Type ID and End User Country'"/>
       
       <assert id="SCH-EUSR-41" flag="fatal" test="count(eusr:Key) = 2"
-      >[SCH-EUSR-41] $name MUST have two Key elements</assert>
+      >[SCH-EUSR-41] <value-of select ="$name" /> MUST have two Key elements</assert>
       <assert id="SCH-EUSR-42" flag="fatal" test="count(eusr:Key[normalize-space(@metaSchemeID) = 'DT']) = 1"
-      >[SCH-EUSR-42] $name MUST have one Key element with the meta scheme ID 'DT'</assert>
+      >[SCH-EUSR-42] <value-of select ="$name" /> MUST have one Key element with the meta scheme ID 'DT'</assert>
       <assert id="SCH-EUSR-43" flag="fatal" test="count(eusr:Key[normalize-space(@metaSchemeID) = 'CC']) = 1"
-      >[SCH-EUSR-43] $name MUST have one Key element with the meta scheme ID 'CC'</assert>
+      >[SCH-EUSR-43] <value-of select ="$name" /> MUST have one Key element with the meta scheme ID 'CC'</assert>
       <assert id="SCH-EUSR-44" flag="fatal" test="count(eusr:Key[normalize-space(@metaSchemeID) = 'CC'][normalize-space(@schemeID) = 'EndUserCountry']) = 1"
-      >[SCH-EUSR-44] $name MUST have one CC Key element with the scheme ID 'EndUserCountry'</assert>
+      >[SCH-EUSR-44] <value-of select ="$name" /> MUST have one CC Key element with the scheme ID 'EndUserCountry'</assert>
     </rule>
 
     <!-- Per End User Country aggregation -->
@@ -225,11 +227,11 @@
       <let name="name" value="'The subset per End User Country'"/>
       
       <assert id="SCH-EUSR-45" flag="fatal" test="count(eusr:Key) = 1"
-      >[SCH-EUSR-45] $name MUST have one Key element</assert>
+      >[SCH-EUSR-45] <value-of select ="$name" /> MUST have one Key element</assert>
       <assert id="SCH-EUSR-46" flag="fatal" test="count(eusr:Key[normalize-space(@metaSchemeID) = 'CC']) = 1"
-      >[SCH-EUSR-46] $name MUST have one Key element with the meta scheme ID 'CC'</assert>
+      >[SCH-EUSR-46] <value-of select ="$name" /> MUST have one Key element with the meta scheme ID 'CC'</assert>
       <assert id="SCH-EUSR-47" flag="fatal" test="count(eusr:Key[normalize-space(@metaSchemeID) = 'CC'][normalize-space(@schemeID) = 'EndUserCountry']) = 1"
-      >[SCH-EUSR-47] $name MUST have one CC Key element with the scheme ID 'EndUserCountry'</assert>
+      >[SCH-EUSR-47] <value-of select ="$name" /> MUST have one CC Key element with the scheme ID 'EndUserCountry'</assert>
     </rule>
   </pattern>
 </schema>
