@@ -52,7 +52,7 @@ Each `PeppolReportingItem` consists of the following elements:
 * `String m_sTransportProtocol` - the transport protocol used; for TSR only
 * `String m_sC1CountryCode` - the country code of C1; for TSR and EUSR
 * `String m_sC4CountryCode` - the country code of C4 - only required for received messages; for TSR and EUSR
-* `String m_sEndUserID` - the end user ID to aggregate on; for EUSR only
+* `String m_sEndUserID` - the end user ID to aggregate on - this ID is **not** part of any report; for EUSR only
 
 To facilitate this collection, the submodule `peppol-reporting-api` exists.
 
