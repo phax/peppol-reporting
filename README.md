@@ -13,6 +13,7 @@ This library supports the following reports:
 * Peppol End User Statistics Report 1.1.0 (June 2023)
     * Specification link: https://docs.peppol.eu/edelivery/specs/reporting/eusr/
     * Supersedes 1.0.0 and 1.0.0-RC2 ([November 2022](https://openpeppol.atlassian.net/wiki/spaces/RR/pages/2967863297/End+user+statistics+reporting+BIS+22+November+2022))
+* OpenPeppol guideline for Reporting implementation: https://docs.peppol.eu/edelivery/changelog/2023-08/2023-08-20%20Peppol%20Reporting%20-%20SP%20Guideline%20v2.0.pdf 
 
 This library does not deal with the transmission of Reports.
 That needs to be done with [phase4](https://github.com/phax/phase4) or another AS4 solution.
