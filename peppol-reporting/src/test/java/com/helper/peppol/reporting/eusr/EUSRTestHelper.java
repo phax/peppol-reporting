@@ -39,6 +39,8 @@ public final class EUSRTestHelper
   {
     final ICommonsList <File> ret = new CommonsArrayList <> ();
     for (final String s : new String [] { "end-user-statistics-reporting-1.xml",
+                                          "end-user-statistics-reporting-2.xml",
+                                          "end-user-statistics-reporting-3.xml",
                                           "end-user-statistics-reporting-empty.xml",
                                           "end-user-statistics-reporting-minimal.xml",
                                           "eusr-in-the-wild-1.xml",

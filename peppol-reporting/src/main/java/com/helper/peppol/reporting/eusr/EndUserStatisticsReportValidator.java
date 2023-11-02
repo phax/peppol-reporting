@@ -31,13 +31,13 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 @NotThreadSafe
 public final class EndUserStatisticsReportValidator
 {
-  public static final String SCH_EUSR_112_PATH = "external/schematron/peppol-end-user-statistics-reporting-1.1.2.sch";
+  public static final String SCH_EUSR_113_PATH = "external/schematron/peppol-end-user-statistics-reporting-1.1.3.sch";
 
-  private static final ISchematronResource SCH_EUSR_112 = SchematronResourceSCH.fromClassPath (SCH_EUSR_112_PATH);
+  private static final ISchematronResource SCH_EUSR_113 = SchematronResourceSCH.fromClassPath (SCH_EUSR_113_PATH);
 
   static
   {
-    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_EUSR_112 })
+    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_EUSR_113 })
       if (!aSch.isValidSchematron ())
         throw new InitializationException ("Schematron in " + aSch.getResource ().getPath () + " is invalid");
   }
@@ -53,7 +53,7 @@ public final class EndUserStatisticsReportValidator
   @Deprecated (forRemoval = true, since = "2.1.3")
   public static ISchematronResource getSchematronEUSR_110 ()
   {
-    return SCH_EUSR_112;
+    return SCH_EUSR_113;
   }
 
   /**
@@ -64,7 +64,7 @@ public final class EndUserStatisticsReportValidator
   @Deprecated (forRemoval = true, since = "2.1.4")
   public static ISchematronResource getSchematronEUSR_111 ()
   {
-    return SCH_EUSR_112;
+    return SCH_EUSR_113;
   }
 
   /**
@@ -72,9 +72,20 @@ public final class EndUserStatisticsReportValidator
    * @since 2.1.4
    */
   @Nonnull
+  @Deprecated (forRemoval = true, since = "2.1.5")
   public static ISchematronResource getSchematronEUSR_112 ()
   {
-    return SCH_EUSR_112;
+    return SCH_EUSR_113;
+  }
+
+  /**
+   * @return Schematron EUSR v1.1.3
+   * @since 2.1.5
+   */
+  @Nonnull
+  public static ISchematronResource getSchematronEUSR_113 ()
+  {
+    return SCH_EUSR_113;
   }
 
   /**
@@ -84,7 +95,7 @@ public final class EndUserStatisticsReportValidator
   @Nonnull
   public static ISchematronResource getSchematronEUSR_11 ()
   {
-    return SCH_EUSR_112;
+    return SCH_EUSR_113;
   }
 
   /**
@@ -94,6 +105,6 @@ public final class EndUserStatisticsReportValidator
   @Nonnull
   public static ISchematronResource getSchematronEUSR_1 ()
   {
-    return SCH_EUSR_112;
+    return SCH_EUSR_113;
   }
 }

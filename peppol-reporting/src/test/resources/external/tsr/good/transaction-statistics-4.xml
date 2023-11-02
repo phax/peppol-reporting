@@ -30,24 +30,26 @@
 
   <!-- Totals -->
   <Total>
-    <Incoming>23</Incoming>
-    <Outgoing>0</Outgoing>
+    <Incoming>19</Incoming>
+    <Outgoing>17</Outgoing>
   </Total>
-  
+
   <!-- Sum per TP must match TotalCount -->
   <Subtotal type="PerTP">
     <Key metaSchemeID="TP" schemeID="Peppol">peppol-transport-as4-v2_0</Key>
-    <Incoming>23</Incoming>
-    <Outgoing>0</Outgoing>
+    <Incoming>19</Incoming>
+    <Outgoing>17</Outgoing>
   </Subtotal>
 
+
+  <!-- region PerSP-DT-PR -->
   <!-- Subtotals must match Total -->
   <Subtotal type="PerSP-DT-PR">
     <Key metaSchemeID="SP" schemeID="CertSubjectCN">POP000001</Key>
     <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
     <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
     <Incoming>5</Incoming>
-    <Outgoing>0</Outgoing>
+    <Outgoing>3</Outgoing>
   </Subtotal>
 
   <Subtotal type="PerSP-DT-PR">
@@ -55,17 +57,31 @@
     <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
     <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
     <Incoming>2</Incoming>
-    <Outgoing>0</Outgoing>
+    <Outgoing>2</Outgoing>
   </Subtotal>
 
+
+  <!-- Sent 12 orders -->
   <Subtotal type="PerSP-DT-PR">
     <Key metaSchemeID="SP" schemeID="CertSubjectCN">POP000002</Key>
-    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
-    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
-    <Incoming>16</Incoming>
-    <Outgoing>0</Outgoing>
+    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:fdc:peppol.eu:poacc:trns:order:3::2.1</Key>
+    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">cenbii-procid-ubl::urn:fdc:peppol.eu:poacc:bis:ordering:3</Key>
+    <Incoming>0</Incoming>
+    <Outgoing>12</Outgoing>
   </Subtotal>
 
+
+  <!-- Sent 12 order responses -->
+  <Subtotal type="PerSP-DT-PR">
+    <Key metaSchemeID="SP" schemeID="CertSubjectCN">POP000002</Key>
+    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:fdc:peppol.eu:poacc:trns:order_response:3::2.1</Key>
+    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">cenbii-procid-ubl::urn:fdc:peppol.eu:poacc:bis:ordering:3</Key>
+    <Incoming>12</Incoming>
+    <Outgoing>0</Outgoing>
+  </Subtotal>
+  <!-- endregion -->
+
+  <!-- region PerSP-DT-PR-CC -->
   <!-- Subtotals must match Total -->
   <Subtotal type="PerSP-DT-PR-CC">
     <Key metaSchemeID="SP" schemeID="CertSubjectCN">POP000001</Key>
@@ -87,15 +103,11 @@
     <Outgoing>0</Outgoing>
   </Subtotal>
 
-  <!--
-    [TSR-20] The country code MUST be coded with ISO code ISO 3166-1 alpha-2.
-    Nevertheless, Greece may use the code 'EL', Kosovo may use the code 'XK'.
-  -->
   <Subtotal type="PerSP-DT-PR-CC">
     <Key metaSchemeID="SP" schemeID="CertSubjectCN">POP000001</Key>
     <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
     <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
-    <Key metaSchemeID="CC" schemeID="SenderCountry">AA</Key>
+    <Key metaSchemeID="CC" schemeID="SenderCountry">BE</Key>
     <Key metaSchemeID="CC" schemeID="ReceiverCountry">DE</Key>
     <Incoming>2</Incoming>
     <Outgoing>0</Outgoing>
@@ -103,11 +115,23 @@
 
   <Subtotal type="PerSP-DT-PR-CC">
     <Key metaSchemeID="SP" schemeID="CertSubjectCN">POP000002</Key>
-    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1</Key>
-    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
-    <Key metaSchemeID="CC" schemeID="SenderCountry">AT</Key>
-    <Key metaSchemeID="CC" schemeID="ReceiverCountry">DE</Key>
-    <Incoming>16</Incoming>
+    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:fdc:peppol.eu:poacc:trns:order_response:3::2.1</Key>
+    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">cenbii-procid-ubl::urn:fdc:peppol.eu:poacc:bis:ordering:3</Key>
+    <Key metaSchemeID="CC" schemeID="SenderCountry">DE</Key>
+    <Key metaSchemeID="CC" schemeID="ReceiverCountry">AT</Key>
+    <Incoming>7</Incoming>
     <Outgoing>0</Outgoing>
   </Subtotal>
+
+  <Subtotal type="PerSP-DT-PR-CC">
+    <Key metaSchemeID="SP" schemeID="CertSubjectCN">POP000002</Key>
+    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:fdc:peppol.eu:poacc:trns:order_response:3::2.1</Key>
+    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">cenbii-procid-ubl::urn:fdc:peppol.eu:poacc:bis:ordering:3</Key>
+    <Key metaSchemeID="CC" schemeID="SenderCountry">ZZ</Key>
+    <Key metaSchemeID="CC" schemeID="ReceiverCountry">ZZ</Key>
+    <Incoming>5</Incoming>
+    <Outgoing>0</Outgoing>
+  </Subtotal>
+  <!-- endregion -->
+
 </TransactionStatisticsReport>
