@@ -179,8 +179,7 @@ public final class EndUserStatisticsReportValidatorTest
     assertTrue (_checkFailedID ("eusr-29-1.xml", "SCH-EUSR-29"));
 
     assertTrue (_checkFailedID ("eusr-30-1.xml", "SCH-EUSR-30"));
-    if (false)
-      assertTrue (_checkFailedID ("eusr-30-2.xml", "SCH-EUSR-30"));
+    assertTrue (_checkFailedID ("eusr-30-2.xml", "SCH-EUSR-30"));
 
     assertTrue (_checkFailedID ("eusr-33-1.xml", "SCH-EUSR-33"));
 
