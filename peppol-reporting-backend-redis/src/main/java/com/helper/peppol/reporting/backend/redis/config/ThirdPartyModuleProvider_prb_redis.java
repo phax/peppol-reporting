@@ -37,7 +37,7 @@ public final class ThirdPartyModuleProvider_prb_redis implements IThirdPartyModu
   private static final IThirdPartyModule JEDIS = new ThirdPartyModule ("Jedis",
                                                                        "Redis",
                                                                        ELicense.MIT,
-                                                                       new Version (5, 0, 0),
+                                                                       new Version (5, 0, 2),
                                                                        "https://github.com/redis/jedis");
 
   @Nullable
