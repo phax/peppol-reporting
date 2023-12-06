@@ -30,10 +30,8 @@ import com.helger.commons.builder.IBuilder;
 import com.helger.commons.datetime.OffsetDate;
 import com.helger.commons.datetime.XMLOffsetDate;
 import com.helger.commons.log.ConditionalLogger;
-import com.helger.commons.math.MathHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.peppol.reporting.jaxb.tsr.v101.HeaderType;
-import com.helger.peppol.reporting.jaxb.tsr.v101.IncomingOutgoingType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.ReportPeriodType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
 import com.helper.peppol.reporting.api.CPeppolReporting;
@@ -77,7 +75,7 @@ public final class TransactionStatisticsReport
     private LocalDate m_aEndDate;
     private String m_sReportingServiceProviderIDScheme;
     private String m_sReportingServiceProviderID;
-    private TSRReportingItemList m_aList;
+    private Iterable <? extends PeppolReportingItem> m_aReportingItems;
 
     /**
      * Constructor. Sets default values for: {@link #customizationID(String)},
@@ -247,34 +245,6 @@ public final class TransactionStatisticsReport
     /**
      * Set the TSR reporting items based on which the report is to be created.
      *
-     * @param a
-     *        The list to be set. May be <code>null</code>.
-     * @return this for chaining
-     */
-    @Nonnull
-    public Builder10 reportingItemList (@Nullable final TSRReportingItemList a)
-    {
-      m_aList = a;
-      return this;
-    }
-
-    /**
-     * Set the TSR reporting items based on which the report is to be created.
-     *
-     * @param aItems
-     *        The items of which a new {@link TSRReportingItemList} is created
-     *        and used. May be <code>null</code>.
-     * @return this for chaining
-     */
-    @Nonnull
-    public Builder10 reportingItemList (@Nullable final PeppolReportingItem... aItems)
-    {
-      return reportingItemList (aItems == null ? null : new TSRReportingItemList (aItems));
-    }
-
-    /**
-     * Set the TSR reporting items based on which the report is to be created.
-     *
      * @param aItems
      *        The items of which a new {@link TSRReportingItemList} is created
      *        and used. May be <code>null</code>.
@@ -283,7 +253,8 @@ public final class TransactionStatisticsReport
     @Nonnull
     public Builder10 reportingItemList (@Nullable final Iterable <? extends PeppolReportingItem> aItems)
     {
-      return reportingItemList (aItems == null ? null : new TSRReportingItemList (aItems));
+      m_aReportingItems = aItems;
+      return this;
     }
 
     /**
@@ -341,7 +312,7 @@ public final class TransactionStatisticsReport
         return false;
       }
 
-      if (m_aList == null)
+      if (m_aReportingItems == null)
       {
         aCondLogger.warn ("Reporting Item list is missing");
         return false;
@@ -377,15 +348,8 @@ public final class TransactionStatisticsReport
         aReport.setHeader (aHeader);
       }
 
-      {
-        final IncomingOutgoingType aFullSet = new IncomingOutgoingType ();
-        aFullSet.setIncoming (MathHelper.toBigInteger (m_aList.getTotalIncomingCount ()));
-        aFullSet.setOutgoing (MathHelper.toBigInteger (m_aList.getTotalOutgoingCount ()));
-        aReport.setTotal (aFullSet);
-      }
-
-      // Add all subsets
-      m_aList.fillReportSubsets (aReport);
+      // Add Full Set and all Subsets
+      TSRReportingItemList.fillReportSubsets (m_aReportingItems, aReport);
       return aReport;
     }
   }

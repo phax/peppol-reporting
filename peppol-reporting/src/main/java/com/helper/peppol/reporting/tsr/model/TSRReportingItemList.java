@@ -19,17 +19,14 @@ package com.helper.peppol.reporting.tsr.model;
 import java.math.BigInteger;
 import java.util.Map;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
-import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsTreeMap;
-import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsSortedMap;
 import com.helger.commons.math.MathHelper;
+import com.helger.peppol.reporting.jaxb.tsr.v101.IncomingOutgoingType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.SubtotalKeyType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.SubtotalType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
@@ -43,50 +40,11 @@ import com.helper.peppol.reporting.api.PeppolReportingItem;
  * @author Philip Helger
  * @since 1.2.0
  */
+@Immutable
 public class TSRReportingItemList
 {
-  private final ICommonsList <PeppolReportingItem> m_aList = new CommonsArrayList <> ();
-
-  public TSRReportingItemList ()
+  private TSRReportingItemList ()
   {}
-
-  public TSRReportingItemList (@Nullable final PeppolReportingItem... aItems)
-  {
-    if (aItems != null)
-      m_aList.addAll (aItems);
-  }
-
-  public TSRReportingItemList (@Nullable final Iterable <? extends PeppolReportingItem> aItems)
-  {
-    if (aItems != null)
-      m_aList.addAll (aItems);
-  }
-
-  @Nonnull
-  public TSRReportingItemList add (@Nonnull final PeppolReportingItem aItem)
-  {
-    ValueEnforcer.notNull (aItem, "Item");
-    m_aList.add (aItem);
-    return this;
-  }
-
-  /**
-   * @return The number of total incoming, received messages. Always &ge; 0.
-   */
-  @Nonnegative
-  public long getTotalIncomingCount ()
-  {
-    return m_aList.stream ().filter (PeppolReportingItem::isReceiving).count ();
-  }
-
-  /**
-   * @return The number of total outgoing, sent messages. Always &ge; 0.
-   */
-  @Nonnegative
-  public long getTotalOutgoingCount ()
-  {
-    return m_aList.stream ().filter (PeppolReportingItem::isSending).count ();
-  }
 
   private static final class TransactionCounter
   {
@@ -126,14 +84,18 @@ public class TSRReportingItemList
     return ret;
   }
 
-  public void fillReportSubsets (@Nonnull final TransactionStatisticsReportType aReport)
+  public static void fillReportSubsets (@Nonnull final Iterable <? extends PeppolReportingItem> aList,
+                                        @Nonnull final TransactionStatisticsReportType aReport)
   {
+    long nTotalIncoming = 0;
+    long nTotalOutgoing = 0;
+
     // Create subsets
     final ICommonsSortedMap <SubtotalKeyTP, TransactionCounter> m_aMapTP = new CommonsTreeMap <> ();
     final ICommonsSortedMap <SubtotalKeySP_DT_PR, TransactionCounter> m_aMapSP_DT_PR = new CommonsTreeMap <> ();
     final ICommonsSortedMap <SubtotalKeySP_DT_PR_CC, TransactionCounter> m_aMapSP_DT_PR_CC = new CommonsTreeMap <> ();
 
-    for (final PeppolReportingItem aItem : m_aList)
+    for (final PeppolReportingItem aItem : aList)
     {
       final SubtotalKeyTP aKeyTP = new SubtotalKeyTP (aItem.getTransportProtocol ());
       final SubtotalKeySP_DT_PR aKeySP_DT_PR = new SubtotalKeySP_DT_PR (aItem.getOtherServiceProviderID (),
@@ -148,6 +110,8 @@ public class TSRReportingItemList
 
       if (bIncoming)
       {
+        nTotalIncoming++;
+
         // This can only be counted for incoming messages, as senders never have
         // the C4 ID
         final SubtotalKeySP_DT_PR_CC aKeySP_DT_PR_CC = new SubtotalKeySP_DT_PR_CC (aItem.getOtherServiceProviderID (),
@@ -159,6 +123,16 @@ public class TSRReportingItemList
                                                                                    aItem.getC4CountryCode ());
         m_aMapSP_DT_PR_CC.computeIfAbsent (aKeySP_DT_PR_CC, x -> new TransactionCounter ()).inc (bIncoming);
       }
+      else
+        nTotalOutgoing++;
+    }
+
+    // Add Total
+    {
+      final IncomingOutgoingType aFullSet = new IncomingOutgoingType ();
+      aFullSet.setIncoming (MathHelper.toBigInteger (nTotalIncoming));
+      aFullSet.setOutgoing (MathHelper.toBigInteger (nTotalOutgoing));
+      aReport.setTotal (aFullSet);
     }
 
     // Add to report

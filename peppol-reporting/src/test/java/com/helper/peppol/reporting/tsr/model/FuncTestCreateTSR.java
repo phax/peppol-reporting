@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.datetime.XMLOffsetDate;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
@@ -55,7 +57,7 @@ public final class FuncTestCreateTSR
     final TransactionStatisticsReportType aReport = TransactionStatisticsReport.builder ()
                                                                                .monthOf (aNow)
                                                                                .reportingServiceProviderID (MY_SPID)
-                                                                               .reportingItemList (new TSRReportingItemList ())
+                                                                               .reportingItemList (new CommonsArrayList <> ())
                                                                                .build ();
 
     // Check content
@@ -119,7 +121,7 @@ public final class FuncTestCreateTSR
     final TransactionStatisticsReportType aReport = TransactionStatisticsReport.builder ()
                                                                                .monthOf (aNow)
                                                                                .reportingServiceProviderID (MY_SPID)
-                                                                               .reportingItemList (aItem)
+                                                                               .reportingItemList (new CommonsArrayList <> (aItem))
                                                                                .build ();
 
     // Check content
@@ -196,7 +198,7 @@ public final class FuncTestCreateTSR
     final TransactionStatisticsReportType aReport = TransactionStatisticsReport.builder ()
                                                                                .monthOf (aNow)
                                                                                .reportingServiceProviderID (MY_SPID)
-                                                                               .reportingItemList (aItem)
+                                                                               .reportingItemList (new CommonsArrayList <> (aItem))
                                                                                .build ();
 
     // Check content
@@ -256,7 +258,7 @@ public final class FuncTestCreateTSR
     final String [] aEndUsers = { "a", "b", "c", "d", "e", "f", "g", "h", "i" };
     final IntFunction <String> fctGetEndUser = idx -> aEndUsers[idx % aEndUsers.length];
 
-    final TSRReportingItemList aList = new TSRReportingItemList ();
+    final ICommonsList <PeppolReportingItem> aList = new CommonsArrayList <> ();
     for (int i = 0; i < 5; ++i)
       aList.add (PeppolReportingItem.builder ()
                                     .exchangeDateTime (aNow)
