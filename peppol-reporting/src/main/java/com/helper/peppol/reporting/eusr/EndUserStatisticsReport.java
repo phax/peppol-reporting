@@ -30,10 +30,8 @@ import com.helger.commons.builder.IBuilder;
 import com.helger.commons.datetime.OffsetDate;
 import com.helger.commons.datetime.XMLOffsetDate;
 import com.helger.commons.log.ConditionalLogger;
-import com.helger.commons.math.MathHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
-import com.helger.peppol.reporting.jaxb.eusr.v110.FullSetType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.HeaderType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.ReportPeriodType;
 import com.helper.peppol.reporting.api.CPeppolReporting;
@@ -77,7 +75,7 @@ public final class EndUserStatisticsReport
     private LocalDate m_aEndDate;
     private String m_sReportingServiceProviderIDScheme;
     private String m_sReportingServiceProviderID;
-    private EUSRReportingItemList m_aList;
+    private Iterable <? extends PeppolReportingItem> m_aReportingItems;
 
     /**
      * Constructor. Sets default values for: {@link #customizationID(String)},
@@ -247,34 +245,6 @@ public final class EndUserStatisticsReport
     /**
      * Set the EUSR reporting items based on which the report is to be created.
      *
-     * @param a
-     *        The list to be set. May be <code>null</code>.
-     * @return this for chaining
-     */
-    @Nonnull
-    public Builder11 reportingItemList (@Nullable final EUSRReportingItemList a)
-    {
-      m_aList = a;
-      return this;
-    }
-
-    /**
-     * Set the EUSR reporting items based on which the report is to be created.
-     *
-     * @param aItems
-     *        The items of which a new {@link EUSRReportingItemList} is created
-     *        and used. May be <code>null</code>.
-     * @return this for chaining
-     */
-    @Nonnull
-    public Builder11 reportingItemList (@Nullable final PeppolReportingItem... aItems)
-    {
-      return reportingItemList (aItems == null ? null : new EUSRReportingItemList (aItems));
-    }
-
-    /**
-     * Set the EUSR reporting items based on which the report is to be created.
-     *
      * @param aItems
      *        The items of which a new {@link EUSRReportingItemList} is created
      *        and used. May be <code>null</code>.
@@ -283,7 +253,8 @@ public final class EndUserStatisticsReport
     @Nonnull
     public Builder11 reportingItemList (@Nullable final Iterable <? extends PeppolReportingItem> aItems)
     {
-      return reportingItemList (aItems == null ? null : new EUSRReportingItemList (aItems));
+      m_aReportingItems = aItems;
+      return this;
     }
 
     /**
@@ -340,7 +311,7 @@ public final class EndUserStatisticsReport
         return false;
       }
 
-      if (m_aList == null)
+      if (m_aReportingItems == null)
       {
         aCondLogger.warn ("Reporting Item list is missing");
         return false;
@@ -376,16 +347,8 @@ public final class EndUserStatisticsReport
         aReport.setHeader (aHeader);
       }
 
-      {
-        final FullSetType aFullSet = new FullSetType ();
-        aFullSet.setSendingEndUsers (MathHelper.toBigInteger (m_aList.getSendingEndUserCount ()));
-        aFullSet.setReceivingEndUsers (MathHelper.toBigInteger (m_aList.getReceivingEndUserCount ()));
-        aFullSet.setSendingOrReceivingEndUsers (MathHelper.toBigInteger (m_aList.getSendingOrReceivingEndUserCount ()));
-        aReport.setFullSet (aFullSet);
-      }
-
-      // Add all subsets
-      m_aList.fillReportSubsets (aReport);
+      // Add the Full set and all Subsets
+      EUSRReportingItemList.fillReportSubsets (m_aReportingItems, aReport);
       return aReport;
     }
   }

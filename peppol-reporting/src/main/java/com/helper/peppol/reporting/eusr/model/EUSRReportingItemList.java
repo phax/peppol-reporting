@@ -19,20 +19,18 @@ package com.helper.peppol.reporting.eusr.model;
 import java.math.BigInteger;
 import java.util.Map;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsHashSet;
 import com.helger.commons.collection.impl.CommonsTreeMap;
-import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsSet;
 import com.helger.commons.collection.impl.ICommonsSortedMap;
 import com.helger.commons.math.MathHelper;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
+import com.helger.peppol.reporting.jaxb.eusr.v110.FullSetType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetKeyType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetType;
 import com.helper.peppol.reporting.api.PeppolReportingItem;
@@ -44,68 +42,11 @@ import com.helper.peppol.reporting.api.PeppolReportingItem;
  * @author Philip Helger
  * @since 1.2.0
  */
+@Immutable
 public class EUSRReportingItemList
 {
-  private final ICommonsList <PeppolReportingItem> m_aList = new CommonsArrayList <> ();
-
-  public EUSRReportingItemList ()
+  private EUSRReportingItemList ()
   {}
-
-  public EUSRReportingItemList (@Nullable final PeppolReportingItem... aItems)
-  {
-    if (aItems != null)
-      m_aList.addAll (aItems);
-  }
-
-  public EUSRReportingItemList (@Nullable final Iterable <? extends PeppolReportingItem> aItems)
-  {
-    if (aItems != null)
-      m_aList.addAll (aItems);
-  }
-
-  @Nonnull
-  public EUSRReportingItemList add (@Nonnull final PeppolReportingItem aItem)
-  {
-    ValueEnforcer.notNull (aItem, "Item");
-    m_aList.add (aItem);
-    return this;
-  }
-
-  /**
-   * @return The number of unique sending end user IDs. Always &ge; 0.
-   */
-  @Nonnegative
-  public long getSendingEndUserCount ()
-  {
-    return m_aList.stream ()
-                  .filter (PeppolReportingItem::isSending)
-                  .map (PeppolReportingItem::getEndUserID)
-                  .distinct ()
-                  .count ();
-  }
-
-  /**
-   * @return The number of unique receiving end user IDs. Always &ge; 0.
-   */
-  @Nonnegative
-  public long getReceivingEndUserCount ()
-  {
-    return m_aList.stream ()
-                  .filter (PeppolReportingItem::isReceiving)
-                  .map (PeppolReportingItem::getEndUserID)
-                  .distinct ()
-                  .count ();
-  }
-
-  /**
-   * @return The number of unique end user IDs (independent of the message
-   *         exchange direction). Always &ge; 0.
-   */
-  @Nonnegative
-  public long getSendingOrReceivingEndUserCount ()
-  {
-    return m_aList.stream ().map (PeppolReportingItem::getEndUserID).distinct ().count ();
-  }
 
   private static final class EndUserCounter
   {
@@ -153,15 +94,24 @@ public class EUSRReportingItemList
     return ret;
   }
 
-  public void fillReportSubsets (@Nonnull final EndUserStatisticsReportType aReport)
+  public static void fillReportSubsets (@Nonnull final Iterable <? extends PeppolReportingItem> aReportingItems,
+                                        @Nonnull final EndUserStatisticsReportType aReport)
   {
+    ValueEnforcer.notNull (aReportingItems, "ReportingItems");
+    ValueEnforcer.notNull (aReport, "Report");
+
+    // For total full sets
+    final ICommonsSet <String> aSendingEndUsers = new CommonsHashSet <> ();
+    final ICommonsSet <String> aReceivingEndUsers = new CommonsHashSet <> ();
+    final ICommonsSet <String> aSendingOrReceivingEndUsers = new CommonsHashSet <> ();
+
     // Create subsets
     final ICommonsSortedMap <SubsetKeyDT_PR, EndUserCounter> m_aMapDT_PR = new CommonsTreeMap <> ();
     final ICommonsSortedMap <SubsetKeyEUC, EndUserCounter> m_aMapEUC = new CommonsTreeMap <> ();
     final ICommonsSortedMap <SubsetKeyDT_EUC, EndUserCounter> m_aMapDT_EUC = new CommonsTreeMap <> ();
     final ICommonsSortedMap <SubsetKeyDT_PR_EUC, EndUserCounter> m_aMapDT_PR_EUC = new CommonsTreeMap <> ();
 
-    for (final PeppolReportingItem aItem : m_aList)
+    for (final PeppolReportingItem aItem : aReportingItems)
     {
       final SubsetKeyDT_PR aKeyDT_PR = new SubsetKeyDT_PR (aItem.getDocTypeIDScheme (),
                                                            aItem.getDocTypeIDValue (),
@@ -183,6 +133,21 @@ public class EUSRReportingItemList
       m_aMapEUC.computeIfAbsent (aKeyEUC, x -> new EndUserCounter ()).inc (sEndUserID, bSending);
       m_aMapDT_EUC.computeIfAbsent (aKeyDT_EUC, x -> new EndUserCounter ()).inc (sEndUserID, bSending);
       m_aMapDT_PR_EUC.computeIfAbsent (aKeyDT_PR_EUC, x -> new EndUserCounter ()).inc (sEndUserID, bSending);
+
+      if (bSending)
+        aSendingEndUsers.add (sEndUserID);
+      else
+        aReceivingEndUsers.add (sEndUserID);
+      aSendingOrReceivingEndUsers.add (sEndUserID);
+    }
+
+    // Add full set
+    {
+      final FullSetType aFullSet = new FullSetType ();
+      aFullSet.setSendingEndUsers (MathHelper.toBigInteger (aSendingEndUsers.size ()));
+      aFullSet.setReceivingEndUsers (MathHelper.toBigInteger (aReceivingEndUsers.size ()));
+      aFullSet.setSendingOrReceivingEndUsers (MathHelper.toBigInteger (aSendingOrReceivingEndUsers.size ()));
+      aReport.setFullSet (aFullSet);
     }
 
     // Add to report

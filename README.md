@@ -156,6 +156,8 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+* v2.2.0 - 2023-12-07
+    * Modified class `EUSRReportingItemList` so that the list is only iterated once and is based on `Iterable` 
 * v2.1.6 - 2023-11-10
     * Updated EUSR Schematron to v1.1.4
 * v2.1.5 - 2023-11-02

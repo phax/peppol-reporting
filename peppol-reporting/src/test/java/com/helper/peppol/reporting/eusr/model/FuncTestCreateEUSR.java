@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.datetime.XMLOffsetDate;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
@@ -55,7 +57,7 @@ public final class FuncTestCreateEUSR
     final EndUserStatisticsReportType aReport = EndUserStatisticsReport.builder ()
                                                                        .monthOf (aNow)
                                                                        .reportingServiceProviderID (MY_SPID)
-                                                                       .reportingItemList (new EUSRReportingItemList ())
+                                                                       .reportingItemList (new CommonsArrayList <> ())
                                                                        .build ();
 
     // Check content
@@ -119,7 +121,7 @@ public final class FuncTestCreateEUSR
     final EndUserStatisticsReportType aReport = EndUserStatisticsReport.builder ()
                                                                        .monthOf (aNow)
                                                                        .reportingServiceProviderID (MY_SPID)
-                                                                       .reportingItemList (aItem)
+                                                                       .reportingItemList (new CommonsArrayList <> (aItem))
                                                                        .build ();
 
     // Check content
@@ -173,7 +175,7 @@ public final class FuncTestCreateEUSR
     final String [] aEndUsers = { "a", "b", "c", "d", "e", "f", "g", "h", "i" };
     final IntFunction <String> fctGetEndUser = idx -> aEndUsers[idx % aEndUsers.length];
 
-    final EUSRReportingItemList aList = new EUSRReportingItemList ();
+    final ICommonsList <PeppolReportingItem> aList = new CommonsArrayList <> ();
     for (int i = 0; i < 5; ++i)
       aList.add (PeppolReportingItem.builder ()
                                     .exchangeDateTime (aNow)
