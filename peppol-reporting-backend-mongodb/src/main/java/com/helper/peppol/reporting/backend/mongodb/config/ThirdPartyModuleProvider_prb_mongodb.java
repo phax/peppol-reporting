@@ -37,7 +37,7 @@ public final class ThirdPartyModuleProvider_prb_mongodb implements IThirdPartyMo
   private static final IThirdPartyModule MONGODB_JAVA_DRIVERS = new ThirdPartyModule ("MongoDB Java Drivers",
                                                                                       "MongoDB, Inc.",
                                                                                       ELicense.APACHE2,
-                                                                                      new Version (4, 10, 0),
+                                                                                      new Version (4, 11, 1),
                                                                                       "https://www.mongodb.com/docs/drivers/java/sync/current/");
 
   @Nullable
