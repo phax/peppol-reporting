@@ -158,6 +158,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 * v2.2.0 - 2023-12-07
     * Modified classes `EUSRReportingItemList` and `TSRReportingItemList` so that the list is only iterated once and is based on `Iterable`. Backwards incompatible change.
+    * Extended class `IPeppolReportingBackendSPI` with method `iterateReportingItems` to be able to lazily iterate over a data source. See [#2](https://github.com/phax/peppol-reporting/issues/2) - thx @iansmirlis
 * v2.1.6 - 2023-11-10
     * Updated EUSR Schematron to v1.1.4
 * v2.1.5 - 2023-11-02
