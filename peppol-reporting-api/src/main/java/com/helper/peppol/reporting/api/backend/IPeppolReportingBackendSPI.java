@@ -84,6 +84,45 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
 
   /**
    * Iterate all {@link PeppolReportingItem} objects in the provided date range,
+   * in the correct order. If the iteration is lazy or eager depends on the
+   * backing implementation.
+   *
+   * @param aStartDateIncl
+   *        The date to start iterating, including this date. May not be
+   *        <code>null</code>.
+   * @param aEndDateIncl
+   *        The date to stop iterating, including this date. May not be
+   *        <code>null</code>. Must not be before the start date.
+   * @return An {@link Iterable} over all matching reporting items.
+   * @throws PeppolReportingBackendException
+   *         In case of an unrecoverable error
+   * @since 2.2.0
+   */
+  @Nonnull
+  Iterable <PeppolReportingItem> iterateReportingItems (@Nonnull LocalDate aStartDateIncl,
+                                                        @Nonnull LocalDate aEndDateIncl) throws PeppolReportingBackendException;
+
+  /**
+   * Iterate all {@link PeppolReportingItem} objects in the provided month, in
+   * the correct order. If the iteration is lazy or eager depends on the backing
+   * implementation.
+   *
+   * @param aYearMonth
+   *        The year and month to iterate. May not be <code>null</code>.
+   * @return An {@link Iterable} over all matching reporting items.
+   * @throws PeppolReportingBackendException
+   *         In case of an unrecoverable error
+   * @see #iterateReportingItems(LocalDate, LocalDate)
+   * @since 2.2.0
+   */
+  @Nonnull
+  default Iterable <PeppolReportingItem> iterateReportingItems (@Nonnull final YearMonth aYearMonth) throws PeppolReportingBackendException
+  {
+    return iterateReportingItems (aYearMonth.atDay (1), aYearMonth.atEndOfMonth ());
+  }
+
+  /**
+   * Iterate all {@link PeppolReportingItem} objects in the provided date range,
    * in the correct order.
    *
    * @param aStartDateIncl
@@ -97,10 +136,14 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
    *        object found.
    * @throws PeppolReportingBackendException
    *         In case of an unrecoverable error
+   * @see #iterateReportingItems(LocalDate, LocalDate)
    */
-  void forEachReportingItem (@Nonnull LocalDate aStartDateIncl,
-                             @Nonnull LocalDate aEndDateIncl,
-                             @Nonnull Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException;
+  default void forEachReportingItem (@Nonnull final LocalDate aStartDateIncl,
+                                     @Nonnull final LocalDate aEndDateIncl,
+                                     @Nonnull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
+  {
+    iterateReportingItems (aStartDateIncl, aEndDateIncl).forEach (aConsumer);
+  }
 
   /**
    * Iterate all {@link PeppolReportingItem} objects in the provided month, in
@@ -114,10 +157,11 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
    * @throws PeppolReportingBackendException
    *         In case of an unrecoverable error
    * @see #forEachReportingItem(LocalDate, LocalDate, Consumer)
+   * @see #iterateReportingItems(YearMonth)
    */
   default void forEachReportingItem (@Nonnull final YearMonth aYearMonth,
                                      @Nonnull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
   {
-    forEachReportingItem (aYearMonth.atDay (1), aYearMonth.atEndOfMonth (), aConsumer);
+    iterateReportingItems (aYearMonth).forEach (aConsumer);
   }
 }

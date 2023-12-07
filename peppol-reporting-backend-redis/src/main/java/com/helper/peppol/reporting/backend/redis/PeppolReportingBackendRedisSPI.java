@@ -34,6 +34,8 @@ import com.helger.commons.annotation.IsSPIImplementation;
 import com.helger.commons.annotation.MustBeLocked;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
@@ -242,5 +244,14 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Found a total of " + nCounter + " matching documents in Redis");
+  }
+
+  @Nonnull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@Nonnull final LocalDate aStartDateIncl,
+                                                               @Nonnull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  {
+    final ICommonsList <PeppolReportingItem> ret = new CommonsArrayList <> ();
+    forEachReportingItem (aStartDateIncl, aEndDateIncl, ret::add);
+    return ret;
   }
 }

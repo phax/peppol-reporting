@@ -17,7 +17,7 @@
 package com.helper.peppol.reporting.backend.inmemory;
 
 import java.time.LocalDate;
-import java.util.function.Consumer;
+import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.GuardedBy;
@@ -93,14 +93,13 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
       LOGGER.debug ("Successfully stored Peppol Reporting Item in memory");
   }
 
-  public void forEachReportingItem (@Nonnull final LocalDate aStartDateIncl,
-                                    @Nonnull final LocalDate aEndDateIncl,
-                                    @Nonnull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
+  @Nonnull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@Nonnull final LocalDate aStartDateIncl,
+                                                               @Nonnull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
     ValueEnforcer.isTrue ( () -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
-    ValueEnforcer.notNull (aConsumer, "Consumer");
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Querying Peppol Reporting Items from in memory between " +
@@ -108,25 +107,58 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
                     " and " +
                     aEndDateIncl);
 
-    m_aRWLock.readLocked ( () -> {
-      int nCounter = 0;
+    final Iterator <PeppolReportingItem> it = new Iterator <> ()
+    {
+      private LocalDate m_aCurDate = aStartDateIncl;
+      private ICommonsList <PeppolReportingItem> m_aAllItemsOfDate;
+      private int m_nDateIndex = 0;
 
-      // Find between date, but order by exchange date and time
-      LocalDate aCurDate = aStartDateIncl;
-      while (aCurDate.compareTo (aEndDateIncl) <= 0)
+      private void _findNextDayWithItems ()
       {
-        final ICommonsList <PeppolReportingItem> aAllItemsOfDay = m_aMap.get (aCurDate);
-        if (aAllItemsOfDay != null)
-        {
-          aAllItemsOfDay.forEach (aConsumer);
-          nCounter += aAllItemsOfDay.size ();
-        }
+        m_nDateIndex = 0;
 
-        aCurDate = aCurDate.plusDays (1);
+        // Find between date, but order by exchange date and time
+        while (m_aCurDate.compareTo (aEndDateIncl) <= 0)
+        {
+          m_aAllItemsOfDate = m_aRWLock.readLockedGet ( () -> m_aMap.get (m_aCurDate));
+          if (m_aAllItemsOfDate != null && m_aAllItemsOfDate.isNotEmpty ())
+            break;
+
+          m_aCurDate = m_aCurDate.plusDays (1);
+        }
       }
 
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Found a total of " + nCounter + " matching documents in memory");
-    });
+      public boolean hasNext ()
+      {
+        if (m_aAllItemsOfDate == null)
+        {
+          // Initial call
+          _findNextDayWithItems ();
+          if (m_aAllItemsOfDate == null)
+            return false;
+        }
+
+        if (m_nDateIndex >= m_aAllItemsOfDate.size ())
+        {
+          // Next day
+          m_aCurDate = m_aCurDate.plusDays (1);
+
+          _findNextDayWithItems ();
+          if (m_aAllItemsOfDate == null)
+            return false;
+        }
+
+        return true;
+      }
+
+      @Nonnull
+      public PeppolReportingItem next ()
+      {
+        final PeppolReportingItem ret = m_aAllItemsOfDate.get (m_nDateIndex);
+        m_nDateIndex++;
+        return ret;
+      }
+    };
+    return () -> it;
   }
 }

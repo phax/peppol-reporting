@@ -82,11 +82,12 @@ public final class PeppolReportingBackendMongoDBSPITest
 
       // At least the amount of written entries must be available
       final MutableInt aCounter = new MutableInt (0);
-      aBackend.forEachReportingItem (PDTFactory.getCurrentYearMonth (), aLoadedItem -> {
+      aBackend.iterateReportingItems (PDTFactory.getCurrentYearMonth ()).forEach (aLoadedItem -> {
         aCounter.inc ();
         if (!aStoredItems.remove (aLoadedItem))
-          LOGGER.info (aLoadedItem + " not in " + aStoredItems);
+          LOGGER.info (aLoadedItem + " was previously created");
       });
+      LOGGER.info ("Iterated " + aCounter.intValue () + " Reporting Items");
       assertTrue (aCounter.intValue () >= nReportItems);
       assertTrue (aStoredItems.size () + " remaining of " + nReportItems, aStoredItems.isEmpty ());
     });

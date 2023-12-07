@@ -17,7 +17,6 @@
 package com.helper.peppol.reporting.backend.mongodb;
 
 import java.time.LocalDate;
-import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,7 +32,6 @@ import com.helger.commons.annotation.IsSPIImplementation;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.mutable.MutableInt;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
@@ -47,7 +45,8 @@ import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Sorts;
 
 /**
- * SPI implementation of {@link IPeppolReportingBackendSPI} for MongoDB.
+ * SPI implementation of {@link IPeppolReportingBackendSPI} for MongoDB. This
+ * backend supports the lazy gathering of report items through an Iterator.
  *
  * @author Philip Helger
  */
@@ -181,14 +180,13 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
       LOGGER.debug ("Successfully stored Peppol Reporting Item in MongoDB");
   }
 
-  public void forEachReportingItem (@Nonnull final LocalDate aStartDateIncl,
-                                    @Nonnull final LocalDate aEndDateIncl,
-                                    @Nonnull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
+  @Nonnull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@Nonnull final LocalDate aStartDateIncl,
+                                                               @Nonnull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
     ValueEnforcer.isTrue ( () -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
-    ValueEnforcer.notNull (aConsumer, "Consumer");
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Querying Peppol Reporting Items from MongoDB between " + aStartDateIncl + " and " + aEndDateIncl);
@@ -203,15 +201,8 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Using MongoDB filter '" + aFilter.toBsonDocument ().toJson () + "'");
 
-    final MutableInt aCounter = new MutableInt (0);
-    _getCollection ().find (aFilter)
-                     .sort (Sorts.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDT))
-                     .forEach (x -> {
-                       aCounter.inc ();
-                       aConsumer.accept (PeppolReportingMongoDBHelper.toDomain (x));
-                     });
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Found a total of " + aCounter.intValue () + " matching documents in MongoDB");
+    return _getCollection ().find (aFilter)
+                            .sort (Sorts.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDT))
+                            .map (PeppolReportingMongoDBHelper::toDomain);
   }
 }
