@@ -375,7 +375,7 @@ public final class FuncTestCreateTSR
   }
 
   @Test
-  public void testCreateExampleForSpec () throws Exception
+  public void testCreateSpecAppendix1 () throws Exception
   {
     final OffsetDateTime aNow = PDTFactory.createLocalDate (2023, Month.DECEMBER, 1)
                                           .atStartOfDay ()
