@@ -53,6 +53,7 @@ import com.mongodb.client.model.Sorts;
 @IsSPIImplementation
 public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackendSPI
 {
+  public static final String COLLECTION_NAME = "reporting-items";
   public static final String CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING = "peppol.reporting.mongodb.connectionstring";
   public static final String CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME = "peppol.reporting.mongodb.dbname";
 
@@ -151,7 +152,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   @Nonnull
   private MongoCollection <Document> _getCollection ()
   {
-    return m_aRWLock.readLockedGet ( () -> m_aClientWrapper.getCollection ("reporting-items"));
+    return m_aRWLock.readLockedGet ( () -> m_aClientWrapper.getCollection (COLLECTION_NAME));
   }
 
   private boolean _isDBWritable ()
