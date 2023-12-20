@@ -170,16 +170,39 @@ public final class FuncTestCreateEUSR
     assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
+  private static final class TestUser
+  {
+    private final String m_sEndUserID;
+    private final String m_sCountryCode;
+
+    TestUser (final String sEndUserID, final String sCountryCode)
+    {
+      m_sEndUserID = sEndUserID;
+      m_sCountryCode = sCountryCode;
+    }
+  }
+
+  private static final TestUser [] TEST_USERS = { new TestUser ("a", "AT"),
+                                                  new TestUser ("b", "BE"),
+                                                  new TestUser ("c", "CY"),
+                                                  new TestUser ("d", "AT"),
+                                                  new TestUser ("e", "BE"),
+                                                  new TestUser ("f", "CY"),
+                                                  new TestUser ("g", "AT"),
+                                                  new TestUser ("h", "BE"),
+                                                  new TestUser ("i", "CY") };
+
   @Test
   public void testCreateReport () throws Exception
   {
     final String sOtherSPID = "POP000002";
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
-    final String [] aEndUsers = { "a", "b", "c", "d", "e", "f", "g", "h", "i" };
-    final IntFunction <String> fctGetEndUser = idx -> aEndUsers[idx % aEndUsers.length];
+    final IntFunction <TestUser> fctGetEndUser = idx -> TEST_USERS[idx % TEST_USERS.length];
 
     final ICommonsList <PeppolReportingItem> aList = new CommonsArrayList <> ();
     for (int i = 0; i < 5; ++i)
+    {
+      final TestUser aTestUser = fctGetEndUser.apply (i);
       aList.add (PeppolReportingItem.builder ()
                                     .exchangeDateTime (aNow)
                                     .directionSending ()
@@ -188,10 +211,13 @@ public final class FuncTestCreateEUSR
                                     .docTypeID (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30)
                                     .processID (EPredefinedProcessIdentifier.BIS3_BILLING)
                                     .transportProtocolPeppolAS4v2 ()
-                                    .c1CountryCode ("FI")
-                                    .endUserID (fctGetEndUser.apply (i))
+                                    .c1CountryCode (aTestUser.m_sCountryCode)
+                                    .endUserID (aTestUser.m_sEndUserID)
                                     .build ());
+    }
     for (int i = 0; i < 3; ++i)
+    {
+      final TestUser aTestUser = fctGetEndUser.apply (i);
       aList.add (PeppolReportingItem.builder ()
                                     .exchangeDateTime (aNow)
                                     .directionSending ()
@@ -200,10 +226,13 @@ public final class FuncTestCreateEUSR
                                     .docTypeID (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30)
                                     .processID (EPredefinedProcessIdentifier.BIS3_BILLING)
                                     .transportProtocolPeppolAS4v2 ()
-                                    .c1CountryCode ("NO")
-                                    .endUserID (fctGetEndUser.apply (i + 3))
+                                    .c1CountryCode (aTestUser.m_sCountryCode)
+                                    .endUserID (aTestUser.m_sEndUserID)
                                     .build ());
+    }
     for (int i = 0; i < 4; ++i)
+    {
+      final TestUser aTestUser = fctGetEndUser.apply (i);
       aList.add (PeppolReportingItem.builder ()
                                     .exchangeDateTime (aNow)
                                     .directionSending ()
@@ -212,10 +241,13 @@ public final class FuncTestCreateEUSR
                                     .docTypeID (EPredefinedDocumentTypeIdentifier.CREDITNOTE_EN16931_PEPPOL_V30)
                                     .processID (EPredefinedProcessIdentifier.BIS3_BILLING)
                                     .transportProtocolPeppolAS4v2 ()
-                                    .c1CountryCode ("NO")
-                                    .endUserID (fctGetEndUser.apply (i))
+                                    .c1CountryCode (aTestUser.m_sCountryCode)
+                                    .endUserID (aTestUser.m_sEndUserID)
                                     .build ());
+    }
     for (int i = 0; i < 2; ++i)
+    {
+      final TestUser aTestUser = fctGetEndUser.apply (i + 4);
       aList.add (PeppolReportingItem.builder ()
                                     .exchangeDateTime (aNow)
                                     .directionReceiving ()
@@ -224,10 +256,11 @@ public final class FuncTestCreateEUSR
                                     .docTypeID (EPredefinedDocumentTypeIdentifier.CREDITNOTE_EN16931_PEPPOL_V30)
                                     .processID (EPredefinedProcessIdentifier.BIS3_BILLING)
                                     .transportProtocolPeppolAS4v2 ()
-                                    .c1CountryCode ("NO")
+                                    .c1CountryCode (aTestUser.m_sCountryCode)
+                                    .endUserID (aTestUser.m_sEndUserID)
                                     .c4CountryCode ("JP")
-                                    .endUserID (fctGetEndUser.apply (i + 4))
                                     .build ());
+    }
 
     // Create report with many transactions
     final EndUserStatisticsReportType aReport = EndUserStatisticsReport.builder ()
@@ -278,29 +311,32 @@ public final class FuncTestCreateEUSR
                                           .atStartOfDay ()
                                           .atOffset (ZoneOffset.UTC);
     final String sOtherSPID1 = "POP000001";
-    final String [] aEndUsers = { "a", "b", "c", "d", "e", "f", "g", "h", "i" };
-    final IntFunction <String> fctGetEndSendingUser = idx -> aEndUsers[idx % aEndUsers.length];
-    final IntFunction <String> fctGetEndReceivingUser = idx -> aEndUsers[idx % (aEndUsers.length / 2)];
+    final String sSenderCountryCode = "NO";
+    final IntFunction <TestUser> fctGetEndSendingUser = idx -> TEST_USERS[idx % TEST_USERS.length];
+    final IntFunction <TestUser> fctGetEndReceivingUser = idx -> TEST_USERS[idx % (TEST_USERS.length / 2)];
 
     final ICommonsList <PeppolReportingItem> aItems = new CommonsArrayList <> ();
     for (int i = 0; i < 40; ++i)
     {
       final int nCut = 18;
+      final boolean bSending = i < nCut;
+      final TestUser aTestUser = (bSending ? fctGetEndSendingUser : fctGetEndReceivingUser).apply (i);
       aItems.add (PeppolReportingItem.builder ()
                                      .exchangeDateTime (aNow)
-                                     .direction (i < nCut ? EReportingDirection.SENDING : EReportingDirection.RECEIVING)
-                                     .c2ID (i < nCut ? MY_SPID : sOtherSPID1)
-                                     .c3ID (i < nCut ? sOtherSPID1 : MY_SPID)
+                                     .direction (bSending ? EReportingDirection.SENDING : EReportingDirection.RECEIVING)
+                                     .c2ID (bSending ? MY_SPID : sOtherSPID1)
+                                     .c3ID (bSending ? sOtherSPID1 : MY_SPID)
                                      .docTypeID (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30)
                                      .processID (EPredefinedProcessIdentifier.BIS3_BILLING)
                                      .transportProtocolPeppolAS4v2 ()
-                                     .c1CountryCode ("DE")
-                                     .c4CountryCode (i < nCut ? null : "DE")
-                                     .endUserID ((i < nCut ? fctGetEndSendingUser : fctGetEndReceivingUser).apply (i))
+                                     .c1CountryCode (bSending ? aTestUser.m_sCountryCode : sSenderCountryCode)
+                                     .c4CountryCode (bSending ? null : aTestUser.m_sCountryCode)
+                                     .endUserID (aTestUser.m_sEndUserID)
                                      .build ());
     }
     for (int i = 0; i < 2; ++i)
     {
+      final TestUser aTestUser = fctGetEndReceivingUser.apply (i);
       aItems.add (PeppolReportingItem.builder ()
                                      .exchangeDateTime (aNow)
                                      .directionReceiving ()
@@ -309,13 +345,14 @@ public final class FuncTestCreateEUSR
                                      .docTypeID (EPredefinedDocumentTypeIdentifier.CREDITNOTE_EN16931_PEPPOL_V30)
                                      .processID (EPredefinedProcessIdentifier.BIS3_BILLING)
                                      .transportProtocolPeppolAS4v2 ()
-                                     .c1CountryCode ("BE")
-                                     .c4CountryCode ("DE")
-                                     .endUserID (fctGetEndReceivingUser.apply (i))
+                                     .c1CountryCode (sSenderCountryCode)
+                                     .c4CountryCode (aTestUser.m_sCountryCode)
+                                     .endUserID (aTestUser.m_sEndUserID)
                                      .build ());
     }
     for (int i = 0; i < 13; ++i)
     {
+      final TestUser aTestUser = fctGetEndSendingUser.apply (i);
       aItems.add (PeppolReportingItem.builder ()
                                      .exchangeDateTime (aNow)
                                      .directionSending ()
@@ -324,12 +361,13 @@ public final class FuncTestCreateEUSR
                                      .docTypeID (EPredefinedDocumentTypeIdentifier.ORDER_FDC_PEPPOL_EU_POACC_TRNS_ORDER_3)
                                      .processID (EPredefinedProcessIdentifier.BIS3_ORDERING)
                                      .transportProtocolPeppolAS4v2 ()
-                                     .c1CountryCode ("NO")
-                                     .endUserID (fctGetEndSendingUser.apply (i))
+                                     .c1CountryCode (aTestUser.m_sCountryCode)
+                                     .endUserID (aTestUser.m_sEndUserID)
                                      .build ());
     }
     for (int i = 0; i < 11; ++i)
     {
+      final TestUser aTestUser = fctGetEndReceivingUser.apply (i);
       aItems.add (PeppolReportingItem.builder ()
                                      .exchangeDateTime (aNow)
                                      .directionReceiving ()
@@ -338,9 +376,9 @@ public final class FuncTestCreateEUSR
                                      .docTypeID (EPredefinedDocumentTypeIdentifier.ORDERRESPONSE_FDC_PEPPOL_EU_POACC_TRNS_ORDER_RESPONSE_3)
                                      .processID (EPredefinedProcessIdentifier.BIS3_ORDERING)
                                      .transportProtocolPeppolAS4v2 ()
-                                     .c1CountryCode ("PT")
-                                     .c4CountryCode ("NO")
-                                     .endUserID (fctGetEndReceivingUser.apply (i))
+                                     .c1CountryCode (sSenderCountryCode)
+                                     .c4CountryCode (aTestUser.m_sCountryCode)
+                                     .endUserID (aTestUser.m_sEndUserID)
                                      .build ());
     }
 
@@ -372,12 +410,12 @@ public final class FuncTestCreateEUSR
                                           .atStartOfDay ()
                                           .atOffset (ZoneOffset.UTC);
     final String sOtherSPID1 = "POP000001";
-    final String [] aEndUsers = { "a", "b", "c", "d", "e", "f", "g", "h", "i" };
-    final IntFunction <String> fctGetEndSendingUser = idx -> aEndUsers[idx % aEndUsers.length];
+    final IntFunction <TestUser> fctGetEndSendingUser = idx -> TEST_USERS[idx % TEST_USERS.length];
 
     final ICommonsList <PeppolReportingItem> aItems = new CommonsArrayList <> ();
     for (int i = 0; i < 18; ++i)
     {
+      final TestUser aTestUser = fctGetEndSendingUser.apply (i);
       aItems.add (PeppolReportingItem.builder ()
                                      .exchangeDateTime (aNow)
                                      .directionSending ()
@@ -386,12 +424,13 @@ public final class FuncTestCreateEUSR
                                      .docTypeID (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30)
                                      .processID (EPredefinedProcessIdentifier.BIS3_BILLING)
                                      .transportProtocolPeppolAS4v2 ()
-                                     .c1CountryCode ("DE")
-                                     .endUserID (fctGetEndSendingUser.apply (i))
+                                     .c1CountryCode (aTestUser.m_sCountryCode)
+                                     .endUserID (aTestUser.m_sEndUserID)
                                      .build ());
     }
     for (int i = 0; i < 3; ++i)
     {
+      final TestUser aTestUser = fctGetEndSendingUser.apply (i);
       aItems.add (PeppolReportingItem.builder ()
                                      .exchangeDateTime (aNow)
                                      .directionSending ()
@@ -400,12 +439,13 @@ public final class FuncTestCreateEUSR
                                      .docTypeID (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30)
                                      .processID (EPredefinedProcessIdentifier.BIS3_BILLING)
                                      .transportProtocolPeppolAS4v2 ()
-                                     .c1CountryCode ("NO")
-                                     .endUserID (fctGetEndSendingUser.apply (i))
+                                     .c1CountryCode (aTestUser.m_sCountryCode)
+                                     .endUserID (aTestUser.m_sEndUserID)
                                      .build ());
     }
     for (int i = 0; i < 5; ++i)
     {
+      final TestUser aTestUser = fctGetEndSendingUser.apply (i);
       aItems.add (PeppolReportingItem.builder ()
                                      .exchangeDateTime (aNow)
                                      .directionSending ()
@@ -414,8 +454,8 @@ public final class FuncTestCreateEUSR
                                      .docTypeID (EPredefinedDocumentTypeIdentifier.ORDER_FDC_PEPPOL_EU_POACC_TRNS_ORDER_3)
                                      .processID (EPredefinedProcessIdentifier.BIS3_ORDERING)
                                      .transportProtocolPeppolAS4v2 ()
-                                     .c1CountryCode ("NO")
-                                     .endUserID (fctGetEndSendingUser.apply (i))
+                                     .c1CountryCode (aTestUser.m_sCountryCode)
+                                     .endUserID (aTestUser.m_sEndUserID)
                                      .build ());
     }
 
@@ -427,7 +467,7 @@ public final class FuncTestCreateEUSR
                                                                        .build ();
 
     // Avoid bloating the logs
-    if (false)
+    if (true)
       LOGGER.info (new EndUserStatisticsReport110Marshaller ().setFormattedOutput (true).getAsString (aReport));
 
     // Ensure it is valid XML
