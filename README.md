@@ -79,6 +79,7 @@ It creates one collection called: `reporting-items`
 It supports the following configuration properties:
 * **`peppol.reporting.mongodb.connectionstring`**: the connection string to use to connect to MongoDB  
 * **`peppol.reporting.mongodb.dbname`**: the MongoDB database name to use  
+* **`peppol.reporting.mongodb.collection`** (since v2.2.1): the MongoDB collection name to use. Defaults to `reporting-items`.
 
 ### Storage in Redis
 
@@ -156,6 +157,8 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+* v2.2.1 - 2023-12-31
+    * Made the collection name customizable in the MongoDB backend
 * v2.2.0 - 2023-12-07
     * Modified classes `EUSRReportingItemList` and `TSRReportingItemList` so that the list is only iterated once and is based on `Iterable`. Backwards incompatible change.
     * Extended class `IPeppolReportingBackendSPI` with method `iterateReportingItems` to be able to lazily iterate over a data source. See [#2](https://github.com/phax/peppol-reporting/issues/2) - thx @iansmirlis

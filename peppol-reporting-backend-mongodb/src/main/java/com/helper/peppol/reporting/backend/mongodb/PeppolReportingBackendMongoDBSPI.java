@@ -53,15 +53,17 @@ import com.mongodb.client.model.Sorts;
 @IsSPIImplementation
 public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackendSPI
 {
-  public static final String COLLECTION_NAME = "reporting-items";
+  public static final String DEFAULT_COLLECTION = "reporting-items";
   public static final String CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING = "peppol.reporting.mongodb.connectionstring";
   public static final String CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME = "peppol.reporting.mongodb.dbname";
+  public static final String CONFIG_PEPPOL_REPORTING_MONGODB_COLLECTION = "peppol.reporting.mongodb.collection";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendMongoDBSPI.class);
 
   private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("m_aRWLock")
   private MongoClientWrapper m_aClientWrapper;
+  private String m_sCollection;
 
   @Nonnull
   @Nonempty
@@ -104,6 +106,11 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
         throw new IllegalStateException ("The Peppol Reporting MongoDB backend was already initialized");
 
       m_aClientWrapper = createClientWrapper (aConfig);
+
+      // Configured collection introduced in 2.2.1
+      final String sConfiguredCollection = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_COLLECTION);
+      m_sCollection = StringHelper.getNotEmpty (sConfiguredCollection, DEFAULT_COLLECTION);
+
       // It may take some time, until the "DB writable" field returns true
     });
 
@@ -143,6 +150,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
         LOGGER.info ("Shutting down Peppol Reporting MongoDB client");
         m_aClientWrapper.close ();
         m_aClientWrapper = null;
+        m_sCollection = null;
       });
     }
     else
@@ -152,7 +160,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   @Nonnull
   private MongoCollection <Document> _getCollection ()
   {
-    return m_aRWLock.readLockedGet ( () -> m_aClientWrapper.getCollection (COLLECTION_NAME));
+    return m_aRWLock.readLockedGet ( () -> m_aClientWrapper.getCollection (m_sCollection));
   }
 
   private boolean _isDBWritable ()
