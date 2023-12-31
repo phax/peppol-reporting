@@ -159,6 +159,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 * v2.2.1 - 2023-12-31
     * Made the collection name customizable in the MongoDB backend
+    * Fixed an error in iterating in the "in-memory" backend when only entries from the last day of the period are present
 * v2.2.0 - 2023-12-07
     * Modified classes `EUSRReportingItemList` and `TSRReportingItemList` so that the list is only iterated once and is based on `Iterable`. Backwards incompatible change.
     * Extended class `IPeppolReportingBackendSPI` with method `iterateReportingItems` to be able to lazily iterate over a data source. See [#2](https://github.com/phax/peppol-reporting/issues/2) - thx @iansmirlis
