@@ -142,6 +142,7 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
         {
           // Next day
           m_aCurDate = m_aCurDate.plusDays (1);
+          m_aAllItemsOfDate = null;
 
           _findNextDayWithItems ();
           if (m_aAllItemsOfDate == null)
