@@ -36,7 +36,6 @@ import com.helger.commons.builder.IBuilder;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.log.ConditionalLogger;
-import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.peppol.smp.ESMPTransportProfile;
@@ -90,9 +89,10 @@ public final class PeppolReportingItem
   // EUSR
   private final String m_sEndUserID;
 
+  @Deprecated (forRemoval = true, since = "2.2.2")
   public static boolean isValidCountryCode (@Nullable final String s)
   {
-    return s != null && s.length () == LEN_COUNTRY_CODE && RegExHelper.stringMatchesPattern ("[0-9A-Z]{2}", s);
+    return PeppolReportingHelper.isValidCountryCode (s);
   }
 
   public PeppolReportingItem (@Nonnull final OffsetDateTime aExchangeDT,
@@ -663,7 +663,7 @@ public final class PeppolReportingItem
         aCondLogger.warn ("C1 Country Code is missing");
         return false;
       }
-      if (!isValidCountryCode (m_sC1CountryCode))
+      if (!PeppolReportingHelper.isValidCountryCode (m_sC1CountryCode))
       {
         aCondLogger.error ("C1 Country Code has an invalid layout");
         return false;
@@ -686,7 +686,7 @@ public final class PeppolReportingItem
           return false;
         }
 
-        if (!isValidCountryCode (m_sC4CountryCode))
+        if (!PeppolReportingHelper.isValidCountryCode (m_sC4CountryCode))
         {
           aCondLogger.error ("C4 Country Code has an invalid layout");
           return false;

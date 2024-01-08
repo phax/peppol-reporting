@@ -17,9 +17,11 @@
 package com.helper.peppol.reporting.api;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.regex.RegExHelper;
 import com.helger.peppolid.IDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.PeppolIdentifierHelper;
 
@@ -34,6 +36,21 @@ public final class PeppolReportingHelper
 {
   private PeppolReportingHelper ()
   {}
+
+  /**
+   * Check if the provided country code is valid according to the Peppol rules.
+   * It must be 2 characters long and follow a provided RegEx.
+   *
+   * @param s
+   *        The country code to check. May be <code>null</code>.
+   * @return <code>true</code> if it is a valid country code, <code>false</code>
+   *         if not.
+   * @since 2.2.2
+   */
+  public static boolean isValidCountryCode (@Nullable final String s)
+  {
+    return s != null && s.length () == 2 && RegExHelper.stringMatchesPattern ("[0-9A-Z]{2}", s);
+  }
 
   /**
    * Check if a document type is eligible for TSR or not. Based on the TSR
