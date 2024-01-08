@@ -41,6 +41,12 @@ public final class CPeppolReporting
   /** The default identification scheme for Service Provider IDs */
   public static final String SERVICE_PROVIDER_ID_SCHEME = "CertSubjectCN";
 
+  /**
+   * The replacement country code to be used if an incoming message does not
+   * contain the COUNTRY_C1 element
+   */
+  public static final String REPLACEMENT_COUNTRY_CODE = "ZZ";
+
   private CPeppolReporting ()
   {}
 }
