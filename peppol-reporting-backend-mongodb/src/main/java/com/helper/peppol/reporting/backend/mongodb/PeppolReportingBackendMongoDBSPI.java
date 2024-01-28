@@ -142,8 +142,12 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
     return ESuccess.SUCCESS;
   }
 
+  /**
+   * @return The internal MongoDB client wrapper. May be <code>null</code>.
+   * @since 2.2.2
+   */
   @Nullable
-  protected final MongoClientWrapper getClientWrapper ()
+  public final MongoClientWrapper getClientWrapper ()
   {
     return m_aRWLock.readLockedGet ( () -> m_aClientWrapper);
   }
