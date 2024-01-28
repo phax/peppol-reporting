@@ -31,6 +31,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.IsSPIImplementation;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.annotation.UsedViaReflection;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
@@ -64,6 +65,10 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   @GuardedBy ("m_aRWLock")
   private MongoClientWrapper m_aClientWrapper;
   private String m_sCollection;
+
+  @UsedViaReflection
+  public PeppolReportingBackendMongoDBSPI ()
+  {}
 
   @Nonnull
   @Nonempty
@@ -135,6 +140,12 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
     }
 
     return ESuccess.SUCCESS;
+  }
+
+  @Nullable
+  protected final MongoClientWrapper getClientWrapper ()
+  {
+    return m_aRWLock.readLockedGet ( () -> m_aClientWrapper);
   }
 
   public boolean isInitialized ()
