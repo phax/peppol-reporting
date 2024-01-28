@@ -18,6 +18,7 @@ package com.helper.peppol.reporting.eusr;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.YearMonth;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -210,6 +211,23 @@ public final class EndUserStatisticsReport
     public Builder11 monthOf (@Nullable final XMLOffsetDate a)
     {
       return monthOf (a == null ? null : a.toLocalDate ());
+    }
+
+    /**
+     * Set the reporting start and end date.
+     *
+     * @param a
+     *        The date from which the first day of the month and the last day of
+     *        the month are taken. May be <code>null</code>.
+     * @return this for chaining
+     * @see #startDate(LocalDate)
+     * @see #endDate(LocalDate)
+     */
+    @Nonnull
+    public Builder11 monthOf (@Nullable final YearMonth a)
+    {
+      return startDate (a == null ? null : a.atDay (1)).endDate (a == null ? null
+                                                                           : a.plusMonths (1).atDay (1).minusDays (1));
     }
 
     /**
