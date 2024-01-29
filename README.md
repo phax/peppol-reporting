@@ -157,9 +157,10 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-* v2.2.2 - work in progress
+* v2.2.2 - 2024-01-29
     * Moved the method `PeppolReportingItem.isValidCountryCode(String)` to class `PeppolReportingHelper`
-    * Added a constant `CPeppolReporting.REPLACEMENT_COUNTRY_CODE` for the "ZZ" code for invalid incoming country codes
+    * Added a constant `CPeppolReporting.REPLACEMENT_COUNTRY_CODE` for the `ZZ` code for invalid incoming country codes
+    * Added a constant `CPeppolReporting.OPENPEPPOL_PARTICIPANT_ID` for the default receiver PID
 * v2.2.1 - 2023-12-31
     * Made the collection name customizable in the MongoDB backend
     * Fixed an error in iterating in the "in-memory" backend when only entries from the last day of the period are present
