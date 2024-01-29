@@ -47,6 +47,11 @@ public final class CPeppolReporting
    */
   public static final String REPLACEMENT_COUNTRY_CODE = "ZZ";
 
+  /**
+   * The participant identifier value where OpenPeppol receives reports.
+   */
+  public static final String OPENPEPPOL_PARTICIPANT_ID = "9925:be0848934496";
+
   private CPeppolReporting ()
   {}
 }
