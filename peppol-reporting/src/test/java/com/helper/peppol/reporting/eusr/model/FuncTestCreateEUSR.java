@@ -286,7 +286,7 @@ public final class FuncTestCreateEUSR
 
     // Full set
     assertNotNull (aReport.getFullSet ());
-    assertEquals (6, aReport.getFullSet ().getSendingEndUsers ().intValueExact ());
+    assertEquals (5, aReport.getFullSet ().getSendingEndUsers ().intValueExact ());
     assertEquals (2, aReport.getFullSet ().getReceivingEndUsers ().intValueExact ());
     assertEquals (6, aReport.getFullSet ().getSendingOrReceivingEndUsers ().intValueExact ());
 

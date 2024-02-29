@@ -32,12 +32,14 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 public final class TransactionStatisticsReportValidator
 {
   public static final String SCH_TSR_104_PATH = "external/schematron/peppol-transaction-statistics-reporting-1.0.4.sch";
+  public static final String SCH_TSR_105_PATH = "external/schematron/peppol-transaction-statistics-reporting-1.0.5.sch";
 
   private static final ISchematronResource SCH_TSR_104 = SchematronResourceSCH.fromClassPath (SCH_TSR_104_PATH);
+  private static final ISchematronResource SCH_TSR_105 = SchematronResourceSCH.fromClassPath (SCH_TSR_105_PATH);
 
   static
   {
-    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_TSR_104 })
+    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_TSR_104, SCH_TSR_105 })
       if (!aSch.isValidSchematron ())
         throw new InitializationException ("Schematron in " + aSch.getResource ().getPath () + " is invalid");
   }
@@ -46,46 +48,24 @@ public final class TransactionStatisticsReportValidator
   {}
 
   /**
-   * @return Schematron TSR v1.0.1
-   * @deprecated Use latest version instead
-   */
-  @Nonnull
-  @Deprecated (forRemoval = true, since = "2.1.3")
-  public static ISchematronResource getSchematronTSR_101 ()
-  {
-    return SCH_TSR_104;
-  }
-
-  /**
-   * @return Schematron TSR v1.0.2
-   * @since 2.1.3
-   */
-  @Nonnull
-  @Deprecated (forRemoval = true, since = "2.1.4")
-  public static ISchematronResource getSchematronTSR_102 ()
-  {
-    return SCH_TSR_104;
-  }
-
-  /**
-   * @return Schematron TSR v1.0.3
-   * @since 2.1.4
-   */
-  @Nonnull
-  @Deprecated (forRemoval = true, since = "2.1.5")
-  public static ISchematronResource getSchematronTSR_103 ()
-  {
-    return SCH_TSR_104;
-  }
-
-  /**
    * @return Schematron TSR v1.0.4
    * @since 2.1.5
    */
   @Nonnull
+  @Deprecated (forRemoval = true, since = "2.2.3")
   public static ISchematronResource getSchematronTSR_104 ()
   {
     return SCH_TSR_104;
+  }
+
+  /**
+   * @return Schematron TSR v1.0.5
+   * @since 2.2.3
+   */
+  @Nonnull
+  public static ISchematronResource getSchematronTSR_105 ()
+  {
+    return SCH_TSR_105;
   }
 
   /**
@@ -95,7 +75,7 @@ public final class TransactionStatisticsReportValidator
   @Nonnull
   public static ISchematronResource getSchematronTSR_10 ()
   {
-    return SCH_TSR_104;
+    return getSchematronTSR_105 ();
   }
 
   /**
@@ -105,6 +85,6 @@ public final class TransactionStatisticsReportValidator
   @Nonnull
   public static ISchematronResource getSchematronTSR_1 ()
   {
-    return SCH_TSR_104;
+    return getSchematronTSR_10 ();
   }
 }
