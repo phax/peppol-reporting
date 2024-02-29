@@ -31,9 +31,11 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 @NotThreadSafe
 public final class TransactionStatisticsReportValidator
 {
+  @Deprecated (forRemoval = true, since = "2.2.3")
   public static final String SCH_TSR_104_PATH = "external/schematron/peppol-transaction-statistics-reporting-1.0.4.sch";
   public static final String SCH_TSR_105_PATH = "external/schematron/peppol-transaction-statistics-reporting-1.0.5.sch";
 
+  @Deprecated (forRemoval = true, since = "2.2.3")
   private static final ISchematronResource SCH_TSR_104 = SchematronResourceSCH.fromClassPath (SCH_TSR_104_PATH);
   private static final ISchematronResource SCH_TSR_105 = SchematronResourceSCH.fromClassPath (SCH_TSR_105_PATH);
 
