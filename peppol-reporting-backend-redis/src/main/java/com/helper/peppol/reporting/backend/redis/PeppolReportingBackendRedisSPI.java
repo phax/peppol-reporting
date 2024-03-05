@@ -83,7 +83,7 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
     final String sHost = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_REDIS_HOST);
     if (StringHelper.hasNoText (sHost))
     {
-      LOGGER.error ("The Redis hostname is missing in the configuration. See property '" +
+      LOGGER.error ("The Redis host name is missing in the configuration. See property '" +
                     CONFIG_PEPPOL_REPORTING_REDIS_HOST +
                     "'");
       return null;
@@ -98,11 +98,17 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
       return null;
     }
 
-    LOGGER.info ("Using Peppol Reporting Redis at '" + sHost + ":" + nPort + "'");
-    final String username = aConfig.getAsString(CONFIG_PEPPOL_REPORTING_REDIS_USER);
-    final String password = aConfig.getAsString(CONFIG_PEPPOL_REPORTING_REDIS_PASSWORD);
+    final String sUserName = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_REDIS_USER);
+    final String sPassword = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_REDIS_PASSWORD);
 
-    return new JedisPool(sHost, nPort, username, password);
+    LOGGER.info ("Using Peppol Reporting Redis at '" +
+                 sHost +
+                 ":" +
+                 nPort +
+                 "'" +
+                 (StringHelper.hasText (sUserName) ? " using username '" + sUserName + "'" : ""));
+
+    return new JedisPool (sHost, nPort, sUserName, sPassword);
   }
 
   @Nonnull
