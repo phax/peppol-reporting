@@ -92,8 +92,10 @@ The used Redis keys are:
 * `peppol:reporting:*` - contains a list of reporting item keys of a single day
 
 It supports the following configuration properties:
-* **`peppol.reporting.redis.host`**: the Redis host to connect to  
-* **`peppol.reporting.redis.port`**: the Redis port to connect to  
+* **`peppol.reporting.redis.host`**: the Redis host to connect to
+* **`peppol.reporting.redis.port`**: the Redis port to connect to
+* **`peppol.reporting.redis.user`** (since v2.2.3; optional): the username used to connect to the Redis server
+* **`peppol.reporting.redis.password`** (since v2.2.3; optional): the password used to connect to the Redis server
 
 ### Storage in memory
 
@@ -157,6 +159,8 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+* v2.2.3 - 2024-03-05
+    * Added the possibility to provide username and password via configuration for the Redis backend
 * v2.2.2 - 2024-01-29
     * Moved the method `PeppolReportingItem.isValidCountryCode(String)` to class `PeppolReportingHelper`
     * Added a constant `CPeppolReporting.REPLACEMENT_COUNTRY_CODE` for the `ZZ` code for invalid incoming country codes
