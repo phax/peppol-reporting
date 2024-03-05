@@ -160,7 +160,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 # News and Noteworthy
 
 * v2.2.3 - 2024-03-05
-    * Added the possibility to provide username and password via configuration for the Redis backend
+    * Added the possibility to provide username and password via configuration for the Redis backend. See [PR #13](https://github.com/phax/peppol-reporting/pull/13) - thx @TaKO8Ki
 * v2.2.2 - 2024-01-29
     * Moved the method `PeppolReportingItem.isValidCountryCode(String)` to class `PeppolReportingHelper`
     * Added a constant `CPeppolReporting.REPLACEMENT_COUNTRY_CODE` for the `ZZ` code for invalid incoming country codes
