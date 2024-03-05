@@ -59,6 +59,8 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
 {
   public static final String CONFIG_PEPPOL_REPORTING_REDIS_HOST = "peppol.reporting.redis.host";
   public static final String CONFIG_PEPPOL_REPORTING_REDIS_PORT = "peppol.reporting.redis.port";
+  public static final String CONFIG_PEPPOL_REPORTING_REDIS_USER = "peppol.reporting.redis.user";
+  public static final String CONFIG_PEPPOL_REPORTING_REDIS_PASSWORD = "peppol.reporting.redis.password";
   public static final int DEFAULT_REDIS_PORT = 6379;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendRedisSPI.class);
@@ -97,7 +99,10 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
     }
 
     LOGGER.info ("Using Peppol Reporting Redis at '" + sHost + ":" + nPort + "'");
-    return new JedisPool (sHost, nPort);
+    final String username = aConfig.getAsString(CONFIG_PEPPOL_REPORTING_REDIS_USER);
+    final String password = aConfig.getAsString(CONFIG_PEPPOL_REPORTING_REDIS_PASSWORD);
+
+    return new JedisPool(sHost, nPort, username, password);
   }
 
   @Nonnull
