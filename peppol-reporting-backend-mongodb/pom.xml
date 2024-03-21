@@ -50,7 +50,7 @@
       <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver-sync</artifactId>
-        <version>4.11.1</version>
+        <version>5.0.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -98,7 +98,10 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.peppol.reporting.backend.mongodb</Automatic-Module-Name>
-            <Export-Package>com.helper.peppol.reporting.backend.mongodb.*</Export-Package>
+            <Export-Package>
+              com.helper.peppol.reporting.backend.mongodb,
+              com.helper.peppol.reporting.backend.mongodb.config
+            </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
         </configuration>
