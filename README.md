@@ -9,10 +9,8 @@ Peppol Reporting is the process of collecting, aggregating and transmitting Pepp
 This library supports the following reports:
 * Peppol Transaction Statistics Report 1.0.1 (March 2023)
     * Specification link: https://docs.peppol.eu/edelivery/specs/reporting/tsr/
-    * Supersedes 1.0.0 ([November 2022](https://openpeppol.atlassian.net/wiki/spaces/RR/pages/2967863297/End+user+statistics+reporting+BIS+22+November+2022))
 * Peppol End User Statistics Report 1.1.0 (June 2023)
     * Specification link: https://docs.peppol.eu/edelivery/specs/reporting/eusr/
-    * Supersedes 1.0.0 and 1.0.0-RC2 ([November 2022](https://openpeppol.atlassian.net/wiki/spaces/RR/pages/2967863297/End+user+statistics+reporting+BIS+22+November+2022))
 * OpenPeppol guideline for Reporting implementation: https://docs.peppol.eu/edelivery/changelog/2023-08/2023-08-20%20Peppol%20Reporting%20-%20SP%20Guideline%20v2.0.pdf 
 
 This library does not deal with the transmission of Reports.
@@ -97,6 +95,17 @@ It supports the following configuration properties:
 * **`peppol.reporting.redis.user`** (since v2.2.3; optional): the username used to connect to the Redis server
 * **`peppol.reporting.redis.password`** (since v2.2.3; optional): the password used to connect to the Redis server
 
+### Storage in CSV
+
+Submodule `peppol-reporting-backend-csv` stores data in a CSV file.
+This submodule was introduced in version 2.2.4.
+
+It supports the following configuration properties:
+* **`peppol.reporting.csv.filename`**: the CSV filename to store the entries in
+* **`peppol.reporting.csv.separator-char`**: the CSV cell separator character to use. The default is `,`
+* **`peppol.reporting.csv.quote-char`**: the CSV quote character to use. The default is `"`
+* **`peppol.reporting.csv.escape-char`**: the CSV escape character to use. The default is `\`
+
 ### Storage in memory
 
 Submodule `peppol-reporting-backend-inmemory` stores data in memory only and is **not persistent**.
@@ -159,6 +168,8 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+* v2.2.4 - 2024-03-21
+    * Added new submodule `peppol-reporting-backend-csv` that uses a CSV file as the backend to store reporting items
 * v2.2.3 - 2024-03-05
     * Added the possibility to provide username and password via configuration for the Redis backend. See [PR #13](https://github.com/phax/peppol-reporting/pull/13) - thx @TaKO8Ki
 * v2.2.2 - 2024-01-29
