@@ -91,7 +91,7 @@ public final class PeppolReportingBackendRedisDBSPITest
       assertTrue (aStoredItems.isEmpty ());
     });
 
-    // May fail if MongoDB server is not running
+    // May fail if Redis server is not running
     if (false)
       assertTrue (eSuccess.isSuccess ());
   }
