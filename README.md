@@ -102,9 +102,9 @@ This submodule was introduced in version 2.2.4.
 
 It supports the following configuration properties:
 * **`peppol.reporting.csv.filename`**: the CSV filename to store the entries in
-* **`peppol.reporting.csv.separator-char`**: the CSV cell separator character to use. The default is `,`
-* **`peppol.reporting.csv.quote-char`**: the CSV quote character to use. The default is `"`
-* **`peppol.reporting.csv.escape-char`**: the CSV escape character to use. The default is `\`
+* **`peppol.reporting.csv.separator-char`** (optional): the CSV cell separator character to use. The default is `,`
+* **`peppol.reporting.csv.quote-char`** (optional): the CSV quote character to use. The default is `"`
+* **`peppol.reporting.csv.escape-char`** (optional): the CSV escape character to use. The default is `\`
 
 ### Storage in memory
 
