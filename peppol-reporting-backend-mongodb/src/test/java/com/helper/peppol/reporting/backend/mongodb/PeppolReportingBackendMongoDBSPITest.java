@@ -84,8 +84,8 @@ public final class PeppolReportingBackendMongoDBSPITest
       final MutableInt aCounter = new MutableInt (0);
       aBackend.iterateReportingItems (PDTFactory.getCurrentYearMonth ()).forEach (aLoadedItem -> {
         aCounter.inc ();
-        if (!aStoredItems.remove (aLoadedItem))
-          LOGGER.info (aLoadedItem + " was previously created");
+        // May fail if a previous test created them
+        aStoredItems.remove (aLoadedItem);
       });
       LOGGER.info ("Iterated " + aCounter.intValue () + " Reporting Items");
       assertTrue (aCounter.intValue () >= nReportItems);

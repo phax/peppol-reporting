@@ -84,8 +84,8 @@ public final class PeppolReportingBackendRedisDBSPITest
       final MutableInt aCounter = new MutableInt (0);
       aBackend.forEachReportingItem (PDTFactory.getCurrentYearMonth (), aLoadedItem -> {
         aCounter.inc ();
-        if (!aStoredItems.remove (aLoadedItem))
-          LOGGER.info (aLoadedItem + " not in " + aStoredItems);
+        // May fail if a previous test created them
+        aStoredItems.remove (aLoadedItem);
       });
       assertTrue (aCounter.intValue () >= nReportItems);
       assertTrue (aStoredItems.isEmpty ());
