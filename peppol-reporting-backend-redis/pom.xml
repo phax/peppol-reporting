@@ -45,15 +45,10 @@
     </developer>
   </developers>
   
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>redis.clients</groupId>
-        <artifactId>jedis</artifactId>
-        <version>5.1.0</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  <!-- Do not bloat global scope -->
+  <properties>
+    <jedis.version>5.1.2</jedis.version>
+  </properties>
  
   <dependencies>
     <dependency>
@@ -68,6 +63,7 @@
     <dependency>
       <groupId>redis.clients</groupId>
       <artifactId>jedis</artifactId>
+      <version>${jedis.version}</version>
     </dependency>
     
     <dependency>

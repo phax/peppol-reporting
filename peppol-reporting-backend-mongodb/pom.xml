@@ -44,16 +44,11 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
-  
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.mongodb</groupId>
-        <artifactId>mongodb-driver-sync</artifactId>
-        <version>5.0.0</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+ 
+  <!-- Do not bloat global scope -->
+  <properties>
+    <mongodb-client.version>5.0.0</mongodb-client.version>
+  </properties>
  
   <dependencies>
     <dependency>
@@ -68,6 +63,7 @@
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver-sync</artifactId>
+      <version>${mongodb-client.version}</version>
     </dependency>
     
     <dependency>
