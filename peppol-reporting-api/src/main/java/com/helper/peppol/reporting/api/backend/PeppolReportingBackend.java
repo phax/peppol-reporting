@@ -64,7 +64,7 @@ public class PeppolReportingBackend
       return null;
     }
 
-    final IPeppolReportingBackendSPI ret = aBackends.getFirst ();
+    final IPeppolReportingBackendSPI ret = aBackends.getFirstOrNull ();
     LOGGER.info ("Using IPeppolReportingBackendSPI implementation '" +
                  ret.getDisplayName () +
                  "/" +

@@ -168,6 +168,9 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+* v2.2.5 - 2024-03-29
+    * Updated to ph-commons 11.1.5
+    * Ensured Java 21 compatibility
 * v2.2.4 - 2024-03-21
     * Added new submodule `peppol-reporting-backend-csv` that uses a CSV file as the backend to store reporting items
 * v2.2.3 - 2024-03-05
