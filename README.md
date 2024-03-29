@@ -11,7 +11,7 @@ This library supports the following reports:
     * Specification link: https://docs.peppol.eu/edelivery/specs/reporting/tsr/
 * Peppol End User Statistics Report 1.1.0 (June 2023)
     * Specification link: https://docs.peppol.eu/edelivery/specs/reporting/eusr/
-* OpenPeppol guideline for Reporting implementation: https://docs.peppol.eu/edelivery/changelog/2023-08/2023-08-20%20Peppol%20Reporting%20-%20SP%20Guideline%20v2.0.pdf 
+* OpenPeppol Operational Guideline for Reporting implementation: https://docs.peppol.eu/edelivery/ 
 
 This library does not deal with the transmission of Reports.
 That needs to be done with [phase4](https://github.com/phax/phase4) or another AS4 solution.
@@ -23,7 +23,7 @@ This library requires Java 11 and Maven to build.
 
 This library offers a Java domain model for EUSR and TSR reports.
 
-*Note*: phase4 v2.2.2 and onwards has support for this project.
+*Note*: phase4 v2.2.2 and onwards has direct support for this project.
 
 ## Overview images
 
