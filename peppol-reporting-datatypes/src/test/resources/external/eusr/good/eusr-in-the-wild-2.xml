@@ -1,0 +1,44 @@
+<EndUserStatisticsReport xmlns="urn:fdc:peppol:end-user-statistics-report:1.1">
+  <CustomizationID>urn:fdc:peppol.eu:edec:trns:end-user-statistics-report:1.1</CustomizationID>
+  <ProfileID>urn:fdc:peppol.eu:edec:bis:reporting:1.0</ProfileID>
+  <Header>
+    <ReportPeriod>
+      <StartDate>2023-08-01</StartDate>
+      <EndDate>2023-08-31</EndDate>
+    </ReportPeriod>
+    <ReporterID schemeID="CertSubjectCN">POP000001</ReporterID>
+  </Header>
+  <FullSet>
+    <SendingEndUsers>3</SendingEndUsers>
+    <ReceivingEndUsers>14</ReceivingEndUsers>
+    <SendingOrReceivingEndUsers>16</SendingOrReceivingEndUsers>
+  </FullSet>
+  <Subset type="PerDT-PR">
+    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0::2.1</Key>
+    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
+    <SendingEndUsers>3</SendingEndUsers>
+    <ReceivingEndUsers>14</ReceivingEndUsers>
+    <SendingOrReceivingEndUsers>16</SendingOrReceivingEndUsers>
+  </Subset>
+  <Subset type="PerDT-EUC">
+    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0::2.1</Key>
+    <Key metaSchemeID="CC" schemeID="EndUserCountry">AU</Key>
+    <SendingEndUsers>3</SendingEndUsers>
+    <ReceivingEndUsers>14</ReceivingEndUsers>
+    <SendingOrReceivingEndUsers>16</SendingOrReceivingEndUsers>
+  </Subset>
+  <Subset type="PerDT-PR-EUC">
+    <Key metaSchemeID="DT" schemeID="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0::2.1</Key>
+    <Key metaSchemeID="PR" schemeID="cenbii-procid-ubl">urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</Key>
+    <Key metaSchemeID="CC" schemeID="EndUserCountry">AU</Key>
+    <SendingEndUsers>3</SendingEndUsers>
+    <ReceivingEndUsers>14</ReceivingEndUsers>
+    <SendingOrReceivingEndUsers>16</SendingOrReceivingEndUsers>
+  </Subset>
+  <Subset type="PerEUC">
+    <Key metaSchemeID="CC" schemeID="EndUserCountry">AU</Key>
+    <SendingEndUsers>3</SendingEndUsers>
+    <ReceivingEndUsers>14</ReceivingEndUsers>
+    <SendingOrReceivingEndUsers>16</SendingOrReceivingEndUsers>
+  </Subset>
+</EndUserStatisticsReport>

@@ -23,10 +23,10 @@
     <artifactId>peppol-reporting-parent-pom</artifactId>
     <version>2.2.6-SNAPSHOT</version>
   </parent>
-  <artifactId>peppol-reporting</artifactId>
+  <artifactId>peppol-reporting-datatypes</artifactId>
   <packaging>bundle</packaging>
-  <inceptionYear>2022</inceptionYear>
-  <url>https://github.com/phax/peppol-reporting/peppol-reporting</url>
+  <inceptionYear>2024</inceptionYear>
+  <url>https://github.com/phax/peppol-reporting/peppol-reporting-datatypes</url>
 
   <licenses>
     <license>
@@ -57,18 +57,6 @@
     <dependency>
       <groupId>com.helger.commons</groupId>
       <artifactId>ph-jaxb-adapter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-xslt</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.peppol</groupId>
-      <artifactId>peppol-reporting-datatypes</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.peppol</groupId>
-      <artifactId>peppol-reporting-api</artifactId>
     </dependency>
 
     <dependency>
@@ -103,16 +91,55 @@
         </executions>
         <configuration>
           <instructions>
-            <Automatic-Module-Name>com.helger.peppol.reporting</Automatic-Module-Name>
+            <Automatic-Module-Name>com.helger.peppol.reporting.datatypes</Automatic-Module-Name>
             <Export-Package>
+              com.helper.peppol.reporting.jaxb.eusr.v110.*,
+              com.helper.peppol.reporting.jaxb.tsr.v101.*,
               com.helper.peppol.reporting.eusr.*,
-              com.helper.peppol.reporting.eusr.model.*,
-              com.helper.peppol.reporting.tsr.*,
-              com.helper.peppol.reporting.tsr.model.*
+              com.helper.peppol.reporting.tsr.*
             </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>${jaxb-plugin.group}</groupId>
+        <artifactId>${jaxb-plugin.artifact}</artifactId>
+        <version>${jaxb-plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <schemaDirectory>${basedir}/src/main/resources/external/schemas</schemaDirectory>
+          <bindingDirectory>${basedir}/src/main/jaxb</bindingDirectory>
+          <extension>true</extension>
+          <strict>false</strict>
+          <args>
+            <arg>-no-header</arg>
+            <arg>-Xph-default-locale</arg>
+            <arg>en_US</arg>
+            <arg>-Xph-annotate</arg>
+            <arg>-Xph-fields-private</arg>
+            <arg>-Xph-code-quality</arg>
+            <arg>-Xph-equalshashcode</arg>
+            <arg>-Xph-tostring</arg>
+            <arg>-Xph-list-extension</arg>
+            <arg>-Xph-csu</arg>
+            <arg>-Xph-cloneable2</arg>
+            <arg>-Xph-value-extender</arg>
+          </args>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.helger</groupId>
+            <artifactId>ph-jaxb-plugin</artifactId>
+            <version>${ph-jaxb-plugin.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
