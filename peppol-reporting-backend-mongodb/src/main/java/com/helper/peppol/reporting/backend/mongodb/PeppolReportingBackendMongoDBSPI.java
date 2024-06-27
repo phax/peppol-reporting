@@ -103,6 +103,23 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
     return new MongoClientWrapper (sConnectionString, sDBName);
   }
 
+  /**
+   * Get the MongoDB collection name to use.
+   *
+   * @param aConfig
+   *        The configuration object to use. Never <code>null</code>.
+   * @return The DB collection name to use. Any <code>null</code> or empty value
+   *         will lead to an error.
+   */
+  @OverrideOnDemand
+  @Nullable
+  protected String getMongoCollectionName (@Nonnull final IConfig aConfig)
+  {
+    // Configured collection introduced in 2.2.1
+    final String sConfiguredCollection = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_COLLECTION);
+    return StringHelper.getNotEmpty (sConfiguredCollection, DEFAULT_COLLECTION);
+  }
+
   @Nonnull
   public ESuccess initBackend (@Nonnull final IConfig aConfig)
   {
@@ -113,8 +130,9 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
       m_aClientWrapper = createClientWrapper (aConfig);
 
       // Configured collection introduced in 2.2.1
-      final String sConfiguredCollection = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_COLLECTION);
-      m_sCollection = StringHelper.getNotEmpty (sConfiguredCollection, DEFAULT_COLLECTION);
+      m_sCollection = getMongoCollectionName (aConfig);
+      if (StringHelper.hasNoText (m_sCollection))
+        throw new IllegalStateException ("The Peppol Reporting MongoDB backend collection name may not be empty");
 
       // It may take some time, until the "DB writable" field returns true
     });
