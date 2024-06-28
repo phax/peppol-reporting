@@ -168,8 +168,10 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-* v2.2.6 - work in progress
+* v3.0.0 - work in progress
     * Extracted `peppol-reporting-datatypes` submodule
+    * Extracted `peppol-reporting-testfiles` submodule
+    * Fixed the namespace name from `com.helper.*` to `com.helger.*` - LOL
 * v2.2.5 - 2024-03-29
     * Updated to ph-commons 11.1.5
     * Ensured Java 21 compatibility

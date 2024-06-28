@@ -21,8 +21,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
 import javax.annotation.Nonnull;
 
 import org.junit.Test;
@@ -32,7 +30,10 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.collection.impl.CommonsHashSet;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsSet;
-import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.peppol.reporting.jaxb.eusr.EndUserStatisticsReport110Marshaller;
+import com.helger.peppol.reporting.testfiles.CReportingTestFiles;
+import com.helger.peppol.reporting.testfiles.EUSRTestHelper;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
@@ -50,10 +51,10 @@ public final class EndUserStatisticsReportValidatorTest
   @Test
   public void testEUSRGoodCases () throws Exception
   {
-    for (final File f : EUSRTestHelper.getAllGoodFiles ())
+    for (final ClassPathResource f : EUSRTestHelper.getAllGoodFiles ())
     {
       final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
-                                                                         .applySchematronValidationToSVRL (new FileSystemResource (f));
+                                                                         .applySchematronValidationToSVRL (f);
       assertNotNull (aSVRL);
 
       if (false)
@@ -67,11 +68,11 @@ public final class EndUserStatisticsReportValidatorTest
   @Test
   public void testSpecificEUSRGoodCase () throws Exception
   {
-    final File f = EUSRTestHelper.getAllGoodFiles ()
-                                 .findFirst (x -> x.getAbsolutePath ().endsWith ("eusr-in-the-wild-1.xml"));
+    final ClassPathResource f = EUSRTestHelper.getAllGoodFiles ()
+                                              .findFirst (x -> x.getPath ().endsWith ("eusr-in-the-wild-1.xml"));
 
     final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
-                                                                       .applySchematronValidationToSVRL (new FileSystemResource (f));
+                                                                       .applySchematronValidationToSVRL (f);
     assertNotNull (aSVRL);
 
     if (false)
@@ -84,13 +85,14 @@ public final class EndUserStatisticsReportValidatorTest
   @Nonnull
   private static ICommonsSet <String> _getAllFailedIDs (@Nonnull final String sFilename) throws Exception
   {
-    final File f = new File ("src/test/resources/external/eusr/bad/" + sFilename);
+    final ClassPathResource f = new ClassPathResource ("external/eusr/bad/" + sFilename,
+                                                       CReportingTestFiles.getTestClassLoader ());
 
     // Ensure correct according to XSD
     assertNotNull ("Failed to read " + sFilename, new EndUserStatisticsReport110Marshaller ().read (f));
 
     final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
-                                                                       .applySchematronValidationToSVRL (new FileSystemResource (f));
+                                                                       .applySchematronValidationToSVRL (f);
     assertNotNull (aSVRL);
 
     if (false)

@@ -34,6 +34,7 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.datetime.XMLOffsetDate;
+import com.helger.peppol.reporting.jaxb.tsr.TransactionStatisticsReport101Marshaller;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
@@ -43,7 +44,6 @@ import com.helper.peppol.reporting.api.CPeppolReporting;
 import com.helper.peppol.reporting.api.EReportingDirection;
 import com.helper.peppol.reporting.api.PeppolReportingItem;
 import com.helper.peppol.reporting.tsr.TransactionStatisticsReport;
-import com.helper.peppol.reporting.tsr.TransactionStatisticsReport101Marshaller;
 import com.helper.peppol.reporting.tsr.TransactionStatisticsReportValidator;
 
 public final class FuncTestCreateTSR

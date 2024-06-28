@@ -96,6 +96,11 @@
       
       <dependency>
         <groupId>com.helger.peppol</groupId>
+        <artifactId>peppol-reporting-testfiles</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.peppol</groupId>
         <artifactId>peppol-reporting-datatypes</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -133,6 +138,7 @@
   </dependencyManagement>
 
   <modules>
+    <module>peppol-reporting-testfiles</module>
     <module>peppol-reporting-datatypes</module>
     <module>peppol-reporting-api</module>
     <module>peppol-reporting</module>
