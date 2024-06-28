@@ -84,7 +84,7 @@
           <instructions>
             <Automatic-Module-Name>com.helger.peppol.reporting.backend.inmemory</Automatic-Module-Name>
             <Export-Package>
-              com.helper.peppol.reporting.backend.inmemory
+              com.helger.peppol.reporting.backend.inmemory
             </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>

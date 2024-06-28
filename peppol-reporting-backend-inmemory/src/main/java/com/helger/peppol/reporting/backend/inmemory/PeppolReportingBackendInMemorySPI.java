@@ -1,0 +1,165 @@
+/*
+ * Copyright (C) 2022-2024 Philip Helger
+ * philip[at]helger[dot]com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.helger.peppol.reporting.backend.inmemory;
+
+import java.time.LocalDate;
+import java.util.Iterator;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.GuardedBy;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.IsSPIImplementation;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
+import com.helger.commons.state.ESuccess;
+import com.helger.config.IConfig;
+import com.helger.peppol.reporting.api.PeppolReportingItem;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
+import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
+
+/**
+ * SPI implementation of {@link IPeppolReportingBackendSPI} for Redis.
+ *
+ * @author Philip Helger
+ */
+@IsSPIImplementation
+public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBackendSPI
+{
+  public static final String CONFIG_PEPPOL_REPORTING_REDIS_HOST = "peppol.reporting.redis.host";
+  public static final String CONFIG_PEPPOL_REPORTING_REDIS_PORT = "peppol.reporting.redis.port";
+  public static final int DEFAULT_REDIS_PORT = 6379;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendInMemorySPI.class);
+
+  private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
+  @GuardedBy ("m_aRWLock")
+  private final ICommonsMap <LocalDate, ICommonsList <PeppolReportingItem>> m_aMap = new CommonsHashMap <> ();
+
+  @Nonnull
+  @Nonempty
+  public String getDisplayName ()
+  {
+    return "InMemory";
+  }
+
+  @Nonnull
+  public ESuccess initBackend (@Nonnull final IConfig aConfig)
+  {
+    return ESuccess.SUCCESS;
+  }
+
+  public boolean isInitialized ()
+  {
+    return true;
+  }
+
+  public void shutdownBackend ()
+  {}
+
+  public void storeReportingItem (@Nonnull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
+  {
+    ValueEnforcer.notNull (aReportingItem, "ReportingItem");
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Trying to store Peppol Reporting Item in memory");
+
+    m_aRWLock.writeLocked ( () -> m_aMap.computeIfAbsent (aReportingItem.getExchangeDTUTC ().toLocalDate (),
+                                                          k -> new CommonsArrayList <> ())
+                                        .add (aReportingItem));
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Successfully stored Peppol Reporting Item in memory");
+  }
+
+  @Nonnull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@Nonnull final LocalDate aStartDateIncl,
+                                                               @Nonnull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  {
+    ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
+    ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
+    ValueEnforcer.isTrue ( () -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Querying Peppol Reporting Items from in memory between " +
+                    aStartDateIncl +
+                    " and " +
+                    aEndDateIncl);
+
+    final Iterator <PeppolReportingItem> it = new Iterator <> ()
+    {
+      private LocalDate m_aCurDate = aStartDateIncl;
+      private ICommonsList <PeppolReportingItem> m_aAllItemsOfDate;
+      private int m_nDateIndex = 0;
+
+      private void _findNextDayWithItems ()
+      {
+        m_nDateIndex = 0;
+
+        // Find between date, but order by exchange date and time
+        while (m_aCurDate.compareTo (aEndDateIncl) <= 0)
+        {
+          m_aAllItemsOfDate = m_aRWLock.readLockedGet ( () -> m_aMap.get (m_aCurDate));
+          if (m_aAllItemsOfDate != null && m_aAllItemsOfDate.isNotEmpty ())
+            break;
+
+          m_aCurDate = m_aCurDate.plusDays (1);
+        }
+      }
+
+      public boolean hasNext ()
+      {
+        if (m_aAllItemsOfDate == null)
+        {
+          // Initial call
+          _findNextDayWithItems ();
+          if (m_aAllItemsOfDate == null)
+            return false;
+        }
+
+        if (m_nDateIndex >= m_aAllItemsOfDate.size ())
+        {
+          // Next day
+          m_aCurDate = m_aCurDate.plusDays (1);
+          m_aAllItemsOfDate = null;
+
+          _findNextDayWithItems ();
+          if (m_aAllItemsOfDate == null)
+            return false;
+        }
+
+        return true;
+      }
+
+      @Nonnull
+      public PeppolReportingItem next ()
+      {
+        final PeppolReportingItem ret = m_aAllItemsOfDate.get (m_nDateIndex);
+        m_nDateIndex++;
+        return ret;
+      }
+    };
+    return () -> it;
+  }
+}

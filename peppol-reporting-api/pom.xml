@@ -111,8 +111,8 @@
           <instructions>
             <Automatic-Module-Name>com.helger.peppol.reporting.api</Automatic-Module-Name>
             <Export-Package>
-              com.helper.peppol.reporting.api.*,
-              com.helper.peppol.reporting.api.backend.*
+              com.helger.peppol.reporting.api,
+              com.helgper.peppol.reporting.api.backend
             </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
             <!-- The latter one has precedence -->

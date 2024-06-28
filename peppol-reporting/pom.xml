@@ -110,10 +110,10 @@
           <instructions>
             <Automatic-Module-Name>com.helger.peppol.reporting</Automatic-Module-Name>
             <Export-Package>
-              com.helper.peppol.reporting.eusr.*,
-              com.helper.peppol.reporting.eusr.model.*,
-              com.helper.peppol.reporting.tsr.*,
-              com.helper.peppol.reporting.tsr.model.*
+              com.helger.peppol.reporting.eusr,
+              com.helger.peppol.reporting.eusr.model,
+              com.helger.peppol.reporting.tsr,
+              com.helger.peppol.reporting.tsr.model
             </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
