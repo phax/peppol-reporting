@@ -31,34 +31,19 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 @NotThreadSafe
 public final class EndUserStatisticsReportValidator
 {
-  @Deprecated (forRemoval = true, since = "2.2.3")
-  public static final String SCH_EUSR_114_PATH = "external/schematron/peppol-end-user-statistics-reporting-1.1.4.sch";
   public static final String SCH_EUSR_115_PATH = "external/schematron/peppol-end-user-statistics-reporting-1.1.5.sch";
 
-  @Deprecated (forRemoval = true, since = "2.2.3")
-  private static final ISchematronResource SCH_EUSR_114 = SchematronResourceSCH.fromClassPath (SCH_EUSR_114_PATH);
   private static final ISchematronResource SCH_EUSR_115 = SchematronResourceSCH.fromClassPath (SCH_EUSR_115_PATH);
 
   static
   {
-    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_EUSR_114, SCH_EUSR_115 })
+    for (final ISchematronResource aSch : new ISchematronResource [] { SCH_EUSR_115 })
       if (!aSch.isValidSchematron ())
         throw new InitializationException ("Schematron in " + aSch.getResource ().getPath () + " is invalid");
   }
 
   private EndUserStatisticsReportValidator ()
   {}
-
-  /**
-   * @return Schematron EUSR v1.1.4
-   * @since 2.1.6
-   */
-  @Nonnull
-  @Deprecated (forRemoval = true, since = "2.2.3")
-  public static ISchematronResource getSchematronEUSR_114 ()
-  {
-    return SCH_EUSR_114;
-  }
 
   /**
    * @return Schematron EUSR v1.1.5
