@@ -47,7 +47,7 @@
   
   <!-- Do not bloat global scope -->
   <properties>
-    <jedis.version>5.1.3</jedis.version>
+    <jedis.version>5.1.4</jedis.version>
   </properties>
  
   <dependencies>
