@@ -134,6 +134,11 @@
         <artifactId>peppol-reporting-backend-redis</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.helger.peppol</groupId>
+        <artifactId>peppol-reporting-backend-sql</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -146,6 +151,7 @@
     <module>peppol-reporting-backend-inmemory</module>
     <module>peppol-reporting-backend-mongodb</module>
     <module>peppol-reporting-backend-redis</module>
+    <module>peppol-reporting-backend-sql</module>
   </modules>
 
   <build>

@@ -53,7 +53,17 @@ jobs:
       uses: supercharge/mongodb-github-action@1.10.0
       with:
         mongodb-version: '6.0'
-          
+  
+    - name: Start PostgreSQL
+      uses: ikalnytskyi/action-setup-postgres@v6
+      with:
+        username: ci
+        password: sw0rdfish
+        database: test
+        port: 5432
+        postgres-version: "14"
+      id: postgres
+              
     - name: Build and deploy with Maven
       run: mvn --batch-mode --update-snapshots deploy
       env:
