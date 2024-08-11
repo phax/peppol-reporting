@@ -57,9 +57,9 @@ jobs:
     - name: Start PostgreSQL
       uses: ikalnytskyi/action-setup-postgres@v6
       with:
-        username: ci
-        password: sw0rdfish
-        database: test
+        username: peppol
+        password: peppol
+        database: peppol-db
         port: 5432
         postgres-version: "14"
       id: postgres
