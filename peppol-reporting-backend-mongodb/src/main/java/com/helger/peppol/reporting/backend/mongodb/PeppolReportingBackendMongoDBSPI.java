@@ -55,9 +55,10 @@ import com.mongodb.client.model.Sorts;
 public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackendSPI
 {
   public static final String DEFAULT_COLLECTION = "reporting-items";
-  public static final String CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING = "peppol.reporting.mongodb.connectionstring";
-  public static final String CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME = "peppol.reporting.mongodb.dbname";
-  public static final String CONFIG_PEPPOL_REPORTING_MONGODB_COLLECTION = "peppol.reporting.mongodb.collection";
+  private static final String CONFIG_PREFIX = "peppol.reporting.mongodb.";
+  public static final String CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING = CONFIG_PREFIX + "connectionstring";
+  public static final String CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME = CONFIG_PREFIX + "dbname";
+  public static final String CONFIG_PEPPOL_REPORTING_MONGODB_COLLECTION = CONFIG_PREFIX + "collection";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendMongoDBSPI.class);
 
