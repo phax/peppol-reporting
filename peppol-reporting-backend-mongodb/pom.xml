@@ -21,7 +21,7 @@
   <parent>
     <groupId>com.helger.peppol</groupId>
     <artifactId>peppol-reporting-parent-pom</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.2-SNAPSHOT</version>
   </parent>
   <artifactId>peppol-reporting-backend-mongodb</artifactId>
   <packaging>bundle</packaging>
