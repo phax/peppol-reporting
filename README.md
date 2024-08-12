@@ -216,7 +216,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-* v3.0.1 - work in progress
+* v3.0.1 - 2024-08-12
     * Added new submodule `peppol-reporting-backend-sql` to support PostgreSQL and MySQL
 * v3.0.0 - 2024-06-28
     * Extracted `peppol-reporting-datatypes` submodule
