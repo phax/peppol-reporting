@@ -95,7 +95,7 @@ It supports the following configuration properties:
 * **`peppol.reporting.redis.user`** (since v2.2.3; optional): the username used to connect to the Redis server
 * **`peppol.reporting.redis.password`** (since v2.2.3; optional): the password used to connect to the Redis server
 
-### Storage in CSV
+### Storage in CSV file
 
 Submodule `peppol-reporting-backend-csv` stores data in a CSV file.
 This submodule was introduced in version 2.2.4.
@@ -110,7 +110,6 @@ It supports the following configuration properties:
 
 Submodule `peppol-reporting-backend-sql` stores data in relational databases.
 This submodule was introduced in version 3.0.1.
-By default it is not bound to any specific DB engine, so you need to provide the necessary driver dependency manually.
 
 It supports the following configuration properties:
 * **`peppol.reporting.jdbc.database-type`**: the SQL database type to operate on. Currently supported are `postgresql` and `mysql`. The value is case-insensitive.
@@ -135,6 +134,25 @@ It can be configured as followed:
 * **`peppol.reporting.flyway.jdbc.password`** (optional): allows a specific JDBC password for usage with Flyway. If none is provided, the value of `peppol.reporting.jdbc.password` is used instead.
 * **`peppol.reporting.flyway.jdbc.schema-create`** (optional): `true` if the DB schema as defined in `peppol.reporting.jdbc.schema` should be automatically created by Flyway. Defaults to `false`.
 * **`peppol.reporting.flyway.baseline.version`** (optional): the Flyway baseline version to use. Defaults to `0`.
+
+By default it is not bound to any specific DB engine, so you need to provide the necessary driver dependency manually.
+PostgreSQL:
+```xml
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>x.y.z</version>
+    </dependency>
+```
+
+MySQL:
+```xml
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>x.y.z</version>
+    </dependency>
+```
 
 ### Storage in memory
 
