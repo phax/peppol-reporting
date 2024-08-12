@@ -61,7 +61,6 @@ jobs:
         password: peppol
         database: peppol-db
         port: 5432
-        postgres-version: "14"
       id: postgres
               
     - name: Build and deploy with Maven
