@@ -36,15 +36,15 @@ public final class ReportingFlywayConfiguration
   public static final String CONFIG_FLYWAY_ENABLED = CONFIG_PREFIX + "enabled";
   private static final boolean DEFAULT_FLYWAY_ENABLED = true;
 
-  private static final String CONFIG_FLYWAY_BASELINE_VERSION = CONFIG_PREFIX + "baseline.version";
-  private static final int DEFAULT_FLYWAY_BASELINE_VERSION = 0;
-
+  private static final String CONFIG_FLYWAY_JDBC_URL = CONFIG_PREFIX + "jdbc.url";
   private static final String CONFIG_FLYWAY_JDBC_USER = CONFIG_PREFIX + "jdbc.user";
   private static final String CONFIG_FLYWAY_JDBC_PASSWORD = CONFIG_PREFIX + "jdbc.password";
-  private static final String CONFIG_FLYWAY_JDBC_URL = CONFIG_PREFIX + "jdbc.url";
 
   private static final String CONFIG_FLYWAY_JDBC_SCHEMA_CREATE = CONFIG_PREFIX + "jdbc.schema-create";
   private static final boolean DEFAULT_FLYWAY_JDBC_SCHEMA_CREATE = false;
+
+  private static final String CONFIG_FLYWAY_BASELINE_VERSION = CONFIG_PREFIX + "baseline.version";
+  private static final int DEFAULT_FLYWAY_BASELINE_VERSION = 0;
 
   @PresentForCodeCoverage
   private static final ReportingFlywayConfiguration INSTANCE = new ReportingFlywayConfiguration ();
@@ -57,9 +57,11 @@ public final class ReportingFlywayConfiguration
     return aConfig.getAsBoolean (CONFIG_FLYWAY_ENABLED, DEFAULT_FLYWAY_ENABLED);
   }
 
-  public static int getFlywayBaselineVersion (@Nonnull final IConfig aConfig)
+  @Nullable
+  public static String getFlywayJdbcUrl (@Nonnull final IConfig aConfig)
   {
-    return aConfig.getAsInt (CONFIG_FLYWAY_BASELINE_VERSION, DEFAULT_FLYWAY_BASELINE_VERSION);
+    final String ret = aConfig.getAsString (CONFIG_FLYWAY_JDBC_URL);
+    return ret != null ? ret : ReportingJdbcConfiguration.getJdbcUrl (aConfig);
   }
 
   @Nullable
@@ -76,15 +78,13 @@ public final class ReportingFlywayConfiguration
     return ret != null ? ret : ReportingJdbcConfiguration.getJdbcPassword (aConfig);
   }
 
-  @Nullable
-  public static String getFlywayJdbcUrl (@Nonnull final IConfig aConfig)
-  {
-    final String ret = aConfig.getAsString (CONFIG_FLYWAY_JDBC_URL);
-    return ret != null ? ret : ReportingJdbcConfiguration.getJdbcUrl (aConfig);
-  }
-
   public static boolean isFlywaySchemaCreate (@Nonnull final IConfig aConfig)
   {
     return aConfig.getAsBoolean (CONFIG_FLYWAY_JDBC_SCHEMA_CREATE, DEFAULT_FLYWAY_JDBC_SCHEMA_CREATE);
+  }
+
+  public static int getFlywayBaselineVersion (@Nonnull final IConfig aConfig)
+  {
+    return aConfig.getAsInt (CONFIG_FLYWAY_BASELINE_VERSION, DEFAULT_FLYWAY_BASELINE_VERSION);
   }
 }

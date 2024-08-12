@@ -39,7 +39,7 @@ public final class ReportingJdbcConfiguration
   public static final String CONFIG_JDBC_URL = CONFIG_PREFIX + "url";
   public static final String CONFIG_JDBC_USER = CONFIG_PREFIX + "user";
   public static final String CONFIG_JDBC_PASSWORD = CONFIG_PREFIX + "password";
-  public static final String CONFIG_JDBC_SCHEMA = CONFIG_PREFIX + "jdbc.schema";
+  public static final String CONFIG_JDBC_SCHEMA = CONFIG_PREFIX + "schema";
 
   public static final String CONFIG_JDBC_EXECUTION_TIME_WARNING_ENABLED = CONFIG_PREFIX +
                                                                           "execution-time-warning.enabled";

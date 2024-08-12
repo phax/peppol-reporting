@@ -93,6 +93,12 @@
       <version>42.7.3</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>9.0.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

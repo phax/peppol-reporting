@@ -20,6 +20,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import javax.annotation.Nonnull;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +29,12 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.datetime.PDTFactory;
+import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.mutable.MutableInt;
 import com.helger.commons.state.ESuccess;
-import com.helger.config.ConfigFactory;
+import com.helger.config.Config;
+import com.helger.config.IConfig;
+import com.helger.config.source.res.ConfigurationSourceProperties;
 import com.helger.peppol.reporting.api.EReportingDirection;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackend;
@@ -46,12 +51,11 @@ public final class PeppolReportingBackendJdbcSPITest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendJdbcSPITest.class);
 
-  @Test
-  public void testBasic () throws PeppolReportingBackendException
+  private void _runTests (@Nonnull final IConfig aConfig) throws PeppolReportingBackendException
   {
     // The default configuration uses e.g.
     // src/test/resources/application.properties for the configuration
-    final ESuccess eSuccess = PeppolReportingBackend.withBackendDo (ConfigFactory.getDefaultConfig (), aBackend -> {
+    final ESuccess eSuccess = PeppolReportingBackend.withBackendDo (aConfig, aBackend -> {
       final ThreadLocalRandom aTLR = ThreadLocalRandom.current ();
       final int nReportItems = aTLR.nextInt (100);
       LOGGER.info ("Creating " + nReportItems + " test reporting items");
@@ -94,5 +98,17 @@ public final class PeppolReportingBackendJdbcSPITest
 
     // May fail if the DB server is not running
     assertTrue (eSuccess.isSuccess ());
+  }
+
+  @Test
+  public void testMySQL () throws PeppolReportingBackendException
+  {
+    _runTests (new Config (new ConfigurationSourceProperties (new ClassPathResource ("application-mysql.properties"))));
+  }
+
+  @Test
+  public void testPostgreSQL () throws PeppolReportingBackendException
+  {
+    _runTests (new Config (new ConfigurationSourceProperties (new ClassPathResource ("application-postgresql.properties"))));
   }
 }

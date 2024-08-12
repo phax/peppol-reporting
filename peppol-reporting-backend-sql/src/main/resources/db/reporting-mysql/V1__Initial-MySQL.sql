@@ -16,7 +16,8 @@
 --
 
 CREATE TABLE peppol_reporting_item (
-  exchangedt timestamp(3) NOT NULL,
+  -- Use up to millisecond precision
+  exchangedt datetime(3)  NOT NULL,
   sending    boolean      NOT NULL,
   c2id       varchar(64)  NOT NULL,
   c3id       varchar(64)  NOT NULL,

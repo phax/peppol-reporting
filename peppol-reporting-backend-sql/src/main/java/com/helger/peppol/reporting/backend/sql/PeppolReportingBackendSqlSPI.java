@@ -17,7 +17,6 @@
 package com.helger.peppol.reporting.backend.sql;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 
 import javax.annotation.Nonnull;
@@ -118,8 +117,11 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
         throw new IllegalStateException ("Failed to create Peppol Reporting SQL DB DataSource provider");
 
       final String sSchemaName = ReportingJdbcConfiguration.getJdbcSchema (aConfig);
-      if (StringHelper.hasText (sSchemaName) && RegExHelper.stringMatchesPattern ("[0-9a-zA-Z]+", sSchemaName))
-        m_sTableNamePrefix = sSchemaName + ".";
+      if (StringHelper.hasText (sSchemaName) && RegExHelper.stringMatchesPattern ("[0-9a-zA-Z-_]+", sSchemaName))
+      {
+        // Quotes are required for PostgreSQL when schema contains a dash
+        m_sTableNamePrefix = "\"" + sSchemaName + "\".";
+      }
       else
         m_sTableNamePrefix = "";
     });
@@ -184,8 +186,8 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
                                                               m_sTableNamePrefix +
                                                               "peppol_reporting_item (exchangedt, sending, c2id, c3id, dtscheme, dtvalue, procscheme, procvalue, tp, c1cc, c4cc, enduserid)" +
                                                               " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                                                              new ConstantPreparedStatementDataProvider (Timestamp.from (aReportingItem.getExchangeDTUTC ()
-                                                                                                                                       .toInstant ()),
+                                                              new ConstantPreparedStatementDataProvider (DBValueHelper.toTimestamp (aReportingItem.getExchangeDTUTC ()
+                                                                                                                                                  .toLocalDateTime ()),
                                                                                                          Boolean.valueOf (aReportingItem.isSending ()),
                                                                                                          DBValueHelper.getTrimmedToLength (aReportingItem.getC2ID (),
                                                                                                                                            PeppolReportingItem.MAX_LEN_C2_ID),
@@ -245,7 +247,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
       for (final DBResultRow aRow : aDBResult)
       {
         ret.add (PeppolReportingItem.builder ()
-                                    .exchangeDateTime (aRow.getAsOffsetDateTime (0))
+                                    .exchangeDateTimeInUTC (aRow.getAsLocalDateTime (0))
                                     .direction (aRow.getAsBoolean (1) ? EReportingDirection.SENDING
                                                                       : EReportingDirection.RECEIVING)
                                     .c2ID (aRow.getAsString (2))

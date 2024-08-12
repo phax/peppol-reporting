@@ -106,6 +106,36 @@ It supports the following configuration properties:
 * **`peppol.reporting.csv.quote-char`** (optional): the CSV quote character to use. The default is `"`
 * **`peppol.reporting.csv.escape-char`** (optional): the CSV escape character to use. The default is `\`
 
+### Storage in SQL databases
+
+Submodule `peppol-reporting-backend-sql` stores data in relational databases.
+This submodule was introduced in version 3.0.1.
+By default it is not bound to any specific DB engine, so you need to provide the necessary driver dependency manually.
+
+It supports the following configuration properties:
+* **`peppol.reporting.jdbc.database-type`**: the SQL database type to operate on. Currently supported are `postgresql` and `mysql`. The value is case-insensitive.
+* **`peppol.reporting.jdbc.driver`**: contains the fully qualified class name of the JDBC driver to be used. E.g. `org.postgresql.Driver` for PostgreSQL
+* **`peppol.reporting.jdbc.url`**: contains the full JDBC connection URL to connect to the database
+* **`peppol.reporting.jdbc.user`** (optional): the database username to use
+* **`peppol.reporting.jdbc.password`** (optional): the database password to use
+* **`peppol.reporting.jdbc.schema`** (optional): the database schema to use
+* **`peppol.reporting.jdbc.execution-time-warning.enabled`** (optional):  if `true` enables warning logging if an SQL command takes too long to execute. Defaults to `true`.
+* **`peppol.reporting.jdbc.execution-time-warning.ms`** (optional): the number of milliseconds after the which an SQL execution will trigger an execution time warning. Defaults to `1000` which is one second.
+* **`peppol.reporting.jdbc.debug.connections`** (optional):  if `true` enables logging of SQL connection handling. Defaults to `false`.
+* **`peppol.reporting.jdbc.debug.transactions`** (optional): if `true` enables logging of SQL transactions. Defaults to `false`. 
+* **`peppol.reporting.jdbc.debug.sql`** (optional): if `true` enables logging of SQL statements. Defaults to `false`.
+
+Database change management is done with the Open Source version of Flyway.
+All the Flyway DDL scripts are available in the folder https://github.com/phax/peppol-reporting/tree/main/peppol-reporting-backend-sql/src/main/resources/db
+
+It can be configured as followed:
+* **`peppol.reporting.flyway.enabled`**: `true` if Flyway should be enabled, `false` if not. Defaults to `true`.
+* **`peppol.reporting.flyway.jdbc.url`** (optional): allows a specific JDBC URL for usage with Flyway. If none is provided, the value of `peppol.reporting.jdbc.url` is used instead.
+* **`peppol.reporting.flyway.jdbc.user`** (optional): allows a specific JDBC username for usage with Flyway. If none is provided, the value of `peppol.reporting.jdbc.user` is used instead.
+* **`peppol.reporting.flyway.jdbc.password`** (optional): allows a specific JDBC password for usage with Flyway. If none is provided, the value of `peppol.reporting.jdbc.password` is used instead.
+* **`peppol.reporting.flyway.jdbc.schema-create`** (optional): `true` if the DB schema as defined in `peppol.reporting.jdbc.schema` should be automatically created by Flyway. Defaults to `false`.
+* **`peppol.reporting.flyway.baseline.version`** (optional): the Flyway baseline version to use. Defaults to `0`.
+
 ### Storage in memory
 
 Submodule `peppol-reporting-backend-inmemory` stores data in memory only and is **not persistent**.
@@ -168,6 +198,8 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+* v3.0.1 - work in progress
+    * Added new submodule `peppol-reporting-backend-sql` to support PostgreSQL and MySQL
 * v3.0.0 - 2024-06-28
     * Extracted `peppol-reporting-datatypes` submodule
     * Extracted `peppol-reporting-testfiles` submodule
