@@ -18,13 +18,15 @@ package com.helger.peppol.reporting.api.backend;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.functional.IThrowingConsumer;
 import com.helger.commons.lang.ServiceLoaderHelper;
 import com.helger.commons.state.ESuccess;
@@ -38,12 +40,14 @@ import com.helger.peppol.reporting.api.PeppolReportingAPIVersion;
  *
  * @author Philip Helger
  */
-@Immutable
+@ThreadSafe
 public class PeppolReportingBackend
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackend.class);
 
-  private static final IPeppolReportingBackendSPI BACKEND_SERVICE = _loadBackendService ();
+  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
+  @GuardedBy ("RW_LOCK")
+  private static IPeppolReportingBackendSPI s_aBackendService = _loadBackendService ();
 
   @Nullable
   private static IPeppolReportingBackendSPI _loadBackendService ()
@@ -83,7 +87,21 @@ public class PeppolReportingBackend
   @Nullable
   public static IPeppolReportingBackendSPI getBackendService ()
   {
-    return BACKEND_SERVICE;
+    return RW_LOCK.readLockedGet ( () -> s_aBackendService);
+  }
+
+  /**
+   * Explicitly set a backend service, in case loading via the SPI failed.
+   *
+   * @param aBackendService
+   *        The backend service to use. May not be <code>null</code>.
+   * @since 3.0.2
+   */
+  public static void setBackendService (@Nonnull final IPeppolReportingBackendSPI aBackendService)
+  {
+    ValueEnforcer.notNull (aBackendService, "BackendService");
+
+    RW_LOCK.writeLocked ( () -> s_aBackendService = aBackendService);
   }
 
   /**
