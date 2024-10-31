@@ -21,7 +21,7 @@
   <parent>
     <groupId>com.helger.peppol</groupId>
     <artifactId>peppol-reporting-parent-pom</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.2</version>
   </parent>
   <artifactId>peppol-reporting-datatypes</artifactId>
   <packaging>bundle</packaging>
