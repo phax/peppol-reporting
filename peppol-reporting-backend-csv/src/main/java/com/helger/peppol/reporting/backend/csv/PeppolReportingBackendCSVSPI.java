@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.GuardedBy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +73,7 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
   private char m_cSeparatorChar;
   private char m_cQuoteChar;
   private char m_cEscapeChar;
+  @GuardedBy ("m_aRWLock")
   private CSVWriter m_aCSVWriter;
 
   @Nonnull
@@ -208,15 +210,17 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
     if (!isInitialized ())
       throw new IllegalStateException ("The Peppol Reporting CSV backend is not initialized");
 
-    m_aCSVWriter.writeNext (asCSV (aReportingItem));
-    try
-    {
-      m_aCSVWriter.flush ();
-    }
-    catch (final IOException ex)
-    {
-      throw new PeppolReportingBackendException ("Failed to flush CSV file", ex);
-    }
+    m_aRWLock.writeLockedThrowing ( () -> {
+      m_aCSVWriter.writeNext (asCSV (aReportingItem));
+      try
+      {
+        m_aCSVWriter.flush ();
+      }
+      catch (final IOException ex)
+      {
+        throw new PeppolReportingBackendException ("Failed to flush CSV file", ex);
+      }
+    });
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Successfully stored Peppol Reporting Item in CSV");
