@@ -216,6 +216,9 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+* v3.0.2 - 2024-10-31
+    * Added new method `PeppolReportingBackend.setBackendService(IPeppolReportingBackendSPI)` to explicitly set the backend
+    * Added missing write locking in CSV backend
 * v3.0.1 - 2024-08-12
     * Added new submodule `peppol-reporting-backend-sql` to support PostgreSQL and MySQL
 * v3.0.0 - 2024-06-28
