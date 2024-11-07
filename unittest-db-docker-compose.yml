@@ -15,8 +15,6 @@
 # limitations under the License.
 #
 
-version: '3.9'
-
 # This Docker compose file starts up local database instances for SMP building
 # Run like this:
 # docker compose -f unittest-db-docker-compose.yml up
@@ -39,6 +37,24 @@ services:
     volumes: 
       - redis:/data
 
+  postgres:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: peppol-db
+      POSTGRES_USER: peppol
+      POSTGRES_PASSWORD: peppol
+    volumes:
+      - pgdata:/var/lib/postgresql/data 
+ 
+#  pg-adminer:
+#    image: adminer
+#    restart: always
+#    ports:
+#      - 8080:8080
+ 
 #  mysql:
 #    image: mysql:8
 #    environment:
@@ -52,3 +68,5 @@ services:
 volumes:
   redis:
     driver: local
+  pgdata:
+
