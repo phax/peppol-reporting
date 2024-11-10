@@ -47,7 +47,7 @@
  
   <!-- Do not bloat global scope -->
   <properties>
-    <mongodb-client.version>5.2.0</mongodb-client.version>
+    <mongodb-client.version>5.2.1</mongodb-client.version>
   </properties>
  
   <dependencies>
