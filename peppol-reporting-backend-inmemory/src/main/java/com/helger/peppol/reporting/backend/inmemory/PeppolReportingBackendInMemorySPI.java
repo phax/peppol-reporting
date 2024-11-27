@@ -35,9 +35,11 @@ import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.state.ESuccess;
 import com.helger.config.IConfig;
+import com.helger.peppol.reporting.api.PeppolReportingHelper;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
+import com.helger.peppolid.CIdentifier;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for Redis.
@@ -82,15 +84,27 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Trying to store Peppol Reporting Item in memory");
+    if (PeppolReportingHelper.isDocumentTypeEligableForReporting (aReportingItem.getDocTypeIDScheme (),
+                                                                  aReportingItem.getDocTypeIDValue ()))
+    {
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Trying to store Peppol Reporting Item in memory");
 
-    m_aRWLock.writeLocked ( () -> m_aMap.computeIfAbsent (aReportingItem.getExchangeDTUTC ().toLocalDate (),
-                                                          k -> new CommonsArrayList <> ())
-                                        .add (aReportingItem));
+      m_aRWLock.writeLocked ( () -> m_aMap.computeIfAbsent (aReportingItem.getExchangeDTUTC ().toLocalDate (),
+                                                            k -> new CommonsArrayList <> ())
+                                          .add (aReportingItem));
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Successfully stored Peppol Reporting Item in memory");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Successfully stored Peppol Reporting Item in memory");
+    }
+    else
+    {
+      LOGGER.info ("Not storing Peppol Reporting Item in memory, as the document type is not eligable for reporting (" +
+                   CIdentifier.getURIEncoded (aReportingItem.getDocTypeIDScheme (),
+                                              aReportingItem.getDocTypeIDValue ()) +
+                   ")");
+    }
+
   }
 
   @Nonnull

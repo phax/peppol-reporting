@@ -49,9 +49,11 @@ import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
 import com.helger.peppol.reporting.api.EReportingDirection;
+import com.helger.peppol.reporting.api.PeppolReportingHelper;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
+import com.helger.peppolid.CIdentifier;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for CSV.
@@ -204,26 +206,37 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Trying to store Peppol Reporting Item in CSV");
+    if (PeppolReportingHelper.isDocumentTypeEligableForReporting (aReportingItem.getDocTypeIDScheme (),
+                                                                  aReportingItem.getDocTypeIDValue ()))
+    {
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Trying to store Peppol Reporting Item in CSV");
 
-    if (!isInitialized ())
-      throw new IllegalStateException ("The Peppol Reporting CSV backend is not initialized");
+      if (!isInitialized ())
+        throw new IllegalStateException ("The Peppol Reporting CSV backend is not initialized");
 
-    m_aRWLock.writeLockedThrowing ( () -> {
-      m_aCSVWriter.writeNext (asCSV (aReportingItem));
-      try
-      {
-        m_aCSVWriter.flush ();
-      }
-      catch (final IOException ex)
-      {
-        throw new PeppolReportingBackendException ("Failed to flush CSV file", ex);
-      }
-    });
+      m_aRWLock.writeLockedThrowing ( () -> {
+        m_aCSVWriter.writeNext (asCSV (aReportingItem));
+        try
+        {
+          m_aCSVWriter.flush ();
+        }
+        catch (final IOException ex)
+        {
+          throw new PeppolReportingBackendException ("Failed to flush CSV file", ex);
+        }
+      });
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Successfully stored Peppol Reporting Item in CSV");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Successfully stored Peppol Reporting Item in CSV");
+    }
+    else
+    {
+      LOGGER.info ("Not storing Peppol Reporting Item in CSV, as the document type is not eligable for reporting (" +
+                   CIdentifier.getURIEncoded (aReportingItem.getDocTypeIDScheme (),
+                                              aReportingItem.getDocTypeIDValue ()) +
+                   ")");
+    }
   }
 
   @Nonnull

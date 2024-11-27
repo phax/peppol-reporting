@@ -40,9 +40,11 @@ import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
+import com.helger.peppol.reporting.api.PeppolReportingHelper;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
+import com.helger.peppolid.CIdentifier;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -185,35 +187,46 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Trying to store Peppol Reporting Item in Redis");
-
-    if (!isInitialized ())
-      throw new IllegalStateException ("The Peppol Reporting Redis backend is not initialized");
-
-    try (final Jedis aJedis = m_aPool.getResource ())
+    if (PeppolReportingHelper.isDocumentTypeEligableForReporting (aReportingItem.getDocTypeIDScheme (),
+                                                                  aReportingItem.getDocTypeIDValue ()))
     {
-      // Get new unique ID
-      final long nID = aJedis.incr ("peppol:reporting:itemidx");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Trying to store Peppol Reporting Item in Redis");
 
-      final Transaction t = aJedis.multi ();
+      if (!isInitialized ())
+        throw new IllegalStateException ("The Peppol Reporting Redis backend is not initialized");
 
-      // Store main data
-      final String sMapKey = "peppol:reporting:item:" + nID;
-      t.hset (sMapKey, PeppolReportingRedisHelper.toMap (aReportingItem));
+      try (final Jedis aJedis = m_aPool.getResource ())
+      {
+        // Get new unique ID
+        final long nID = aJedis.incr ("peppol:reporting:itemidx");
 
-      // add reference to list of entries per day
-      t.lpush ("peppol:reporting:" + _getDayKey (aReportingItem.getExchangeDTUTC ().toLocalDate ()), sMapKey);
-      t.exec ();
+        final Transaction t = aJedis.multi ();
+
+        // Store main data
+        final String sMapKey = "peppol:reporting:item:" + nID;
+        t.hset (sMapKey, PeppolReportingRedisHelper.toMap (aReportingItem));
+
+        // add reference to list of entries per day
+        t.lpush ("peppol:reporting:" + _getDayKey (aReportingItem.getExchangeDTUTC ().toLocalDate ()), sMapKey);
+        t.exec ();
+      }
+      catch (final JedisException ex)
+      {
+        LOGGER.error ("Failed to store Peppol Reporting Item in Redis: " + ex.getMessage ());
+        throw new PeppolReportingBackendException ("Failed to store Peppol Reporting Item in Redis", ex);
+      }
+
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Successfully stored Peppol Reporting Item in Redis");
     }
-    catch (final JedisException ex)
+    else
     {
-      LOGGER.error ("Failed to store Peppol Reporting Item in Redis: " + ex.getMessage ());
-      throw new PeppolReportingBackendException ("Failed to store Peppol Reporting Item in Redis", ex);
+      LOGGER.info ("Not storing Peppol Reporting Item in Redis, as the document type is not eligable for reporting (" +
+                   CIdentifier.getURIEncoded (aReportingItem.getDocTypeIDScheme (),
+                                              aReportingItem.getDocTypeIDValue ()) +
+                   ")");
     }
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Successfully stored Peppol Reporting Item in Redis");
   }
 
   public void forEachReportingItem (@Nonnull final LocalDate aStartDateIncl,

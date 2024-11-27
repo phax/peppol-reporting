@@ -43,9 +43,11 @@ import com.helger.db.jdbc.callback.ConstantPreparedStatementDataProvider;
 import com.helger.db.jdbc.executor.DBExecutor;
 import com.helger.db.jdbc.executor.DBResultRow;
 import com.helger.peppol.reporting.api.EReportingDirection;
+import com.helger.peppol.reporting.api.PeppolReportingHelper;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
+import com.helger.peppolid.CIdentifier;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for SQL. This
@@ -173,50 +175,61 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Trying to store Peppol Reporting Item in SQL DB");
+    if (PeppolReportingHelper.isDocumentTypeEligableForReporting (aReportingItem.getDocTypeIDScheme (),
+                                                                  aReportingItem.getDocTypeIDValue ()))
+    {
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Trying to store Peppol Reporting Item in SQL DB");
 
-    if (!isInitialized ())
-      throw new IllegalStateException ("The Peppol Reporting SQL DB backend is not initialized");
+      if (!isInitialized ())
+        throw new IllegalStateException ("The Peppol Reporting SQL DB backend is not initialized");
 
-    final DBExecutor aExecutor = _newExecutor ();
-    final ESuccess eSuccess = aExecutor.performInTransaction ( () -> {
-      // Create new
-      final long nCreated = aExecutor.insertOrUpdateOrDelete ("INSERT INTO " +
-                                                              m_sTableNamePrefix +
-                                                              "peppol_reporting_item (exchangedt, sending, c2id, c3id, dtscheme, dtvalue, procscheme, procvalue, tp, c1cc, c4cc, enduserid)" +
-                                                              " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                                                              new ConstantPreparedStatementDataProvider (DBValueHelper.toTimestamp (aReportingItem.getExchangeDTUTC ()
-                                                                                                                                                  .toLocalDateTime ()),
-                                                                                                         Boolean.valueOf (aReportingItem.isSending ()),
-                                                                                                         DBValueHelper.getTrimmedToLength (aReportingItem.getC2ID (),
-                                                                                                                                           PeppolReportingItem.MAX_LEN_C2_ID),
-                                                                                                         DBValueHelper.getTrimmedToLength (aReportingItem.getC3ID (),
-                                                                                                                                           PeppolReportingItem.MAX_LEN_C3_ID),
-                                                                                                         DBValueHelper.getTrimmedToLength (aReportingItem.getDocTypeIDScheme (),
-                                                                                                                                           PeppolReportingItem.MAX_LEN_DOCTYPE_SCHEME),
-                                                                                                         DBValueHelper.getTrimmedToLength (aReportingItem.getDocTypeIDValue (),
-                                                                                                                                           PeppolReportingItem.MAX_LEN_DOCTYPE_VALUE),
-                                                                                                         DBValueHelper.getTrimmedToLength (aReportingItem.getProcessIDScheme (),
-                                                                                                                                           PeppolReportingItem.MAX_LEN_PROCESS_SCHEME),
-                                                                                                         DBValueHelper.getTrimmedToLength (aReportingItem.getProcessIDValue (),
-                                                                                                                                           PeppolReportingItem.MAX_LEN_PROCESS_VALUE),
-                                                                                                         DBValueHelper.getTrimmedToLength (aReportingItem.getTransportProtocol (),
-                                                                                                                                           PeppolReportingItem.MAX_LEN_TRANSPORT_PROTOCOL),
-                                                                                                         DBValueHelper.getTrimmedToLength (aReportingItem.getC1CountryCode (),
-                                                                                                                                           PeppolReportingItem.MAX_LEN_C1_COUNTRY_CODE),
-                                                                                                         DBValueHelper.getTrimmedToLength (aReportingItem.getC4CountryCode (),
-                                                                                                                                           PeppolReportingItem.MAX_LEN_C4_COUNTRY_CODE),
-                                                                                                         DBValueHelper.getTrimmedToLength (aReportingItem.getEndUserID (),
-                                                                                                                                           PeppolReportingItem.MAX_LEN_END_USER_ID)));
-      if (nCreated != 1)
-        throw new IllegalStateException ("Failed to create new SQL DB entry (" + nCreated + ")");
-    });
-    if (eSuccess.isFailure ())
-      throw new IllegalStateException ("Failed to insert into Peppol Reporting into SQL DB");
+      final DBExecutor aExecutor = _newExecutor ();
+      final ESuccess eSuccess = aExecutor.performInTransaction ( () -> {
+        // Create new
+        final long nCreated = aExecutor.insertOrUpdateOrDelete ("INSERT INTO " +
+                                                                m_sTableNamePrefix +
+                                                                "peppol_reporting_item (exchangedt, sending, c2id, c3id, dtscheme, dtvalue, procscheme, procvalue, tp, c1cc, c4cc, enduserid)" +
+                                                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                                                new ConstantPreparedStatementDataProvider (DBValueHelper.toTimestamp (aReportingItem.getExchangeDTUTC ()
+                                                                                                                                                    .toLocalDateTime ()),
+                                                                                                           Boolean.valueOf (aReportingItem.isSending ()),
+                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getC2ID (),
+                                                                                                                                             PeppolReportingItem.MAX_LEN_C2_ID),
+                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getC3ID (),
+                                                                                                                                             PeppolReportingItem.MAX_LEN_C3_ID),
+                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getDocTypeIDScheme (),
+                                                                                                                                             PeppolReportingItem.MAX_LEN_DOCTYPE_SCHEME),
+                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getDocTypeIDValue (),
+                                                                                                                                             PeppolReportingItem.MAX_LEN_DOCTYPE_VALUE),
+                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getProcessIDScheme (),
+                                                                                                                                             PeppolReportingItem.MAX_LEN_PROCESS_SCHEME),
+                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getProcessIDValue (),
+                                                                                                                                             PeppolReportingItem.MAX_LEN_PROCESS_VALUE),
+                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getTransportProtocol (),
+                                                                                                                                             PeppolReportingItem.MAX_LEN_TRANSPORT_PROTOCOL),
+                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getC1CountryCode (),
+                                                                                                                                             PeppolReportingItem.MAX_LEN_C1_COUNTRY_CODE),
+                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getC4CountryCode (),
+                                                                                                                                             PeppolReportingItem.MAX_LEN_C4_COUNTRY_CODE),
+                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getEndUserID (),
+                                                                                                                                             PeppolReportingItem.MAX_LEN_END_USER_ID)));
+        if (nCreated != 1)
+          throw new IllegalStateException ("Failed to create new SQL DB entry (" + nCreated + ")");
+      });
+      if (eSuccess.isFailure ())
+        throw new IllegalStateException ("Failed to insert into Peppol Reporting into SQL DB");
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Successfully stored Peppol Reporting Item in SQL DB");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Successfully stored Peppol Reporting Item in SQL DB");
+    }
+    else
+    {
+      LOGGER.info ("Not storing Peppol Reporting Item in SQL DB, as the document type is not eligable for reporting (" +
+                   CIdentifier.getURIEncoded (aReportingItem.getDocTypeIDScheme (),
+                                              aReportingItem.getDocTypeIDValue ()) +
+                   ")");
+    }
   }
 
   @Nonnull

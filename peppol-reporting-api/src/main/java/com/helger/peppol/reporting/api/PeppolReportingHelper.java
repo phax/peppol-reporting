@@ -71,15 +71,37 @@ public final class PeppolReportingHelper
   {
     ValueEnforcer.notNull (aDocTypeID, "DocTypeID");
 
-    if (PeppolIdentifierHelper.DOCUMENT_TYPE_SCHEME_BUSDOX_DOCID_QNS.equals (aDocTypeID.getScheme ()))
-    {
-      final String sValue = aDocTypeID.getValue ();
+    return isDocumentTypeEligableForReporting (aDocTypeID.getScheme (), aDocTypeID.getValue ());
+  }
 
+  /**
+   * Check if a document type is eligible for TSR or not. Based on the TSR
+   * specification 1.0 chapter 2.2.1 and EUSR specification 1.1 chapter 2.2.1:
+   * <ul>
+   * <li>End User Statistics Reports MUST NOT be counted for (a Transaction
+   * Statistics Report|an End User Statistics Report)</li>
+   * <li>Transaction Statistics Reports MUST NOT be counted for (a Transaction
+   * Statistics Report|an End User Statistics Report)</li>
+   * </ul>
+   *
+   * @param sDocTypeIDScheme
+   *        The document type ID scheme to be checked. May be <code>null</code>.
+   * @param sDocTypeIDValue
+   *        The document type ID value to be checked. May be <code>null</code>.
+   * @return <code>false</code> if the document type is not suitable for
+   *         reporting, <code>true</code> otherwise.
+   * @since 3.0.3
+   */
+  public static boolean isDocumentTypeEligableForReporting (@Nullable final String sDocTypeIDScheme,
+                                                            @Nullable final String sDocTypeIDValue)
+  {
+    if (PeppolIdentifierHelper.DOCUMENT_TYPE_SCHEME_BUSDOX_DOCID_QNS.equals (sDocTypeIDScheme))
+    {
       // EUSR 1.1
-      if ("urn:fdc:peppol:end-user-statistics-report:1.1::EndUserStatisticsReport##urn:fdc:peppol.eu:edec:trns:end-user-statistics-report:1.1::1.1".equals (sValue))
+      if ("urn:fdc:peppol:end-user-statistics-report:1.1::EndUserStatisticsReport##urn:fdc:peppol.eu:edec:trns:end-user-statistics-report:1.1::1.1".equals (sDocTypeIDValue))
         return false;
       // TSR 1.0
-      if ("urn:fdc:peppol:transaction-statistics-report:1.0::TransactionStatisticsReport##urn:fdc:peppol.eu:edec:trns:transaction-statistics-reporting:1.0::1.0".equals (sValue))
+      if ("urn:fdc:peppol:transaction-statistics-report:1.0::TransactionStatisticsReport##urn:fdc:peppol.eu:edec:trns:transaction-statistics-reporting:1.0::1.0".equals (sDocTypeIDValue))
         return false;
     }
 

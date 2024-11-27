@@ -36,9 +36,11 @@ import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
+import com.helger.peppol.reporting.api.PeppolReportingHelper;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
+import com.helger.peppolid.CIdentifier;
 import com.mongodb.MongoClientException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -206,21 +208,32 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Trying to store Peppol Reporting Item in MongoDB");
+    if (PeppolReportingHelper.isDocumentTypeEligableForReporting (aReportingItem.getDocTypeIDScheme (),
+                                                                  aReportingItem.getDocTypeIDValue ()))
+    {
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Trying to store Peppol Reporting Item in MongoDB");
 
-    if (!isInitialized ())
-      throw new IllegalStateException ("The Peppol Reporting MongoDB backend is not initialized");
+      if (!isInitialized ())
+        throw new IllegalStateException ("The Peppol Reporting MongoDB backend is not initialized");
 
-    if (!_isDBWritable ())
-      throw new IllegalStateException ("The Peppol Reporting MongoDB is not writable");
+      if (!_isDBWritable ())
+        throw new IllegalStateException ("The Peppol Reporting MongoDB is not writable");
 
-    // Write to collection
-    if (!_getCollection ().insertOne (PeppolReportingMongoDBHelper.toBson (aReportingItem)).wasAcknowledged ())
-      throw new IllegalStateException ("Failed to insert into Peppol Reporting MongoDB Collection");
+      // Write to collection
+      if (!_getCollection ().insertOne (PeppolReportingMongoDBHelper.toBson (aReportingItem)).wasAcknowledged ())
+        throw new IllegalStateException ("Failed to insert into Peppol Reporting MongoDB Collection");
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Successfully stored Peppol Reporting Item in MongoDB");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Successfully stored Peppol Reporting Item in MongoDB");
+    }
+    else
+    {
+      LOGGER.info ("Not storing Peppol Reporting Item in MongoDB, as the document type is not eligable for reporting (" +
+                   CIdentifier.getURIEncoded (aReportingItem.getDocTypeIDScheme (),
+                                              aReportingItem.getDocTypeIDValue ()) +
+                   ")");
+    }
   }
 
   @Nonnull
