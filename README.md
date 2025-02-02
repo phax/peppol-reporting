@@ -113,7 +113,7 @@ This submodule was introduced in version 3.0.1.
 
 It supports the following configuration properties:
 * **`peppol.reporting.jdbc.database-type`**: the SQL database type to operate on. Currently supported are `postgresql` and `mysql`. The value is case-insensitive.
-* **`peppol.reporting.jdbc.driver`**: contains the fully qualified class name of the JDBC driver to be used. E.g. `org.postgresql.Driver` for PostgreSQL
+* **`peppol.reporting.jdbc.driver`**: contains the fully qualified class name of the JDBC driver to be used. E.g. `org.postgresql.Driver` for PostgreSQL or `com.mysql.cj.jdbc.Driver` for MySQL
 * **`peppol.reporting.jdbc.url`**: contains the full JDBC connection URL to connect to the database
 * **`peppol.reporting.jdbc.user`** (optional): the database username to use
 * **`peppol.reporting.jdbc.password`** (optional): the database password to use
