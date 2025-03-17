@@ -202,18 +202,26 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
     return ret;
   }
 
+  @Nonnull
+  private String _getCSVFilename ()
+  {
+    return m_aRWLock.readLockedGet ( () -> m_aCSVFile == null ? "" : m_aCSVFile.getAbsolutePath ());
+  }
+
   public void storeReportingItem (@Nonnull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
+
+    final String sCSVFilename = _getCSVFilename ();
 
     if (PeppolReportingHelper.isDocumentTypeEligableForReporting (aReportingItem.getDocTypeIDScheme (),
                                                                   aReportingItem.getDocTypeIDValue ()))
     {
       if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Trying to store Peppol Reporting Item in CSV");
+        LOGGER.debug ("Trying to store Peppol Reporting Item in CSV '" + sCSVFilename + "'");
 
       if (!isInitialized ())
-        throw new IllegalStateException ("The Peppol Reporting CSV backend is not initialized");
+        throw new IllegalStateException ("The Peppol Reporting CSV backend '" + sCSVFilename + "' is not initialized");
 
       m_aRWLock.writeLockedThrowing ( () -> {
         m_aCSVWriter.writeNext (asCSV (aReportingItem));
@@ -223,16 +231,18 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
         }
         catch (final IOException ex)
         {
-          throw new PeppolReportingBackendException ("Failed to flush CSV file", ex);
+          throw new PeppolReportingBackendException ("Failed to flush CSV file '" + sCSVFilename + "'", ex);
         }
       });
 
       if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Successfully stored Peppol Reporting Item in CSV");
+        LOGGER.debug ("Successfully stored Peppol Reporting Item in CSV '" + sCSVFilename + "'");
     }
     else
     {
-      LOGGER.info ("Not storing Peppol Reporting Item in CSV, as the document type is not eligable for reporting (" +
+      LOGGER.info ("Not storing Peppol Reporting Item in CSV '" +
+                   sCSVFilename +
+                   "', as the document type is not eligable for reporting (" +
                    CIdentifier.getURIEncoded (aReportingItem.getDocTypeIDScheme (),
                                               aReportingItem.getDocTypeIDValue ()) +
                    ")");
@@ -260,7 +270,6 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
                               .c4CountryCode (StringHelper.getNotEmpty (aValue.get (11), (String) null))
                               .endUserID (aValue.get (12))
                               .build ();
-
   }
 
   public void forEachReportingItem (@Nonnull final LocalDate aStartDateIncl,
@@ -272,11 +281,18 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
     ValueEnforcer.isTrue ( () -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
     ValueEnforcer.notNull (aConsumer, "Consumer");
 
+    final String sCSVFilename = _getCSVFilename ();
+
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Querying Peppol Reporting Items from CSV between " + aStartDateIncl + " and " + aEndDateIncl);
+      LOGGER.debug ("Querying Peppol Reporting Items from CSV '" +
+                    sCSVFilename +
+                    "' between " +
+                    aStartDateIncl +
+                    " and " +
+                    aEndDateIncl);
 
     if (!isInitialized ())
-      throw new IllegalStateException ("The Peppol Reporting CSV backend is not initialized");
+      throw new IllegalStateException ("The Peppol Reporting CSV backend '" + sCSVFilename + "' is not initialized");
 
     final int nCounter = 0;
     try (final CSVReader aReader = new CSVReader (new FileReader (m_aCSVFile, StandardCharsets.UTF_8)))
@@ -299,11 +315,11 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
     }
     catch (final IOException ex)
     {
-      throw new PeppolReportingBackendException ("IO error in reading CSV", ex);
+      throw new PeppolReportingBackendException ("IO error in reading CSV '" + sCSVFilename + "'", ex);
     }
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Found a total of " + nCounter + " matching documents in CSV");
+      LOGGER.debug ("Found a total of " + nCounter + " matching documents in CSV '" + sCSVFilename + "'");
   }
 
   @Nonnull
