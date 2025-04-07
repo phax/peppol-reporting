@@ -77,6 +77,19 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
     return "SQL";
   }
 
+  @Nonnull
+  public static String getTableNamePrefix (@Nonnull final IConfig aConfig)
+  {
+    final String sSchemaName = StringHelper.trim (ReportingJdbcConfiguration.getJdbcSchema (aConfig));
+    if (StringHelper.hasText (sSchemaName))
+    {
+      // Quotes are required for PostgreSQL when schema contains a dash
+      return "\"" + sSchemaName + "\".";
+    }
+    // May not be null
+    return "";
+  }
+
   @Nullable
   @OverrideOnDemand
   protected ReportingDataSourceProvider createReportingDataSourceProvider (@Nonnull final IConfig aConfig)
@@ -116,15 +129,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
       m_aDSP = createReportingDataSourceProvider (aConfig);
       if (m_aDSP == null)
         throw new IllegalStateException ("Failed to create Peppol Reporting SQL DB DataSource provider");
-
-      final String sSchemaName = StringHelper.trim (ReportingJdbcConfiguration.getJdbcSchema (aConfig));
-      if (StringHelper.hasText (sSchemaName))
-      {
-        // Quotes are required for PostgreSQL when schema contains a dash
-        m_sTableNamePrefix = "\"" + sSchemaName + "\".";
-      }
-      else
-        m_sTableNamePrefix = "";
+      m_sTableNamePrefix = getTableNamePrefix (aConfig);
     });
 
     if (!isInitialized ())
@@ -138,7 +143,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
   public boolean isInitialized ()
   {
-    return m_aRWLock.readLockedBoolean ( () -> m_aConfig != null && m_aDSP != null);
+    return m_aRWLock.readLockedBoolean ( () -> m_aConfig != null && m_aDSP != null && m_sTableNamePrefix != null);
   }
 
   public void shutdownBackend ()
