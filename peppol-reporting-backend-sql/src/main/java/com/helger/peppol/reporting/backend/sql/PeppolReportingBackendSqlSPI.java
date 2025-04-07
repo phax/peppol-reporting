@@ -106,11 +106,11 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
       // Resolve database type
       final String sDBType = ReportingJdbcConfiguration.getJdbcDatabaseType (aConfig);
-      final EDatabaseType eDBType = EDatabaseType.getFromCaseIDInsensitiveOrNull (sDBType);
+      final EPeppolReportingDatabaseType eDBType = EPeppolReportingDatabaseType.getFromCaseIDInsensitiveOrNull (sDBType);
       if (eDBType == null)
         throw new IllegalStateException ("The database type MUST be provided and MUST be one of " +
                                          StringHelper.imploder ()
-                                                     .source (EDatabaseType.values (), EDatabaseType::getID)
+                                                     .source (EPeppolReportingDatabaseType.values (), EPeppolReportingDatabaseType::getID)
                                                      .separator (", ")
                                                      .build () +
                                          " - provided value is '" +

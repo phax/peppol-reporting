@@ -60,7 +60,7 @@ final class FlywayMigrator
   private FlywayMigrator ()
   {}
 
-  void runFlyway (@Nonnull final EDatabaseType eDBType, @Nonnull final IConfig aConfig)
+  void runFlyway (@Nonnull final EPeppolReportingDatabaseType eDBType, @Nonnull final IConfig aConfig)
   {
     ValueEnforcer.notNull (eDBType, "DBType");
 

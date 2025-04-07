@@ -166,9 +166,9 @@ This module is mainly meant for testing purposes.
 To aggregate data for a single Reporting Period, all the matching `PeppolReportingItem` objects need to be collected first.
 All the matching items need to be fed into the respective report builder.
 
-Via the builder `EndUserStatisticsReport.builder ()`, the report of type `EndUserStatisticsReportType` can be created.
+Via the builder `EndUserStatisticsReport.builder ()`, the report of type `EndUserStatisticsReportType` (EUSR) can be created.
 
-Via the builder `TransactionStatisticsReport.builder ()`, the report of type `TransactionStatisticsReportType` can be created.
+Via the builder `TransactionStatisticsReport.builder ()`, the report of type `TransactionStatisticsReportType` (TSR) can be created.
 
 ## Report XML Serialization
 
@@ -217,12 +217,13 @@ Note: all v1.x releases used the group ID `com.helger` only.
 # News and Noteworthy
 
 * v3.0.4 - work in progress
-    * Extended `PeppolReportingBackendMongoDBSPI` API
+    * [MongoDB] Extended `PeppolReportingBackendMongoDBSPI` API
+    * [SQL] Renamed class `EDatabaseType` to `EPeppolReportingDatabaseType` (internal backwards incompatible change)
 * v3.0.3 - 2024-11-27
     * Calling the `PeppolReportingHelper.isDocumentTypeEligableForReporting` method in all backends to avoid the need for outside filtering
 * v3.0.2 - 2024-10-31
     * Added new method `PeppolReportingBackend.setBackendService(IPeppolReportingBackendSPI)` to explicitly set the backend
-    * Added missing write locking in CSV backend
+    * [CSV] Added missing write locking in CSV backend
 * v3.0.1 - 2024-08-12
     * Added new submodule `peppol-reporting-backend-sql` to support PostgreSQL and MySQL
 * v3.0.0 - 2024-06-28
