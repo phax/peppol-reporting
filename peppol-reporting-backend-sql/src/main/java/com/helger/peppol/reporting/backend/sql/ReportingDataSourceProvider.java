@@ -39,7 +39,7 @@ public final class ReportingDataSourceProvider implements IHasDataSource, Closea
   private static final Logger LOGGER = LoggerFactory.getLogger (ReportingDataSourceProvider.class);
   private final BasicDataSource m_aDataSource;
 
-  ReportingDataSourceProvider (@Nonnull final IConfig aConfig)
+  public ReportingDataSourceProvider (@Nonnull final IConfig aConfig)
   {
     // build data source
     // This is usually only called once on startup and than the same
