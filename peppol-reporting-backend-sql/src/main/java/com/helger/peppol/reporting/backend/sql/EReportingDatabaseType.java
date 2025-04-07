@@ -29,7 +29,7 @@ import com.helger.commons.name.IHasDisplayName;
  *
  * @author Philip Helger
  */
-public enum EPeppolReportingDatabaseType implements IHasID <String>, IHasDisplayName
+public enum EReportingDatabaseType implements IHasID <String>, IHasDisplayName
 {
   // IDs must be lowercase because they are used in directory names
   MYSQL ("mysql", "MySQL"),
@@ -38,7 +38,7 @@ public enum EPeppolReportingDatabaseType implements IHasID <String>, IHasDisplay
   private final String m_sID;
   private final String m_sDisplayName;
 
-  EPeppolReportingDatabaseType (@Nonnull @Nonempty final String sID, @Nonnull @Nonempty final String sDisplayName)
+  EReportingDatabaseType (@Nonnull @Nonempty final String sID, @Nonnull @Nonempty final String sDisplayName)
   {
     m_sID = sID;
     m_sDisplayName = sDisplayName;
@@ -59,8 +59,8 @@ public enum EPeppolReportingDatabaseType implements IHasID <String>, IHasDisplay
   }
 
   @Nullable
-  public static EPeppolReportingDatabaseType getFromCaseIDInsensitiveOrNull (@Nullable final String sID)
+  public static EReportingDatabaseType getFromCaseIDInsensitiveOrNull (@Nullable final String sID)
   {
-    return EnumHelper.getFromIDCaseInsensitiveOrNull (EPeppolReportingDatabaseType.class, sID);
+    return EnumHelper.getFromIDCaseInsensitiveOrNull (EReportingDatabaseType.class, sID);
   }
 }

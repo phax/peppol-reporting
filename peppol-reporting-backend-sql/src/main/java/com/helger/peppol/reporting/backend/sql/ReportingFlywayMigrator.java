@@ -38,29 +38,29 @@ import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
 
 /**
- * This class has the sole purpose of encapsulating the org.flywaydb classes, so
- * that it's usage can be turned off (for whatever reason).
+ * This class has the sole purpose of encapsulating the org.flywaydb classes, so that it's usage can
+ * be turned off (for whatever reason).
  *
  * @author Philip Helger
  */
-final class FlywayMigrator
+final class ReportingFlywayMigrator
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (FlywayMigrator.Singleton.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (ReportingFlywayMigrator.Singleton.class);
 
   // Indirection level to not load org.flyway classes by default
   @Immutable
   public static final class Singleton
   {
-    static final FlywayMigrator INSTANCE = new FlywayMigrator ();
+    static final ReportingFlywayMigrator INSTANCE = new ReportingFlywayMigrator ();
 
     private Singleton ()
     {}
   }
 
-  private FlywayMigrator ()
+  private ReportingFlywayMigrator ()
   {}
 
-  void runFlyway (@Nonnull final EPeppolReportingDatabaseType eDBType, @Nonnull final IConfig aConfig)
+  void runFlyway (@Nonnull final EReportingDatabaseType eDBType, @Nonnull final IConfig aConfig)
   {
     ValueEnforcer.notNull (eDBType, "DBType");
 
@@ -111,7 +111,7 @@ final class FlywayMigrator
 
     // The JDBC driver is the same as for main connection
     final FluentConfiguration aFlywayConfig = Flyway.configure ()
-                                                    .dataSource (new DriverDataSource (FlywayMigrator.class.getClassLoader (),
+                                                    .dataSource (new DriverDataSource (ReportingFlywayMigrator.class.getClassLoader (),
                                                                                        ReportingJdbcConfiguration.getJdbcDriver (aConfig),
                                                                                        ReportingFlywayConfiguration.getFlywayJdbcUrl (aConfig),
                                                                                        ReportingFlywayConfiguration.getFlywayJdbcUser (aConfig),

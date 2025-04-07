@@ -218,7 +218,8 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 * v3.0.4 - work in progress
     * [MongoDB] Extended `PeppolReportingBackendMongoDBSPI` API
-    * [SQL] Renamed class `EDatabaseType` to `EPeppolReportingDatabaseType` (internal backwards incompatible change)
+    * [SQL] Renamed class `EDatabaseType` to `EReportingDatabaseType` (internal backwards incompatible change)
+    * [SQL] Renamed class `FlywayMigrator` to `ReportingFlywayMigrator` (internal backwards incompatible change)
 * v3.0.3 - 2024-11-27
     * Calling the `PeppolReportingHelper.isDocumentTypeEligableForReporting` method in all backends to avoid the need for outside filtering
 * v3.0.2 - 2024-10-31

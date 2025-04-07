@@ -106,11 +106,11 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
       // Resolve database type
       final String sDBType = ReportingJdbcConfiguration.getJdbcDatabaseType (aConfig);
-      final EPeppolReportingDatabaseType eDBType = EPeppolReportingDatabaseType.getFromCaseIDInsensitiveOrNull (sDBType);
+      final EReportingDatabaseType eDBType = EReportingDatabaseType.getFromCaseIDInsensitiveOrNull (sDBType);
       if (eDBType == null)
         throw new IllegalStateException ("The database type MUST be provided and MUST be one of " +
                                          StringHelper.imploder ()
-                                                     .source (EPeppolReportingDatabaseType.values (), EPeppolReportingDatabaseType::getID)
+                                                     .source (EReportingDatabaseType.values (), EReportingDatabaseType::getID)
                                                      .separator (", ")
                                                      .build () +
                                          " - provided value is '" +
@@ -119,7 +119,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
       // Run Flyway
       if (ReportingFlywayConfiguration.isFlywayEnabled (aConfig))
-        FlywayMigrator.Singleton.INSTANCE.runFlyway (eDBType, aConfig);
+        ReportingFlywayMigrator.Singleton.INSTANCE.runFlyway (eDBType, aConfig);
       else
         LOGGER.warn ("Flyway Migration is disabled according to the configuration item " +
                      ReportingFlywayConfiguration.CONFIG_FLYWAY_ENABLED);
