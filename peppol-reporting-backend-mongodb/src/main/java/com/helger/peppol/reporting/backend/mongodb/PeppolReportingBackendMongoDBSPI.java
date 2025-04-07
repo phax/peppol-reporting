@@ -48,8 +48,8 @@ import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Sorts;
 
 /**
- * SPI implementation of {@link IPeppolReportingBackendSPI} for MongoDB. This
- * backend supports the lazy gathering of report items through an Iterator.
+ * SPI implementation of {@link IPeppolReportingBackendSPI} for MongoDB. This backend supports the
+ * lazy gathering of report items through an Iterator.
  *
  * @author Philip Helger
  */
@@ -81,9 +81,9 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   }
 
   @Nullable
-  @OverrideOnDemand
-  protected MongoClientWrapper createClientWrapper (@Nonnull final IConfig aConfig)
+  public static MongoClientWrapper createDefaultClientWrapper (@Nonnull final IConfig aConfig)
   {
+    // Get connection string from configuration
     final String sConnectionString = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING);
     if (StringHelper.hasNoText (sConnectionString))
     {
@@ -93,6 +93,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
       return null;
     }
 
+    // Get database name from configuration
     final String sDBName = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME);
     if (StringHelper.hasNoText (sDBName))
     {
@@ -106,13 +107,20 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
     return new MongoClientWrapper (sConnectionString, sDBName);
   }
 
+  @Nullable
+  @OverrideOnDemand
+  protected MongoClientWrapper createClientWrapper (@Nonnull final IConfig aConfig)
+  {
+    return createDefaultClientWrapper (aConfig);
+  }
+
   /**
    * Get the MongoDB collection name to use.
    *
    * @param aConfig
    *        The configuration object to use. Never <code>null</code>.
-   * @return The DB collection name to use. Any <code>null</code> or empty value
-   *         will lead to an error.
+   * @return The DB collection name to use. Any <code>null</code> or empty value will lead to an
+   *         error.
    */
   @OverrideOnDemand
   @Nullable
