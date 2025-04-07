@@ -34,7 +34,6 @@ import com.helger.commons.annotation.UsedViaReflection;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
@@ -50,8 +49,8 @@ import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
 
 /**
- * SPI implementation of {@link IPeppolReportingBackendSPI} for SQL. This
- * backend supports the lazy gathering of report items through an Iterator.
+ * SPI implementation of {@link IPeppolReportingBackendSPI} for SQL. This backend supports the lazy
+ * gathering of report items through an Iterator.
  *
  * @author Philip Helger
  */
@@ -118,8 +117,8 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
       if (m_aDSP == null)
         throw new IllegalStateException ("Failed to create Peppol Reporting SQL DB DataSource provider");
 
-      final String sSchemaName = ReportingJdbcConfiguration.getJdbcSchema (aConfig);
-      if (StringHelper.hasText (sSchemaName) && RegExHelper.stringMatchesPattern ("[0-9a-zA-Z-_]+", sSchemaName))
+      final String sSchemaName = StringHelper.trim (ReportingJdbcConfiguration.getJdbcSchema (aConfig));
+      if (StringHelper.hasText (sSchemaName))
       {
         // Quotes are required for PostgreSQL when schema contains a dash
         m_sTableNamePrefix = "\"" + sSchemaName + "\".";
