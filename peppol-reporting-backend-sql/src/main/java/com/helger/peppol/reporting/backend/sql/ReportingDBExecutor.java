@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.config.IConfig;
+import com.helger.db.api.config.JdbcConfigurationConfig;
 import com.helger.db.jdbc.IHasDataSource;
 import com.helger.db.jdbc.executor.DBExecutor;
 
@@ -34,11 +34,10 @@ public final class ReportingDBExecutor extends DBExecutor
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (ReportingDBExecutor.class);
 
-  public ReportingDBExecutor (@Nonnull final IHasDataSource aDataSourceProvider, @Nonnull final IConfig aConfig)
+  public ReportingDBExecutor (@Nonnull final IHasDataSource aDataSourceProvider,
+                              @Nonnull final JdbcConfigurationConfig aJdbcConfig)
   {
     super (aDataSourceProvider);
-
-    final ReportingJdbcConfiguration aJdbcConfig = new ReportingJdbcConfiguration (aConfig);
 
     // This is ONLY for debugging
     setDebugConnections (aJdbcConfig.isJdbcDebugConnections ());

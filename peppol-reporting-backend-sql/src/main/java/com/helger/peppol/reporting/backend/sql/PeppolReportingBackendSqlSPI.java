@@ -66,6 +66,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("m_aRWLock")
   private IConfig m_aConfig;
+  private ReportingJdbcConfiguration m_aJdbcConfig;
   @GuardedBy ("m_aRWLock")
   private ReportingDataSourceProvider m_aDSP;
   private String m_sTableNamePrefix;
@@ -108,8 +109,10 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
       if (m_aDSP != null)
         throw new IllegalStateException ("The Peppol Reporting SQL DB backend was already initialized");
 
-      // Resolve database type
+      // Init JDBC configuration
       final ReportingJdbcConfiguration aJdbcConfig = new ReportingJdbcConfiguration (aConfig);
+
+      // Resolve database type
       final EDatabaseSystemType eDBType = aJdbcConfig.getJdbcDatabaseSystemType ();
       final EnumSet <EDatabaseSystemType> aAllowedDBTypes = EnumSet.of (EDatabaseSystemType.MYSQL,
                                                                         EDatabaseSystemType.POSTGRESQL);
@@ -138,6 +141,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
       // Remember stuff
       m_aConfig = aConfig;
+      m_aJdbcConfig = aJdbcConfig;
       m_aDSP = createReportingDataSourceProvider (aJdbcConfig);
       if (m_aDSP == null)
         throw new IllegalStateException ("Failed to create Peppol Reporting SQL DB DataSource provider");
@@ -184,7 +188,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   @Nonnull
   private DBExecutor _newExecutor ()
   {
-    return new ReportingDBExecutor (m_aDSP, m_aConfig);
+    return new ReportingDBExecutor (m_aDSP, m_aJdbcConfig);
   }
 
   public void storeReportingItem (@Nonnull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
