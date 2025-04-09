@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.string.StringHelper;
-import com.helger.config.IConfig;
 import com.helger.db.api.EDatabaseSystemType;
 import com.helger.db.api.flyway.FlywayConfiguration;
 
@@ -62,7 +61,9 @@ final class ReportingFlywayMigrator
   private ReportingFlywayMigrator ()
   {}
 
-  void runFlyway (@Nonnull final EDatabaseSystemType eDBType, @Nonnull final IConfig aConfig)
+  void runFlyway (@Nonnull final EDatabaseSystemType eDBType,
+                  @Nonnull final ReportingJdbcConfiguration aJdbcConfig,
+                  final FlywayConfiguration aFlywayConfig)
   {
     ValueEnforcer.notNull (eDBType, "DBType");
 
@@ -110,9 +111,6 @@ final class ReportingFlywayMigrator
         }
       }
     };
-
-    final ReportingJdbcConfiguration aJdbcConfig = new ReportingJdbcConfiguration (aConfig);
-    final FlywayConfiguration aFlywayConfig = new ReportingFlywayConfigurationBuilder (aConfig, aJdbcConfig).build ();
 
     // The JDBC driver is the same as for main connection
     final FluentConfiguration aActualFlywayConfig = Flyway.configure ()

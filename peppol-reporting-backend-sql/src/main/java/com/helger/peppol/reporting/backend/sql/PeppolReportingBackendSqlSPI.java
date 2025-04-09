@@ -69,7 +69,6 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   @GuardedBy ("m_aRWLock")
   private ReportingDataSourceProvider m_aDSP;
   private String m_sTableNamePrefix;
-  private FlywayConfiguration m_aFlywayConfig;
 
   @UsedViaReflection
   public PeppolReportingBackendSqlSPI ()
@@ -127,13 +126,13 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
       // Build Flyway configuration
       final ReportingFlywayConfigurationBuilder aBuilder = new ReportingFlywayConfigurationBuilder (aConfig,
                                                                                                     aJdbcConfig);
-      m_aFlywayConfig = aBuilder.build ();
+      final FlywayConfiguration aFlywayConfig = aBuilder.build ();
 
       // Run Flyway
-      if (m_aFlywayConfig.isFlywayEnabled ())
-        ReportingFlywayMigrator.Singleton.INSTANCE.runFlyway (eDBType, aConfig);
+      if (aFlywayConfig.isFlywayEnabled ())
+        ReportingFlywayMigrator.Singleton.INSTANCE.runFlyway (eDBType, aJdbcConfig, aFlywayConfig);
       else
-        LOGGER.warn ("Peppol Reporting Flyway Migration is disabled according to the configuration item '" +
+        LOGGER.warn ("Peppol Reporting Flyway Migration is disabled according to the configuration key '" +
                      aBuilder.getConfigKeyEnabled () +
                      "'");
 
