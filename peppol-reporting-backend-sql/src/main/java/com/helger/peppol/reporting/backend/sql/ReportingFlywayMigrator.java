@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
+import com.helger.db.api.flyway.FlywayConfiguration;
 
 /**
  * This class has the sole purpose of encapsulating the org.flywaydb classes, so that it's usage can
@@ -109,34 +110,36 @@ final class ReportingFlywayMigrator
       }
     };
 
+    final FlywayConfiguration aFlywayConfig = new ReportingFlywayConfigurationBuilder (aConfig).build ();
+
     // The JDBC driver is the same as for main connection
-    final FluentConfiguration aFlywayConfig = Flyway.configure ()
-                                                    .dataSource (new DriverDataSource (ReportingFlywayMigrator.class.getClassLoader (),
-                                                                                       ReportingJdbcConfiguration.getJdbcDriver (aConfig),
-                                                                                       ReportingFlywayConfiguration.getFlywayJdbcUrl (aConfig),
-                                                                                       ReportingFlywayConfiguration.getFlywayJdbcUser (aConfig),
-                                                                                       ReportingFlywayConfiguration.getFlywayJdbcPassword (aConfig)));
+    final FluentConfiguration aFlywayFluentConfig = Flyway.configure ()
+                                                          .dataSource (new DriverDataSource (ReportingFlywayMigrator.class.getClassLoader (),
+                                                                                             ReportingJdbcConfiguration.getJdbcDriver (aConfig),
+                                                                                             aFlywayConfig.getFlywayJdbcUrl (),
+                                                                                             aFlywayConfig.getFlywayJdbcUser (),
+                                                                                             aFlywayConfig.getFlywayJdbcPassword ()));
 
     // Required for creating DB tables
-    aFlywayConfig.baselineOnMigrate (true);
+    aFlywayFluentConfig.baselineOnMigrate (true);
 
     // Disable validation, because DDL comments are also taken into
     // consideration
-    aFlywayConfig.validateOnMigrate (false);
+    aFlywayFluentConfig.validateOnMigrate (false);
 
     // Version 1 is the baseline
-    aFlywayConfig.baselineVersion (Integer.toString (ReportingFlywayConfiguration.getFlywayBaselineVersion (aConfig)))
-                 .baselineDescription ("Peppol Reporting Baseline");
+    aFlywayFluentConfig.baselineVersion (Integer.toString (aFlywayConfig.getFlywayBaselineVersion ()))
+                       .baselineDescription ("Peppol Reporting Baseline");
 
     // Separate directory per DB type
-    aFlywayConfig.locations ("db/reporting-" + eDBType.getID ());
+    aFlywayFluentConfig.locations ("db/reporting-" + eDBType.getID ());
 
     // Avoid scanning the ClassPath by enumerating them explicitly
     if (false)
-      aFlywayConfig.javaMigrations ();
+      aFlywayFluentConfig.javaMigrations ();
 
     // Callbacks
-    aFlywayConfig.callbacks (aCallbackLogging, aCallbackAudit);
+    aFlywayFluentConfig.callbacks (aCallbackLogging, aCallbackAudit);
 
     // Flyway to handle the DB schema?
     final String sSchema = ReportingJdbcConfiguration.getJdbcSchema (aConfig);
@@ -144,12 +147,12 @@ final class ReportingFlywayMigrator
     {
       // Use the schema only, if it is explicitly configured
       // The default schema name is ["$user", public] and as such unusable
-      aFlywayConfig.schemas (sSchema);
+      aFlywayFluentConfig.schemas (sSchema);
     }
     // If no schema is specified, schema create should also be disabled
-    aFlywayConfig.createSchemas (ReportingFlywayConfiguration.isFlywaySchemaCreate (aConfig));
+    aFlywayFluentConfig.createSchemas (aFlywayConfig.isFlywaySchemaCreate ());
 
-    final Flyway aFlyway = aFlywayConfig.load ();
+    final Flyway aFlyway = aFlywayFluentConfig.load ();
     if (false)
       aFlyway.validate ();
     aFlyway.migrate ();

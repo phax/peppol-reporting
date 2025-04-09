@@ -37,6 +37,7 @@ import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
+import com.helger.db.api.flyway.FlywayConfiguration;
 import com.helger.db.api.helper.DBValueHelper;
 import com.helger.db.jdbc.callback.ConstantPreparedStatementDataProvider;
 import com.helger.db.jdbc.executor.DBExecutor;
@@ -65,6 +66,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   @GuardedBy ("m_aRWLock")
   private ReportingDataSourceProvider m_aDSP;
   private String m_sTableNamePrefix;
+  private FlywayConfiguration m_aFlywayConfig;
 
   @UsedViaReflection
   public PeppolReportingBackendSqlSPI ()
@@ -118,12 +120,17 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
                                          sDBType +
                                          "'");
 
+      // Build Flyway configuration
+      final ReportingFlywayConfigurationBuilder aBuilder = new ReportingFlywayConfigurationBuilder (aConfig);
+      m_aFlywayConfig = aBuilder.build ();
+
       // Run Flyway
-      if (ReportingFlywayConfiguration.isFlywayEnabled (aConfig))
+      if (m_aFlywayConfig.isFlywayEnabled ())
         ReportingFlywayMigrator.Singleton.INSTANCE.runFlyway (eDBType, aConfig);
       else
-        LOGGER.warn ("Peppol Reporting Flyway Migration is disabled according to the configuration item " +
-                     ReportingFlywayConfiguration.CONFIG_FLYWAY_ENABLED);
+        LOGGER.warn ("Peppol Reporting Flyway Migration is disabled according to the configuration item '" +
+                     aBuilder.getConfigKeyEnabled () +
+                     "'");
 
       // Remember stuff
       m_aConfig = aConfig;
