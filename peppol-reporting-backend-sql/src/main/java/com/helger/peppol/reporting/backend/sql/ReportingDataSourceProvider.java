@@ -26,7 +26,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.config.IConfig;
+import com.helger.db.api.config.IJdbcConfiguration;
 import com.helger.db.jdbc.IHasDataSource;
 
 /**
@@ -39,20 +39,20 @@ public final class ReportingDataSourceProvider implements IHasDataSource, Closea
   private static final Logger LOGGER = LoggerFactory.getLogger (ReportingDataSourceProvider.class);
   private final BasicDataSource m_aDataSource;
 
-  public ReportingDataSourceProvider (@Nonnull final IConfig aConfig)
+  public ReportingDataSourceProvider (@Nonnull final IJdbcConfiguration aConfig)
   {
     // build data source
     // This is usually only called once on startup and than the same
     // DataSource is reused during the entire lifetime
     m_aDataSource = new BasicDataSource ();
-    m_aDataSource.setDriverClassName (ReportingJdbcConfiguration.getJdbcDriver (aConfig));
-    final String sUserName = ReportingJdbcConfiguration.getJdbcUser (aConfig);
+    m_aDataSource.setDriverClassName (aConfig.getJdbcDriver ());
+    final String sUserName = aConfig.getJdbcUser ();
     if (sUserName != null)
       m_aDataSource.setUsername (sUserName);
-    final String sPassword = ReportingJdbcConfiguration.getJdbcPassword (aConfig);
+    final String sPassword = aConfig.getJdbcPassword ();
     if (sPassword != null)
       m_aDataSource.setPassword (sPassword);
-    m_aDataSource.setUrl (ReportingJdbcConfiguration.getJdbcUrl (aConfig));
+    m_aDataSource.setUrl (aConfig.getJdbcUrl ());
 
     // settings
     m_aDataSource.setDefaultAutoCommit (Boolean.FALSE);

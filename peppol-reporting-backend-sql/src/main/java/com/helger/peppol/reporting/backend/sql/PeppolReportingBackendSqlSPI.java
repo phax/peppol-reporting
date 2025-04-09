@@ -39,6 +39,7 @@ import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
 import com.helger.db.api.EDatabaseSystemType;
+import com.helger.db.api.config.IJdbcConfiguration;
 import com.helger.db.api.flyway.FlywayConfiguration;
 import com.helger.db.api.helper.DBValueHelper;
 import com.helger.db.jdbc.callback.ConstantPreparedStatementDataProvider;
@@ -82,9 +83,9 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   }
 
   @Nonnull
-  public static String getTableNamePrefix (@Nonnull final IConfig aConfig)
+  public static String getTableNamePrefix (@Nonnull final String sJdbcSchema)
   {
-    final String sSchemaName = StringHelper.trim (ReportingJdbcConfiguration.getJdbcSchema (aConfig));
+    final String sSchemaName = StringHelper.trim (sJdbcSchema);
     if (StringHelper.hasText (sSchemaName))
     {
       // Quotes are required for PostgreSQL when schema contains a dash
@@ -96,9 +97,9 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
   @Nullable
   @OverrideOnDemand
-  protected ReportingDataSourceProvider createReportingDataSourceProvider (@Nonnull final IConfig aConfig)
+  protected ReportingDataSourceProvider createReportingDataSourceProvider (@Nonnull final IJdbcConfiguration aJdbcConfig)
   {
-    return new ReportingDataSourceProvider (aConfig);
+    return new ReportingDataSourceProvider (aJdbcConfig);
   }
 
   @Nonnull
@@ -109,8 +110,8 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
         throw new IllegalStateException ("The Peppol Reporting SQL DB backend was already initialized");
 
       // Resolve database type
-      final String sDBType = ReportingJdbcConfiguration.getJdbcDatabaseType (aConfig);
-      final EDatabaseSystemType eDBType = EDatabaseSystemType.getFromIDCaseInsensitiveOrNull (sDBType);
+      final ReportingJdbcConfiguration aJdbcConfig = new ReportingJdbcConfiguration (aConfig);
+      final EDatabaseSystemType eDBType = aJdbcConfig.getJdbcDatabaseSystemType ();
       final EnumSet <EDatabaseSystemType> aAllowedDBTypes = EnumSet.of (EDatabaseSystemType.MYSQL,
                                                                         EDatabaseSystemType.POSTGRESQL);
       if (eDBType == null || !aAllowedDBTypes.contains (eDBType))
@@ -120,11 +121,12 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
                                                      .separator (", ")
                                                      .build () +
                                          " - provided value is '" +
-                                         sDBType +
+                                         aJdbcConfig.getJdbcDatabaseType () +
                                          "'");
 
       // Build Flyway configuration
-      final ReportingFlywayConfigurationBuilder aBuilder = new ReportingFlywayConfigurationBuilder (aConfig);
+      final ReportingFlywayConfigurationBuilder aBuilder = new ReportingFlywayConfigurationBuilder (aConfig,
+                                                                                                    aJdbcConfig);
       m_aFlywayConfig = aBuilder.build ();
 
       // Run Flyway
@@ -137,10 +139,10 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
       // Remember stuff
       m_aConfig = aConfig;
-      m_aDSP = createReportingDataSourceProvider (aConfig);
+      m_aDSP = createReportingDataSourceProvider (aJdbcConfig);
       if (m_aDSP == null)
         throw new IllegalStateException ("Failed to create Peppol Reporting SQL DB DataSource provider");
-      m_sTableNamePrefix = getTableNamePrefix (aConfig);
+      m_sTableNamePrefix = getTableNamePrefix (aJdbcConfig.getJdbcSchema ());
     });
 
     if (!isInitialized ())

@@ -111,49 +111,50 @@ final class ReportingFlywayMigrator
       }
     };
 
-    final FlywayConfiguration aFlywayConfig = new ReportingFlywayConfigurationBuilder (aConfig).build ();
+    final ReportingJdbcConfiguration aJdbcConfig = new ReportingJdbcConfiguration (aConfig);
+    final FlywayConfiguration aFlywayConfig = new ReportingFlywayConfigurationBuilder (aConfig, aJdbcConfig).build ();
 
     // The JDBC driver is the same as for main connection
-    final FluentConfiguration aFlywayFluentConfig = Flyway.configure ()
+    final FluentConfiguration aActualFlywayConfig = Flyway.configure ()
                                                           .dataSource (new DriverDataSource (ReportingFlywayMigrator.class.getClassLoader (),
-                                                                                             ReportingJdbcConfiguration.getJdbcDriver (aConfig),
+                                                                                             aJdbcConfig.getJdbcDriver (),
                                                                                              aFlywayConfig.getFlywayJdbcUrl (),
                                                                                              aFlywayConfig.getFlywayJdbcUser (),
                                                                                              aFlywayConfig.getFlywayJdbcPassword ()));
 
     // Required for creating DB tables
-    aFlywayFluentConfig.baselineOnMigrate (true);
+    aActualFlywayConfig.baselineOnMigrate (true);
 
     // Disable validation, because DDL comments are also taken into
     // consideration
-    aFlywayFluentConfig.validateOnMigrate (false);
+    aActualFlywayConfig.validateOnMigrate (false);
 
     // Version 1 is the baseline
-    aFlywayFluentConfig.baselineVersion (Integer.toString (aFlywayConfig.getFlywayBaselineVersion ()))
+    aActualFlywayConfig.baselineVersion (Integer.toString (aFlywayConfig.getFlywayBaselineVersion ()))
                        .baselineDescription ("Peppol Reporting Baseline");
 
     // Separate directory per DB type
-    aFlywayFluentConfig.locations ("db/reporting-" + eDBType.getID ());
+    aActualFlywayConfig.locations ("db/reporting-" + eDBType.getID ());
 
     // Avoid scanning the ClassPath by enumerating them explicitly
     if (false)
-      aFlywayFluentConfig.javaMigrations ();
+      aActualFlywayConfig.javaMigrations ();
 
     // Callbacks
-    aFlywayFluentConfig.callbacks (aCallbackLogging, aCallbackAudit);
+    aActualFlywayConfig.callbacks (aCallbackLogging, aCallbackAudit);
 
     // Flyway to handle the DB schema?
-    final String sSchema = ReportingJdbcConfiguration.getJdbcSchema (aConfig);
+    final String sSchema = aJdbcConfig.getJdbcSchema ();
     if (StringHelper.hasText (sSchema))
     {
       // Use the schema only, if it is explicitly configured
       // The default schema name is ["$user", public] and as such unusable
-      aFlywayFluentConfig.schemas (sSchema);
+      aActualFlywayConfig.schemas (sSchema);
     }
     // If no schema is specified, schema create should also be disabled
-    aFlywayFluentConfig.createSchemas (aFlywayConfig.isFlywaySchemaCreate ());
+    aActualFlywayConfig.createSchemas (aFlywayConfig.isFlywaySchemaCreate ());
 
-    final Flyway aFlyway = aFlywayFluentConfig.load ();
+    final Flyway aFlyway = aActualFlywayConfig.load ();
     if (false)
       aFlyway.validate ();
     aFlyway.migrate ();

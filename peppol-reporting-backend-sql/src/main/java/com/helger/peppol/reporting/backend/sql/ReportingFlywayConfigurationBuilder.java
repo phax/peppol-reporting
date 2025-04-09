@@ -15,16 +15,17 @@ public class ReportingFlywayConfigurationBuilder extends FlywayConfigurationBuil
 {
   public static final String FLYWAY_CONFIG_PREFIX = "peppol.reporting.flyway.";
 
-  public ReportingFlywayConfigurationBuilder (@Nonnull final IConfig aConfig)
+  public ReportingFlywayConfigurationBuilder (@Nonnull final IConfig aConfig,
+                                              @Nonnull final ReportingJdbcConfiguration aJdbcConfig)
   {
     super (aConfig, FLYWAY_CONFIG_PREFIX);
 
     // Fallback to other configuration values
     if (jdbcUrl () == null)
-      jdbcUrl (ReportingJdbcConfiguration.getJdbcUrl (aConfig));
+      jdbcUrl (aJdbcConfig.getJdbcUrl ());
     if (jdbcUser () == null)
-      jdbcUser (ReportingJdbcConfiguration.getJdbcUser (aConfig));
+      jdbcUser (aJdbcConfig.getJdbcUser ());
     if (jdbcPassword () == null)
-      jdbcUser (ReportingJdbcConfiguration.getJdbcPassword (aConfig));
+      jdbcPassword (aJdbcConfig.getJdbcPassword ());
   }
 }

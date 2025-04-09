@@ -38,20 +38,22 @@ public final class ReportingDBExecutor extends DBExecutor
   {
     super (aDataSourceProvider);
 
-    // This is ONLY for debugging
-    setDebugConnections (ReportingJdbcConfiguration.isJdbcDebugConnections (aConfig));
-    setDebugTransactions (ReportingJdbcConfiguration.isJdbcDebugTransaction (aConfig));
-    setDebugSQLStatements (ReportingJdbcConfiguration.isJdbcDebugSQL (aConfig));
+    final ReportingJdbcConfiguration aJdbcConfig = new ReportingJdbcConfiguration (aConfig);
 
-    if (ReportingJdbcConfiguration.isJdbcExecutionTimeWarningEnabled (aConfig))
+    // This is ONLY for debugging
+    setDebugConnections (aJdbcConfig.isJdbcDebugConnections ());
+    setDebugTransactions (aJdbcConfig.isJdbcDebugTransactions ());
+    setDebugSQLStatements (aJdbcConfig.isJdbcDebugSQL ());
+
+    if (aJdbcConfig.isJdbcExecutionTimeWarningEnabled ())
     {
-      final long nMillis = ReportingJdbcConfiguration.getJdbcExecutionTimeWarningMilliseconds (aConfig);
+      final long nMillis = aJdbcConfig.getJdbcExecutionTimeWarningMilliseconds ();
       if (nMillis > 0)
         setExecutionDurationWarnMS (nMillis);
       else
         if (LOGGER.isDebugEnabled ())
-          LOGGER.debug ("Ignoring setting '" +
-                        ReportingJdbcConfiguration.CONFIG_JDBC_EXECUTION_TIME_WARNING_MS +
+          LOGGER.debug ("Ignoring configuration key '" +
+                        aJdbcConfig.getConfigKeyJdbcExecutionTimeWarningMilliseconds () +
                         "' because it is invalid.");
     }
     else
