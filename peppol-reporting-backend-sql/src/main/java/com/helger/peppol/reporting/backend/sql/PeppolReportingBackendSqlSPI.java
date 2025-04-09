@@ -18,6 +18,7 @@ package com.helger.peppol.reporting.backend.sql;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,6 +38,7 @@ import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
+import com.helger.db.api.EDatabaseSystemType;
 import com.helger.db.api.flyway.FlywayConfiguration;
 import com.helger.db.api.helper.DBValueHelper;
 import com.helger.db.jdbc.callback.ConstantPreparedStatementDataProvider;
@@ -108,12 +110,13 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
       // Resolve database type
       final String sDBType = ReportingJdbcConfiguration.getJdbcDatabaseType (aConfig);
-      final EReportingDatabaseType eDBType = EReportingDatabaseType.getFromCaseIDInsensitiveOrNull (sDBType);
-      if (eDBType == null)
+      final EDatabaseSystemType eDBType = EDatabaseSystemType.getFromIDCaseInsensitiveOrNull (sDBType);
+      final EnumSet <EDatabaseSystemType> aAllowedDBTypes = EnumSet.of (EDatabaseSystemType.MYSQL,
+                                                                        EDatabaseSystemType.POSTGRESQL);
+      if (eDBType == null || !aAllowedDBTypes.contains (eDBType))
         throw new IllegalStateException ("The database type MUST be provided and MUST be one of " +
                                          StringHelper.imploder ()
-                                                     .source (EReportingDatabaseType.values (),
-                                                              EReportingDatabaseType::getID)
+                                                     .source (aAllowedDBTypes, EDatabaseSystemType::getID)
                                                      .separator (", ")
                                                      .build () +
                                          " - provided value is '" +
