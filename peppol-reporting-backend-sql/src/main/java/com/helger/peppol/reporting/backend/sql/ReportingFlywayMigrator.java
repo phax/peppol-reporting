@@ -63,7 +63,7 @@ final class ReportingFlywayMigrator
 
   void runFlyway (@Nonnull final EDatabaseSystemType eDBType,
                   @Nonnull final ReportingJdbcConfiguration aJdbcConfig,
-                  final FlywayConfiguration aFlywayConfig)
+                  @Nonnull final FlywayConfiguration aFlywayConfig)
   {
     ValueEnforcer.notNull (eDBType, "DBType");
 
