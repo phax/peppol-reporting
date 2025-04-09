@@ -35,7 +35,7 @@ This library offers a Java domain model for EUSR and TSR reports.
 
 ## Data collection
 
-Data collection needs to happen into your Access Point instances.
+Data collection needs to happen inside your Access Point instances.
 
 The data for reporting needs to be collected in instances of class `PeppolReportingItem`.
 For each sent or received Peppol transmission, such a `PeppolReportingItem` needs to be collected, and persisted.
