@@ -217,12 +217,13 @@ Note: all v1.x releases used the group ID `com.helger` only.
 # News and Noteworthy
 
 * v3.1.0 - work in progress
-    * [SQL] Requires ph-db 7.0.7
+    * [SQL] Requires ph-db 7.1.0
     * [MongoDB] Extended `PeppolReportingBackendMongoDBSPI` API
     * [SQL] Renamed class `EDatabaseType` to `EReportingDatabaseType` (internal backwards incompatible change)
     * [SQL] Renamed class `FlywayMigrator` to `ReportingFlywayMigrator` (internal backwards incompatible change)
     * [SQL] Removed class `ReportingFlywayConfiguration` in favour of `ReportingFlywayConfigurationBuilder`
     * [SQL] Replaced class `EReportingDatabaseType` with `EDatabaseSystemType` from ph-db
+    * [SQL] Reworked class `ReportingJdbcConfiguration` to be based on a new shared class from ph-db
 * v3.0.3 - 2024-11-27
     * Calling the `PeppolReportingHelper.isDocumentTypeEligableForReporting` method in all backends to avoid the need for outside filtering
 * v3.0.2 - 2024-10-31
