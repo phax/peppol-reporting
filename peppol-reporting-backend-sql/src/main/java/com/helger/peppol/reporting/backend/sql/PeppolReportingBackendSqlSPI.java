@@ -42,6 +42,7 @@ import com.helger.db.api.EDatabaseSystemType;
 import com.helger.db.api.config.IJdbcConfiguration;
 import com.helger.db.api.flyway.FlywayConfiguration;
 import com.helger.db.api.helper.DBValueHelper;
+import com.helger.db.jdbc.DataSourceProviderFromJdbcConfiguration;
 import com.helger.db.jdbc.callback.ConstantPreparedStatementDataProvider;
 import com.helger.db.jdbc.executor.DBExecutor;
 import com.helger.db.jdbc.executor.DBResultRow;
@@ -68,7 +69,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   private IConfig m_aConfig;
   private ReportingJdbcConfiguration m_aJdbcConfig;
   @GuardedBy ("m_aRWLock")
-  private ReportingDataSourceProvider m_aDSP;
+  private DataSourceProviderFromJdbcConfiguration m_aDSP;
   private String m_sTableNamePrefix;
 
   @UsedViaReflection
@@ -97,9 +98,9 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
   @Nullable
   @OverrideOnDemand
-  protected ReportingDataSourceProvider createReportingDataSourceProvider (@Nonnull final IJdbcConfiguration aJdbcConfig)
+  protected DataSourceProviderFromJdbcConfiguration createReportingDataSourceProvider (@Nonnull final IJdbcConfiguration aJdbcConfig)
   {
-    return new ReportingDataSourceProvider (aJdbcConfig);
+    return new DataSourceProviderFromJdbcConfiguration (aJdbcConfig);
   }
 
   @Nonnull
