@@ -63,6 +63,8 @@ import com.helger.peppolid.CIdentifier;
 public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendSqlSPI.class);
+  private static final EnumSet <EDatabaseSystemType> ALLOWED_DB_TYPES = EnumSet.of (EDatabaseSystemType.MYSQL,
+                                                                                    EDatabaseSystemType.POSTGRESQL);
 
   private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("m_aRWLock")
@@ -84,11 +86,18 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   }
 
   @Nonnull
-  public static String getTableNamePrefix (@Nonnull final String sJdbcSchema)
+  public static String getTableNamePrefix (@Nonnull final EDatabaseSystemType eDBType,
+                                           @Nonnull final String sJdbcSchema)
   {
     final String sSchemaName = StringHelper.trim (sJdbcSchema);
     if (StringHelper.hasText (sSchemaName))
     {
+      if (eDBType == EDatabaseSystemType.MYSQL)
+      {
+        // MySQL does not like quotes
+        return sSchemaName + ".";
+      }
+
       // Quotes are required for PostgreSQL when schema contains a dash
       return "\"" + sSchemaName + "\".";
     }
@@ -115,12 +124,10 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
       // Resolve database type
       final EDatabaseSystemType eDBType = aJdbcConfig.getJdbcDatabaseSystemType ();
-      final EnumSet <EDatabaseSystemType> aAllowedDBTypes = EnumSet.of (EDatabaseSystemType.MYSQL,
-                                                                        EDatabaseSystemType.POSTGRESQL);
-      if (eDBType == null || !aAllowedDBTypes.contains (eDBType))
+      if (eDBType == null || !ALLOWED_DB_TYPES.contains (eDBType))
         throw new IllegalStateException ("The database type MUST be provided and MUST be one of " +
                                          StringHelper.imploder ()
-                                                     .source (aAllowedDBTypes, EDatabaseSystemType::getID)
+                                                     .source (ALLOWED_DB_TYPES, EDatabaseSystemType::getID)
                                                      .separator (", ")
                                                      .build () +
                                          " - provided value is '" +
@@ -146,7 +153,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
       m_aDSP = createReportingDataSourceProvider (aJdbcConfig);
       if (m_aDSP == null)
         throw new IllegalStateException ("Failed to create Peppol Reporting SQL DB DataSource provider");
-      m_sTableNamePrefix = getTableNamePrefix (aJdbcConfig.getJdbcSchema ());
+      m_sTableNamePrefix = getTableNamePrefix (eDBType, aJdbcConfig.getJdbcSchema ());
     });
 
     if (!isInitialized ())
@@ -239,7 +246,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
           throw new IllegalStateException ("Failed to create new SQL DB entry (" + nCreated + ")");
       });
       if (eSuccess.isFailure ())
-        throw new IllegalStateException ("Failed to insert into Peppol Reporting into SQL DB");
+        throw new IllegalStateException ("Failed to insert Peppol Reporting item into SQL DB");
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Successfully stored Peppol Reporting Item in SQL DB");

@@ -55,15 +55,15 @@ services:
 #    ports:
 #      - 8080:8080
  
-#  mysql:
-#    image: mysql:8
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
-#      MYSQL_DATABASE: peppol-reporting
-#      MYSQL_USER: reporting
-#      MYSQL_PASSWORD: reporting
-#    ports:
-#      - "3306:3306"
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: peppol-reporting
+      MYSQL_USER: reporting
+      MYSQL_PASSWORD: reporting
+    ports:
+      - "3306:3306"
 
 volumes:
   redis:
