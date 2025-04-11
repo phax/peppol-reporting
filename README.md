@@ -216,7 +216,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-* v3.1.0 - work in progress
+* v3.1.0 - 2025-04-11
     * [SQL] Requires ph-db 7.1.0
     * [MongoDB] Extended `PeppolReportingBackendMongoDBSPI` API
     * [SQL] Renamed class `EDatabaseType` to `EReportingDatabaseType` (internal backwards incompatible change)
