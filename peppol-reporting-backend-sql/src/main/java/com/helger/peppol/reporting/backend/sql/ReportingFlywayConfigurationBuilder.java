@@ -25,7 +25,7 @@ import com.helger.db.api.flyway.FlywayConfigurationBuilderConfig;
  * The specific Flyway Configuration builder for Peppol Reporting.
  *
  * @author Philip Helger
- * @since 3.0.4
+ * @since 3.1.0
  */
 public class ReportingFlywayConfigurationBuilder extends FlywayConfigurationBuilderConfig
 {
