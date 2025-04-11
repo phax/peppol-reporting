@@ -109,6 +109,14 @@ public class MongoClientWrapper implements AutoCloseable
   private final MongoDatabase m_aDatabase;
   private final IsWriteable m_aClusterListener = new IsWriteable ();
 
+  /**
+   * Constructor
+   *
+   * @param sConnectionString
+   *        MongoDB connection string. May neither be <code>null</code> nor empty.
+   * @param sDBName
+   *        MongoDB database name. May neither be <code>null</code> nor empty.
+   */
   public MongoClientWrapper (@Nonnull @Nonempty final String sConnectionString, @Nonnull @Nonempty final String sDBName)
   {
     ValueEnforcer.notEmpty (sConnectionString, "ConnectionString");
@@ -123,9 +131,7 @@ public class MongoClientWrapper implements AutoCloseable
                                                                      if (GlobalDebug.isDebugMode ())
                                                                      {
                                                                        /*
-                                                                        * Less
-                                                                        * waiting
-                                                                        * time
+                                                                        * Less waiting time
                                                                         */
                                                                        x.serverSelectionTimeout (10, TimeUnit.SECONDS);
                                                                      }
