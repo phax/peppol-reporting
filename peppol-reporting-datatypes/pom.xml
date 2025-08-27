@@ -21,7 +21,7 @@
   <parent>
     <groupId>com.helger.peppol</groupId>
     <artifactId>peppol-reporting-parent-pom</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>4.0.0</version>
   </parent>
   <artifactId>peppol-reporting-datatypes</artifactId>
   <packaging>bundle</packaging>
@@ -103,7 +103,7 @@
               com.helger.peppol.reporting.jaxb.tsr,
               com.helger.peppol.reporting.jaxb.tsr.v101
             </Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Import-Package>!jakarta.annotation.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -146,6 +146,16 @@
           </dependency>
         </dependencies>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <source>17</source>
+          <sourcepath>
+            ${project.build.sourceDirectory}:${project.build.directory}/generated-sources/xjc
+          </sourcepath>
+        </configuration>
+      </plugin> 
     </plugins>
   </build>
 </project>

@@ -19,14 +19,14 @@ package com.helger.peppol.reporting.backend.redis;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.datetime.PDTFromString;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.datetime.format.PDTFromString;
 import com.helger.peppol.reporting.api.EReportingDirection;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
+
+import jakarta.annotation.Nonnull;
 
 @Immutable
 public final class PeppolReportingRedisHelper

@@ -16,7 +16,7 @@
  */
 package com.helger.peppol.reporting.api;
 
-import javax.annotation.concurrent.Immutable;
+import com.helger.annotation.concurrent.Immutable;
 
 /**
  * Constants for Peppol Reporting in general.

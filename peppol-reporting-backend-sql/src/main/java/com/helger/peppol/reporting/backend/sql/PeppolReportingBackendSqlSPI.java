@@ -20,23 +20,21 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.EnumSet;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.IsSPIImplementation;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.annotation.UsedViaReflection;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.style.IsSPIImplementation;
+import com.helger.annotation.style.OverrideOnDemand;
+import com.helger.annotation.style.UsedViaReflection;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.state.ESuccess;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringImplode;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.config.IConfig;
 import com.helger.db.api.EDatabaseSystemType;
 import com.helger.db.api.config.IJdbcConfiguration;
@@ -52,6 +50,9 @@ import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for SQL. This backend supports the lazy
@@ -90,7 +91,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
                                            @Nonnull final String sJdbcSchema)
   {
     final String sSchemaName = StringHelper.trim (sJdbcSchema);
-    if (StringHelper.hasText (sSchemaName))
+    if (StringHelper.isNotEmpty (sSchemaName))
     {
       if (eDBType == EDatabaseSystemType.MYSQL)
       {
@@ -126,10 +127,10 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
       final EDatabaseSystemType eDBType = aJdbcConfig.getJdbcDatabaseSystemType ();
       if (eDBType == null || !ALLOWED_DB_TYPES.contains (eDBType))
         throw new IllegalStateException ("The database type MUST be provided and MUST be one of " +
-                                         StringHelper.imploder ()
-                                                     .source (ALLOWED_DB_TYPES, EDatabaseSystemType::getID)
-                                                     .separator (", ")
-                                                     .build () +
+                                         StringImplode.imploder ()
+                                                      .source (ALLOWED_DB_TYPES, EDatabaseSystemType::getID)
+                                                      .separator (", ")
+                                                      .build () +
                                          " - provided value is '" +
                                          aJdbcConfig.getJdbcDatabaseType () +
                                          "'");

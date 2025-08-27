@@ -16,7 +16,7 @@
  */
 package com.helger.peppol.reporting.eusr.model;
 
-import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
+import com.helger.annotation.style.MustImplementEqualsAndHashcode;
 
 /**
  * This is a marker interface for EUSR Subset keys

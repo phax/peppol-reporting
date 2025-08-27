@@ -16,10 +16,6 @@
  */
 package com.helger.peppol.reporting.backend.sql;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.callback.BaseCallback;
@@ -33,10 +29,14 @@ import org.flywaydb.core.internal.jdbc.DriverDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
 import com.helger.db.api.EDatabaseSystemType;
 import com.helger.db.api.flyway.FlywayConfiguration;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * This class has the sole purpose of encapsulating the org.flywaydb classes, so that it's usage can
@@ -143,7 +143,7 @@ final class ReportingFlywayMigrator
 
     // Flyway to handle the DB schema?
     final String sSchema = aJdbcConfig.getJdbcSchema ();
-    if (StringHelper.hasText (sSchema))
+    if (StringHelper.isNotEmpty (sSchema))
     {
       // Use the schema only, if it is explicitly configured
       // The default schema name is ["$user", public] and as such unusable

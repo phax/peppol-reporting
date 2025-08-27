@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.io.resource.ClassPathResource;
 import com.helger.peppol.reporting.testfiles.TSRTestHelper;
 
 public final class TransactionStatisticsReport100MarshallerTest

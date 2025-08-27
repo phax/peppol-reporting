@@ -21,7 +21,7 @@
   <parent>
     <groupId>com.helger.peppol</groupId>
     <artifactId>peppol-reporting-parent-pom</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>4.0.0</version>
   </parent>
   <artifactId>peppol-reporting-api</artifactId>
   <packaging>bundle</packaging>
@@ -48,10 +48,6 @@
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
-      <artifactId>ph-commons</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.commons</groupId>
       <artifactId>ph-config</artifactId>
     </dependency>
     <dependency>
@@ -71,6 +67,11 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-unittest-support-ext</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -114,7 +115,7 @@
               com.helger.peppol.reporting.api,
               com.helger.peppol.reporting.api.backend
             </Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Import-Package>!jakarta.annotation.*,*</Import-Package>
             <!-- The latter one has precedence -->
             <Include-Resource>{maven-resources},peppol-reporting-api-version.properties=target/classes/peppol-reporting-api-version.properties</Include-Resource>
           </instructions>

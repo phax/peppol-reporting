@@ -16,10 +16,10 @@
  */
 package com.helger.peppol.reporting.backend.sql;
 
-import javax.annotation.Nonnull;
-
 import com.helger.config.IConfig;
 import com.helger.db.api.flyway.FlywayConfigurationBuilderConfig;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * The specific Flyway Configuration builder for Peppol Reporting.

@@ -27,12 +27,12 @@ import java.time.ZoneOffset;
 
 import org.junit.Test;
 
-import com.helger.commons.datetime.PDTFactory;
-import com.helger.commons.mock.CommonsTestHelper;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.string.StringHelper;
+import com.helger.datetime.helper.PDTFactory;
 import com.helger.peppol.reporting.api.PeppolReportingItem.Builder;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
+import com.helger.unittest.support.TestHelper;
 
 /**
  * Test class for class {@link PeppolReportingItem}
@@ -78,9 +78,8 @@ public final class PeppolReportingItemTest
     assertEquals ("FI", aItem.getEndUserCountryCode ());
     assertEquals ("abc", aItem.getEndUserID ());
 
-    CommonsTestHelper.testDefaultImplementationWithEqualContentObject (aItem, aBuilder.build ());
-    CommonsTestHelper.testDefaultImplementationWithDifferentContentObject (aItem,
-                                                                           aBuilder.endUserID ("foobar").build ());
+    TestHelper.testDefaultImplementationWithEqualContentObject (aItem, aBuilder.build ());
+    TestHelper.testDefaultImplementationWithDifferentContentObject (aItem, aBuilder.endUserID ("foobar").build ());
   }
 
   @Test

@@ -16,14 +16,14 @@
  */
 package com.helger.peppol.reporting.backend.sql;
 
-import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.db.api.config.JdbcConfigurationConfig;
 import com.helger.db.jdbc.IHasDataSource;
 import com.helger.db.jdbc.executor.DBExecutor;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * The Reporting specific DB Executor

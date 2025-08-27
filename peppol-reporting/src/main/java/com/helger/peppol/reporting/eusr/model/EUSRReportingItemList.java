@@ -19,25 +19,25 @@ package com.helger.peppol.reporting.eusr.model;
 import java.math.BigInteger;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.impl.CommonsHashSet;
-import com.helger.commons.collection.impl.CommonsTreeMap;
-import com.helger.commons.collection.impl.ICommonsSet;
-import com.helger.commons.collection.impl.ICommonsSortedMap;
-import com.helger.commons.math.MathHelper;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.numeric.BigHelper;
+import com.helger.collection.commons.CommonsHashSet;
+import com.helger.collection.commons.CommonsTreeMap;
+import com.helger.collection.commons.ICommonsSet;
+import com.helger.collection.commons.ICommonsSortedMap;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.FullSetType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetKeyType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetType;
 
+import jakarta.annotation.Nonnull;
+
 /**
- * This class represents a set of {@link PeppolReportingItem} objects for a
- * single Reporting Period used to create EUSR reports.
+ * This class represents a set of {@link PeppolReportingItem} objects for a single Reporting Period
+ * used to create EUSR reports.
  *
  * @author Philip Helger
  * @since 1.2.0
@@ -66,19 +66,19 @@ public class EUSRReportingItemList
     @Nonnull
     public BigInteger getSendingEndUserCount ()
     {
-      return MathHelper.toBigInteger (m_aSenders.size ());
+      return BigHelper.toBigInteger (m_aSenders.size ());
     }
 
     @Nonnull
     public BigInteger getReceivingEndUserCount ()
     {
-      return MathHelper.toBigInteger (m_aReceivers.size ());
+      return BigHelper.toBigInteger (m_aReceivers.size ());
     }
 
     @Nonnull
     public BigInteger getSendingOrReceivingEndUserCount ()
     {
-      return MathHelper.toBigInteger (m_aSendersOrReceivers.size ());
+      return BigHelper.toBigInteger (m_aSendersOrReceivers.size ());
     }
   }
 
@@ -144,9 +144,9 @@ public class EUSRReportingItemList
     // Add full set
     {
       final FullSetType aFullSet = new FullSetType ();
-      aFullSet.setSendingEndUsers (MathHelper.toBigInteger (aSendingEndUsers.size ()));
-      aFullSet.setReceivingEndUsers (MathHelper.toBigInteger (aReceivingEndUsers.size ()));
-      aFullSet.setSendingOrReceivingEndUsers (MathHelper.toBigInteger (aSendingOrReceivingEndUsers.size ()));
+      aFullSet.setSendingEndUsers (BigHelper.toBigInteger (aSendingEndUsers.size ()));
+      aFullSet.setReceivingEndUsers (BigHelper.toBigInteger (aReceivingEndUsers.size ()));
+      aFullSet.setSendingOrReceivingEndUsers (BigHelper.toBigInteger (aSendingOrReceivingEndUsers.size ()));
       aReport.setFullSet (aFullSet);
     }
 

@@ -25,35 +25,35 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.GuardedBy;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ELockType;
-import com.helger.commons.annotation.IsSPIImplementation;
-import com.helger.commons.annotation.MustBeLocked;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.VisibleForTesting;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.ELockType;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.concurrent.MustBeLocked;
+import com.helger.annotation.style.IsSPIImplementation;
+import com.helger.annotation.style.VisibleForTesting;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.state.ESuccess;
+import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.commons.csv.CCSV;
 import com.helger.commons.csv.CSVReader;
 import com.helger.commons.csv.CSVWriter;
-import com.helger.commons.datetime.PDTFromString;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.string.StringHelper;
 import com.helger.config.IConfig;
+import com.helger.datetime.format.PDTFromString;
+import com.helger.io.file.FileHelper;
 import com.helger.peppol.reporting.api.EReportingDirection;
 import com.helger.peppol.reporting.api.PeppolReportingHelper;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for CSV.
@@ -88,7 +88,7 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
   private static char _asChar (@Nonnull final IConfig aConfig, final String sProperty, final char cDefault)
   {
     final String sValue = aConfig.getAsString (sProperty);
-    if (StringHelper.hasNoText (sValue))
+    if (StringHelper.isEmpty (sValue))
       return cDefault;
     if (sValue.length () > 1)
       LOGGER.warn ("The configuration property '" +
@@ -103,7 +103,7 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
   public ESuccess initBackend (@Nonnull final IConfig aConfig)
   {
     final String sFilename = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_CSV_FILENAME);
-    if (StringHelper.hasNoText (sFilename))
+    if (StringHelper.isEmpty (sFilename))
     {
       LOGGER.error ("The CSV filename is missing in the configuration. See property '" +
                     CONFIG_PEPPOL_REPORTING_CSV_FILENAME +

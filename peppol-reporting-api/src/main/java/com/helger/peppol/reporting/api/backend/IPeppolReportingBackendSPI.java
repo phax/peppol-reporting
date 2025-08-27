@@ -20,14 +20,14 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.annotation.IsSPIInterface;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.name.IHasDisplayName;
-import com.helger.commons.state.ESuccess;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.style.IsSPIInterface;
+import com.helger.base.name.IHasDisplayName;
+import com.helger.base.state.ESuccess;
 import com.helger.config.IConfig;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * A generic interface for writing and reading reporting items.

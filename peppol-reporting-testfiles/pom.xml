@@ -21,7 +21,7 @@
   <parent>
     <groupId>com.helger.peppol</groupId>
     <artifactId>peppol-reporting-parent-pom</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>4.0.0</version>
   </parent>
   <artifactId>peppol-reporting-testfiles</artifactId>
   <packaging>bundle</packaging>
@@ -48,7 +48,7 @@
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
-      <artifactId>ph-commons</artifactId>
+      <artifactId>ph-io</artifactId>
     </dependency>
     
     <dependency>
@@ -82,7 +82,7 @@
             <Export-Package>
               com.helger.peppol.reporting.testfiles
             </Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Import-Package>!jakarta.annotation.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

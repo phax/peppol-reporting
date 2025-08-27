@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2022-2025 Philip Helger
@@ -21,13 +22,12 @@
   <parent>
     <groupId>com.helger.peppol</groupId>
     <artifactId>peppol-reporting-parent-pom</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>4.0.0</version>
   </parent>
   <artifactId>peppol-reporting-backend-sql</artifactId>
   <packaging>bundle</packaging>
   <inceptionYear>2024</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-sql</url>
-
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -35,7 +35,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <developers>
     <developer>
       <id>philip</id>
@@ -44,13 +43,11 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
- 
   <!-- Do not bloat global scope -->
   <properties>
-    <flyway.version>9.22.3</flyway.version>
-    <ph-db.version>7.1.0</ph-db.version>
+    <flyway.version>11.11.2</flyway.version>
+    <ph-db.version>8.0.0</ph-db.version>
   </properties>
- 
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
@@ -61,11 +58,10 @@
       <artifactId>peppol-reporting-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.helger</groupId>
+      <groupId>com.helger.db</groupId>
       <artifactId>ph-db-jdbc</artifactId>
       <version>${ph-db.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
@@ -76,7 +72,12 @@
       <artifactId>flyway-mysql</artifactId>
       <version>${flyway.version}</version>
     </dependency>
-   
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+      <version>${flyway.version}</version>
+    </dependency>
+    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -96,11 +97,15 @@
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
-      <version>9.3.0</version>
+      <version>9.4.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-unittest-support-ext</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -117,11 +122,12 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.peppol.reporting.backend.sql</Automatic-Module-Name>
-            <Export-Package>
-              com.helger.peppol.reporting.backend.sql,
-              com.helger.peppol.reporting.backend.sql.config
-            </Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Export-Package>com.helger.peppol.reporting.backend.sql,
+              com.helger.peppol.reporting.backend.sql.config</Export-Package>
+            <Import-Package>!jakarta.annotation.*,*</Import-Package>
+            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
+            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.commons.thirdparty.IThirdPartyModuleProviderSPI,
+osgi.serviceloader; osgi.serviceloader=com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI</Provide-Capability>
           </instructions>
         </configuration>
       </plugin>

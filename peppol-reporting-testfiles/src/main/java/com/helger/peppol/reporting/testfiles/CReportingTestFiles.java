@@ -16,8 +16,9 @@
  */
 package com.helger.peppol.reporting.testfiles;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
+import com.helger.annotation.concurrent.Immutable;
+
+import jakarta.annotation.Nonnull;
 
 @Immutable
 public final class CReportingTestFiles

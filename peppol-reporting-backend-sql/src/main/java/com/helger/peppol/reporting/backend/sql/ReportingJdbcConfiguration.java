@@ -16,11 +16,11 @@
  */
 package com.helger.peppol.reporting.backend.sql;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.config.IConfig;
 import com.helger.db.api.config.JdbcConfigurationConfig;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Peppol Reporting JDBC configuration with lazy initialization.

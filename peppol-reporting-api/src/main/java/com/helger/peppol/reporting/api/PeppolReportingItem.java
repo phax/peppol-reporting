@@ -22,31 +22,31 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.builder.IBuilder;
-import com.helger.commons.equals.EqualsHelper;
-import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.log.ConditionalLogger;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.MustImplementEqualsAndHashcode;
+import com.helger.base.builder.IBuilder;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.equals.EqualsHelper;
+import com.helger.base.hashcode.HashCodeGenerator;
+import com.helger.base.log.ConditionalLogger;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.peppol.smp.ESMPTransportProfile;
 import com.helger.peppol.smp.ISMPTransportProfile;
 import com.helger.peppolid.IDocumentTypeIdentifier;
 import com.helger.peppolid.IProcessIdentifier;
 import com.helger.peppolid.peppol.PeppolIdentifierHelper;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
- * This class represents a single Peppol Reporting raw data item. It contains
- * the raw data for Peppol TSR and EUSR together.
+ * This class represents a single Peppol Reporting raw data item. It contains the raw data for
+ * Peppol TSR and EUSR together.
  *
  * @author Philip Helger
  */
@@ -88,12 +88,6 @@ public final class PeppolReportingItem
   private final String m_sC4CountryCode;
   // EUSR
   private final String m_sEndUserID;
-
-  @Deprecated (forRemoval = true, since = "2.2.2")
-  public static boolean isValidCountryCode (@Nullable final String s)
-  {
-    return PeppolReportingHelper.isValidCountryCode (s);
-  }
 
   public PeppolReportingItem (@Nonnull final OffsetDateTime aExchangeDT,
                               @Nonnull final EReportingDirection eDirection,
@@ -161,8 +155,8 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return <code>true</code> if this reporting item is for sending.
-   *         <code>false</code> if it is for receiving.
+   * @return <code>true</code> if this reporting item is for sending. <code>false</code> if it is
+   *         for receiving.
    * @see #isReceiving()
    */
   public boolean isSending ()
@@ -171,8 +165,8 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return <code>true</code> if this reporting item is for receiving.
-   *         <code>false</code> if it is for sending.
+   * @return <code>true</code> if this reporting item is for receiving. <code>false</code> if it is
+   *         for sending.
    * @see #isSending()
    */
   public boolean isReceiving ()
@@ -181,8 +175,7 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The sending Service Provider (C2) ID. Neither <code>null</code> nor
-   *         empty.
+   * @return The sending Service Provider (C2) ID. Neither <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
@@ -192,8 +185,7 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The receiving Service Provider (C3) ID. Neither <code>null</code>
-   *         nor empty.
+   * @return The receiving Service Provider (C3) ID. Neither <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
@@ -203,9 +195,8 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The ID of the other service provider. So if this item is for a sent
-   *         message, this is the C3-ID otherwise it is the C2 ID. Neither
-   *         <code>null</code> nor empty.
+   * @return The ID of the other service provider. So if this item is for a sent message, this is
+   *         the C3-ID otherwise it is the C2 ID. Neither <code>null</code> nor empty.
    * @see #isSending()
    * @see #isReceiving()
    * @see #getC2ID()
@@ -219,8 +210,7 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The document type identifier scheme used. Neither <code>null</code>
-   *         nor empty.
+   * @return The document type identifier scheme used. Neither <code>null</code> nor empty.
    * @see #getDocTypeIDValue()
    */
   @Nonnull
@@ -231,8 +221,7 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The document type identifier value used. Neither <code>null</code>
-   *         nor empty.
+   * @return The document type identifier value used. Neither <code>null</code> nor empty.
    * @see #getDocTypeIDScheme()
    */
   @Nonnull
@@ -243,8 +232,7 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The process identifier scheme used. Neither <code>null</code> nor
-   *         empty.
+   * @return The process identifier scheme used. Neither <code>null</code> nor empty.
    * @see #getProcessIDValue()
    */
   @Nonnull
@@ -255,8 +243,7 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The process identifier scheme value. Neither <code>null</code> nor
-   *         empty.
+   * @return The process identifier scheme value. Neither <code>null</code> nor empty.
    * @see #getProcessIDScheme()
    */
   @Nonnull
@@ -267,9 +254,8 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The country code of C1. Neither <code>null</code> nor empty. C2
-   *         knows it via KYC, C3 knows it, because it is transferred in the
-   *         SBDH (since v2.0.0).
+   * @return The country code of C1. Neither <code>null</code> nor empty. C2 knows it via KYC, C3
+   *         knows it, because it is transferred in the SBDH (since v2.0.0).
    */
   @Nonnull
   @Nonempty
@@ -279,9 +265,8 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The country code of C4. May be <code>null</code> for sent messages,
-   *         because C1/C2 cannot necessarily know the country code of C4 in all
-   *         cases.
+   * @return The country code of C4. May be <code>null</code> for sent messages, because C1/C2
+   *         cannot necessarily know the country code of C4 in all cases.
    */
   @Nullable
   public String getC4CountryCode ()
@@ -290,8 +275,7 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return <code>true</code> if a C4 country code is present,
-   *         <code>false</code> if not.
+   * @return <code>true</code> if a C4 country code is present, <code>false</code> if not.
    * @since 2.1.0
    */
   public boolean hasC4CountryCode ()
@@ -310,8 +294,8 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The End User Country for EUSR. It's either C1 country code or C4
-   *         country code, depending on the message direction.
+   * @return The End User Country for EUSR. It's either C1 country code or C4 country code,
+   *         depending on the message direction.
    * @see #isSending()
    * @see #isReceiving()
    * @see #getC1CountryCode()
@@ -325,8 +309,8 @@ public final class PeppolReportingItem
   }
 
   /**
-   * @return The end user ID. The exact layout is implementation specific and
-   *         varies from Service Provider to Service Provider.
+   * @return The end user ID. The exact layout is implementation specific and varies from Service
+   *         Provider to Service Provider.
    */
   @Nonnull
   @Nonempty
@@ -560,10 +544,8 @@ public final class PeppolReportingItem
      * Check if all mandatory fields are set or not.
      *
      * @param bLogFailures
-     *        <code>true</code> if missing fields should be logged,
-     *        <code>false</code> if not.
-     * @return <code>true</code> if all mandatory fields are set,
-     *         <code>false</code> if not.
+     *        <code>true</code> if missing fields should be logged, <code>false</code> if not.
+     * @return <code>true</code> if all mandatory fields are set, <code>false</code> if not.
      */
     public boolean isComplete (final boolean bLogFailures)
     {
@@ -581,7 +563,7 @@ public final class PeppolReportingItem
         return false;
       }
 
-      if (StringHelper.hasNoText (m_sC2ID))
+      if (StringHelper.isEmpty (m_sC2ID))
       {
         aCondLogger.warn ("C2 ID is missing");
         return false;
@@ -592,7 +574,7 @@ public final class PeppolReportingItem
         return false;
       }
 
-      if (StringHelper.hasNoText (m_sC3ID))
+      if (StringHelper.isEmpty (m_sC3ID))
       {
         aCondLogger.warn ("C3 ID is missing");
         return false;
@@ -603,7 +585,7 @@ public final class PeppolReportingItem
         return false;
       }
 
-      if (StringHelper.hasNoText (m_sDocTypeIDScheme))
+      if (StringHelper.isEmpty (m_sDocTypeIDScheme))
       {
         aCondLogger.warn ("Document Type ID Scheme is missing");
         return false;
@@ -614,7 +596,7 @@ public final class PeppolReportingItem
         return false;
       }
 
-      if (StringHelper.hasNoText (m_sDocTypeIDValue))
+      if (StringHelper.isEmpty (m_sDocTypeIDValue))
       {
         aCondLogger.warn ("Document Type ID Value is missing");
         return false;
@@ -625,7 +607,7 @@ public final class PeppolReportingItem
         return false;
       }
 
-      if (StringHelper.hasNoText (m_sProcessIDScheme))
+      if (StringHelper.isEmpty (m_sProcessIDScheme))
       {
         aCondLogger.warn ("Process ID Scheme is missing");
         return false;
@@ -636,7 +618,7 @@ public final class PeppolReportingItem
         return false;
       }
 
-      if (StringHelper.hasNoText (m_sProcessIDValue))
+      if (StringHelper.isEmpty (m_sProcessIDValue))
       {
         aCondLogger.warn ("Process ID Value is missing");
         return false;
@@ -647,7 +629,7 @@ public final class PeppolReportingItem
         return false;
       }
 
-      if (StringHelper.hasNoText (m_sTransportProtocol))
+      if (StringHelper.isEmpty (m_sTransportProtocol))
       {
         aCondLogger.warn ("Transport Protocol is missing");
         return false;
@@ -658,7 +640,7 @@ public final class PeppolReportingItem
         return false;
       }
 
-      if (StringHelper.hasNoText (m_sC1CountryCode))
+      if (StringHelper.isEmpty (m_sC1CountryCode))
       {
         aCondLogger.warn ("C1 Country Code is missing");
         return false;
@@ -670,7 +652,7 @@ public final class PeppolReportingItem
       }
 
       // C4 is only mandatory for receivers
-      if (StringHelper.hasNoText (m_sC4CountryCode))
+      if (StringHelper.isEmpty (m_sC4CountryCode))
       {
         if (m_eDirection.isReceiving ())
         {
@@ -693,7 +675,7 @@ public final class PeppolReportingItem
         }
       }
 
-      if (StringHelper.hasNoText (m_sEndUserID))
+      if (StringHelper.isEmpty (m_sEndUserID))
       {
         aCondLogger.warn ("End User ID is missing");
         return false;

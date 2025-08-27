@@ -16,7 +16,7 @@
  */
 package com.helger.peppol.reporting.tsr.model;
 
-import javax.annotation.concurrent.Immutable;
+import com.helger.annotation.concurrent.Immutable;
 
 /**
  * Constants for TSR

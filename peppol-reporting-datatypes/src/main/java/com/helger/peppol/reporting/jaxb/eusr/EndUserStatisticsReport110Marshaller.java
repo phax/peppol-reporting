@@ -16,10 +16,9 @@
  */
 package com.helger.peppol.reporting.jaxb.eusr;
 
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.io.resource.ClassPathResource;
 import com.helger.jaxb.GenericJAXBMarshaller;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.ObjectFactory;

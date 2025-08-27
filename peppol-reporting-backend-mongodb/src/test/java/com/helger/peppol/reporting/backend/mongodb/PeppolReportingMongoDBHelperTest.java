@@ -24,7 +24,7 @@ import java.time.OffsetDateTime;
 import org.bson.Document;
 import org.junit.Test;
 
-import com.helger.commons.datetime.PDTFactory;
+import com.helger.datetime.helper.PDTFactory;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;

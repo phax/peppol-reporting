@@ -17,7 +17,7 @@ This library does not deal with the transmission of Reports.
 That needs to be done with [phase4](https://github.com/phax/phase4) or another AS4 solution.
 See the [phase4 Wiki](https://github.com/phax/phase4/wiki/Profile-Peppol#special-handling-for-peppol-reporting) for detailed guidance on integration with this project. 
 
-This library requires Java 11 and Maven to build.
+This library requires Java 17 and Maven to build.
 
 # How to use it
 
@@ -216,73 +216,100 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-* v3.1.0 - 2025-04-11
-    * [SQL] Requires ph-db 7.1.0
-    * [MongoDB] Extended `PeppolReportingBackendMongoDBSPI` API
-    * [SQL] Renamed class `EDatabaseType` to `EReportingDatabaseType` (internal backwards incompatible change)
-    * [SQL] Renamed class `FlywayMigrator` to `ReportingFlywayMigrator` (internal backwards incompatible change)
-    * [SQL] Removed class `ReportingFlywayConfiguration` in favour of `ReportingFlywayConfigurationBuilder`
-    * [SQL] Replaced class `EReportingDatabaseType` with `EDatabaseSystemType` from ph-db
-    * [SQL] Reworked class `ReportingJdbcConfiguration` to be based on a new shared class from ph-db
-* v3.0.3 - 2024-11-27
-    * Calling the `PeppolReportingHelper.isDocumentTypeEligableForReporting` method in all backends to avoid the need for outside filtering
-* v3.0.2 - 2024-10-31
-    * Added new method `PeppolReportingBackend.setBackendService(IPeppolReportingBackendSPI)` to explicitly set the backend
-    * [CSV] Added missing write locking in CSV backend
-* v3.0.1 - 2024-08-12
-    * Added new submodule `peppol-reporting-backend-sql` to support PostgreSQL and MySQL
-* v3.0.0 - 2024-06-28
-    * Extracted `peppol-reporting-datatypes` submodule
-    * Extracted `peppol-reporting-testfiles` submodule
-    * Changed the Java package names from `com.helper.*` to `com.helger.*` - LOL
-* v2.2.5 - 2024-03-29
-    * Updated to ph-commons 11.1.5
-    * Ensured Java 21 compatibility
-* v2.2.4 - 2024-03-21
-    * Added new submodule `peppol-reporting-backend-csv` that uses a CSV file as the backend to store reporting items
-* v2.2.3 - 2024-03-05
-    * Added the possibility to provide username and password via configuration for the Redis backend. See [PR #13](https://github.com/phax/peppol-reporting/pull/13) - thx @TaKO8Ki
-* v2.2.2 - 2024-01-29
-    * Moved the method `PeppolReportingItem.isValidCountryCode(String)` to class `PeppolReportingHelper`
-    * Added a constant `CPeppolReporting.REPLACEMENT_COUNTRY_CODE` for the `ZZ` code for invalid incoming country codes
-    * Added a constant `CPeppolReporting.OPENPEPPOL_PARTICIPANT_ID` for the default receiver PID
-* v2.2.1 - 2023-12-31
-    * Made the collection name customizable in the MongoDB backend
-    * Fixed an error in iterating in the "in-memory" backend when only entries from the last day of the period are present
-* v2.2.0 - 2023-12-07
-    * Modified classes `EUSRReportingItemList` and `TSRReportingItemList` so that the list is only iterated once and is based on `Iterable`. Backwards incompatible change.
-    * Extended class `IPeppolReportingBackendSPI` with method `iterateReportingItems` to be able to lazily iterate over a data source. See [#2](https://github.com/phax/peppol-reporting/issues/2) - thx @iansmirlis
-* v2.1.6 - 2023-11-10
-    * Updated EUSR Schematron to v1.1.4
-* v2.1.5 - 2023-11-02
-    * Updated EUSR Schematron to v1.1.3 and TSR Schematron to v1.0.4
-* v2.1.4 - 2023-10-12
-    * Updated EUSR Schematron to v1.1.2 and TSR Schematron to v1.0.3
-* v2.1.3 - 2023-09-21
-    * Updated EUSR Schematron to v1.1.1 and TSR Schematron to v1.0.2
-* v2.1.2 - 2023-09-12
-    * Added class `PeppolReportingHelper` with some generic helper methods
-* v2.1.1 - 2023-09-10
-    * Added new submodule `peppol-reporting-backend-inmemory` that uses memory persistence as the backend to store reporting items
-    * Added third party module descriptors
-    * Fixed the date time offset when storing to MongoDB
-* v2.1.0 - 2023-09-10
-    * Added new API package `com.helper.peppol.reporting.api.backend` to define a generic backend API
-    * Added new submodule `peppol-reporting-backend-mongodb` that uses MongoDB as the backend to store reporting items
-    * Added new submodule `peppol-reporting-backend-redis` that uses Redis as the backend to store reporting items
-* v2.0.0 - 2023-07-21
-    * Changed the Maven Group ID to be `com.helger.peppol` instead of `com.helger`
-    * Introduced the new submodule `peppol-reporting-api`
-    * Changed some of the package names introduced in v1.2.0 to reflect the submodule name
-    * Using Maven Bundle plugin to create OSGI bundles
-* v1.2.0 - 2023-07-20
-    * Added data models to easily build End User Statistics Reports v1.1.0 in code
-    * Added data models to easily build Transaction Statistics Reports v1.0.1 in code
-* v1.1.0 - 2023-07-02
-    * Updated to support EUSR 1.1.0
-* v1.0.0 - 2023-04-26
-    * Initial Version
-    * Supports EUSR 1.0.0 and TSR 1.0.1 
+v4.0.0 - 2025-08-27
+* Requires Java 17 as the minimum version
+* Updated to ph-commons 12.0.0
+* Removed all code marked as deprecated for removal
+* [SQL] Updated to Flyway 11.x
+
+v3.1.0 - 2025-04-11
+* [SQL] Requires ph-db 7.1.0
+* [MongoDB] Extended `PeppolReportingBackendMongoDBSPI` API
+* [SQL] Renamed class `EDatabaseType` to `EReportingDatabaseType` (internal backwards incompatible change)
+* [SQL] Renamed class `FlywayMigrator` to `ReportingFlywayMigrator` (internal backwards incompatible change)
+* [SQL] Removed class `ReportingFlywayConfiguration` in favour of `ReportingFlywayConfigurationBuilder`
+* [SQL] Replaced class `EReportingDatabaseType` with `EDatabaseSystemType` from ph-db
+* [SQL] Reworked class `ReportingJdbcConfiguration` to be based on a new shared class from ph-db
+
+v3.0.3 - 2024-11-27
+* Calling the `PeppolReportingHelper.isDocumentTypeEligableForReporting` method in all backends to avoid the need for outside filtering
+
+v3.0.2 - 2024-10-31
+* Added new method `PeppolReportingBackend.setBackendService(IPeppolReportingBackendSPI)` to explicitly set the backend
+* [CSV] Added missing write locking in CSV backend
+
+v3.0.1 - 2024-08-12
+* Added new submodule `peppol-reporting-backend-sql` to support PostgreSQL and MySQL
+
+v3.0.0 - 2024-06-28
+* Extracted `peppol-reporting-datatypes` submodule
+* Extracted `peppol-reporting-testfiles` submodule
+* Changed the Java package names from `com.helper.*` to `com.helger.*` - LOL
+
+v2.2.5 - 2024-03-29
+* Updated to ph-commons 11.1.5
+* Ensured Java 21 compatibility
+
+v2.2.4 - 2024-03-21
+* Added new submodule `peppol-reporting-backend-csv` that uses a CSV file as the backend to store reporting items
+
+v2.2.3 - 2024-03-05
+* Added the possibility to provide username and password via configuration for the Redis backend. See [PR #13](https://github.com/phax/peppol-reporting/pull/13) - thx @TaKO8Ki
+
+v2.2.2 - 2024-01-29
+* Moved the method `PeppolReportingItem.isValidCountryCode(String)` to class `PeppolReportingHelper`
+* Added a constant `CPeppolReporting.REPLACEMENT_COUNTRY_CODE` for the `ZZ` code for invalid incoming country codes
+* Added a constant `CPeppolReporting.OPENPEPPOL_PARTICIPANT_ID` for the default receiver PID
+
+v2.2.1 - 2023-12-31
+* Made the collection name customizable in the MongoDB backend
+* Fixed an error in iterating in the "in-memory" backend when only entries from the last day of the period are present
+
+v2.2.0 - 2023-12-07
+* Modified classes `EUSRReportingItemList` and `TSRReportingItemList` so that the list is only iterated once and is based on `Iterable`. Backwards incompatible change.
+* Extended class `IPeppolReportingBackendSPI` with method `iterateReportingItems` to be able to lazily iterate over a data source. See [#2](https://github.com/phax/peppol-reporting/issues/2) - thx @iansmirlis
+
+v2.1.6 - 2023-11-10
+* Updated EUSR Schematron to v1.1.4
+
+v2.1.5 - 2023-11-02
+* Updated EUSR Schematron to v1.1.3 and TSR Schematron to v1.0.4
+
+v2.1.4 - 2023-10-12
+* Updated EUSR Schematron to v1.1.2 and TSR Schematron to v1.0.3
+
+v2.1.3 - 2023-09-21
+* Updated EUSR Schematron to v1.1.1 and TSR Schematron to v1.0.2
+
+v2.1.2 - 2023-09-12
+* Added class `PeppolReportingHelper` with some generic helper methods
+
+v2.1.1 - 2023-09-10
+* Added new submodule `peppol-reporting-backend-inmemory` that uses memory persistence as the backend to store reporting items
+* Added third party module descriptors
+* Fixed the date time offset when storing to MongoDB
+
+v2.1.0 - 2023-09-10
+* Added new API package `com.helper.peppol.reporting.api.backend` to define a generic backend API
+* Added new submodule `peppol-reporting-backend-mongodb` that uses MongoDB as the backend to store reporting items
+* Added new submodule `peppol-reporting-backend-redis` that uses Redis as the backend to store reporting items
+
+v2.0.0 - 2023-07-21
+* Changed the Maven Group ID to be `com.helger.peppol` instead of `com.helger`
+* Introduced the new submodule `peppol-reporting-api`
+* Changed some of the package names introduced in v1.2.0 to reflect the submodule name
+* Using Maven Bundle plugin to create OSGI bundles
+
+v1.2.0 - 2023-07-20
+* Added data models to easily build End User Statistics Reports v1.1.0 in code
+* Added data models to easily build Transaction Statistics Reports v1.0.1 in code
+
+v1.1.0 - 2023-07-02
+* Updated to support EUSR 1.1.0
+
+v1.0.0 - 2023-04-26
+* Initial Version
+* Supports EUSR 1.0.0 and TSR 1.0.1 
 
 ---
 

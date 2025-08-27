@@ -16,7 +16,7 @@
  */
 package com.helger.peppol.reporting.eusr.model;
 
-import javax.annotation.concurrent.Immutable;
+import com.helger.annotation.concurrent.Immutable;
 
 /**
  * Constants for EUSR - End User Statistics Reporting

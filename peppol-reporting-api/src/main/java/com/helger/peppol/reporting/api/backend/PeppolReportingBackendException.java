@@ -16,7 +16,7 @@
  */
 package com.helger.peppol.reporting.api.backend;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Special Peppol Reporting Backend exception

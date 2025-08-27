@@ -20,24 +20,24 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.YearMonth;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.builder.IBuilder;
-import com.helger.commons.datetime.OffsetDate;
-import com.helger.commons.datetime.XMLOffsetDate;
-import com.helger.commons.log.ConditionalLogger;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.builder.IBuilder;
+import com.helger.base.log.ConditionalLogger;
+import com.helger.base.string.StringHelper;
+import com.helger.datetime.rt.OffsetDate;
+import com.helger.datetime.xml.XMLOffsetDate;
 import com.helger.peppol.reporting.api.CPeppolReporting;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.eusr.model.EUSRReportingItemList;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.HeaderType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.ReportPeriodType;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Builder for Peppol End User Statistics Report objects.
@@ -80,8 +80,7 @@ public final class EndUserStatisticsReport
 
     /**
      * Constructor. Sets default values for: {@link #customizationID(String)},
-     * {@link #profileID(String)} and
-     * {@link #reportingServiceProviderIDScheme(String)}
+     * {@link #profileID(String)} and {@link #reportingServiceProviderIDScheme(String)}
      */
     public Builder11 ()
     {
@@ -150,8 +149,8 @@ public final class EndUserStatisticsReport
      * Set the reporting start and end date.
      *
      * @param a
-     *        The date from which the first day of the month and the last day of
-     *        the month are taken. May be <code>null</code>.
+     *        The date from which the first day of the month and the last day of the month are
+     *        taken. May be <code>null</code>.
      * @return this for chaining
      * @see #startDate(LocalDate)
      * @see #endDate(LocalDate)
@@ -159,18 +158,17 @@ public final class EndUserStatisticsReport
     @Nonnull
     public Builder11 monthOf (@Nullable final LocalDate a)
     {
-      return startDate (a == null ? null : a.withDayOfMonth (1)).endDate (a == null ? null
-                                                                                    : a.plusMonths (1)
-                                                                                       .withDayOfMonth (1)
-                                                                                       .minusDays (1));
+      return startDate (a == null ? null : a.withDayOfMonth (1)).endDate (a == null ? null : a.plusMonths (1)
+                                                                                              .withDayOfMonth (1)
+                                                                                              .minusDays (1));
     }
 
     /**
      * Set the reporting start and end date.
      *
      * @param a
-     *        The date from which the first day of the month and the last day of
-     *        the month are taken. May be <code>null</code>.
+     *        The date from which the first day of the month and the last day of the month are
+     *        taken. May be <code>null</code>.
      * @return this for chaining
      * @see #startDate(LocalDate)
      * @see #endDate(LocalDate)
@@ -185,8 +183,8 @@ public final class EndUserStatisticsReport
      * Set the reporting start and end date.
      *
      * @param a
-     *        The date from which the first day of the month and the last day of
-     *        the month are taken. May be <code>null</code>.
+     *        The date from which the first day of the month and the last day of the month are
+     *        taken. May be <code>null</code>.
      * @return this for chaining
      * @see #startDate(LocalDate)
      * @see #endDate(LocalDate)
@@ -201,8 +199,8 @@ public final class EndUserStatisticsReport
      * Set the reporting start and end date.
      *
      * @param a
-     *        The date from which the first day of the month and the last day of
-     *        the month are taken. May be <code>null</code>.
+     *        The date from which the first day of the month and the last day of the month are
+     *        taken. May be <code>null</code>.
      * @return this for chaining
      * @see #startDate(LocalDate)
      * @see #endDate(LocalDate)
@@ -217,8 +215,8 @@ public final class EndUserStatisticsReport
      * Set the reporting start and end date.
      *
      * @param a
-     *        The date from which the first day of the month and the last day of
-     *        the month are taken. May be <code>null</code>.
+     *        The date from which the first day of the month and the last day of the month are
+     *        taken. May be <code>null</code>.
      * @return this for chaining
      * @see #startDate(LocalDate)
      * @see #endDate(LocalDate)
@@ -226,13 +224,13 @@ public final class EndUserStatisticsReport
     @Nonnull
     public Builder11 monthOf (@Nullable final YearMonth a)
     {
-      return startDate (a == null ? null : a.atDay (1)).endDate (a == null ? null
-                                                                           : a.plusMonths (1).atDay (1).minusDays (1));
+      return startDate (a == null ? null : a.atDay (1)).endDate (a == null ? null : a.plusMonths (1)
+                                                                                     .atDay (1)
+                                                                                     .minusDays (1));
     }
 
     /**
-     * Set the reporting Service Provider ID scheme to be used. Defaulted in the
-     * constructor.
+     * Set the reporting Service Provider ID scheme to be used. Defaulted in the constructor.
      *
      * @param s
      *        New value. May be <code>null</code>.
@@ -264,8 +262,8 @@ public final class EndUserStatisticsReport
      * Set the EUSR reporting items based on which the report is to be created.
      *
      * @param aItems
-     *        The items of which a new {@link EUSRReportingItemList} is created
-     *        and used. May be <code>null</code>.
+     *        The items of which a new {@link EUSRReportingItemList} is created and used. May be
+     *        <code>null</code>.
      * @return this for chaining
      */
     @Nonnull
@@ -279,21 +277,19 @@ public final class EndUserStatisticsReport
      * Check if all mandatory fields are set or not.
      *
      * @param bLogFailures
-     *        <code>true</code> if missing fields should be logged,
-     *        <code>false</code> if not.
-     * @return <code>true</code> if all mandatory fields are set,
-     *         <code>false</code> if not.
+     *        <code>true</code> if missing fields should be logged, <code>false</code> if not.
+     * @return <code>true</code> if all mandatory fields are set, <code>false</code> if not.
      */
     public boolean isComplete (final boolean bLogFailures)
     {
       final ConditionalLogger aCondLogger = new ConditionalLogger (LOGGER, bLogFailures);
-      if (StringHelper.hasNoText (m_sCustomizationID))
+      if (StringHelper.isEmpty (m_sCustomizationID))
       {
         aCondLogger.warn ("CustomizationID is missing");
         return false;
       }
 
-      if (StringHelper.hasNoText (m_sProfileID))
+      if (StringHelper.isEmpty (m_sProfileID))
       {
         aCondLogger.warn ("ProfileID is missing");
         return false;
@@ -317,13 +313,13 @@ public final class EndUserStatisticsReport
         return false;
       }
 
-      if (StringHelper.hasNoText (m_sReportingServiceProviderIDScheme))
+      if (StringHelper.isEmpty (m_sReportingServiceProviderIDScheme))
       {
         aCondLogger.warn ("Reporting Service Provider ID Scheme is missing");
         return false;
       }
 
-      if (StringHelper.hasNoText (m_sReportingServiceProviderID))
+      if (StringHelper.isEmpty (m_sReportingServiceProviderID))
       {
         aCondLogger.warn ("Reporting Service Provider ID is missing");
         return false;
@@ -340,8 +336,8 @@ public final class EndUserStatisticsReport
     }
 
     /**
-     * Build the main EUSR report. Use {@link #isComplete(boolean)} to check if
-     * all mandatory fields are set or not.
+     * Build the main EUSR report. Use {@link #isComplete(boolean)} to check if all mandatory fields
+     * are set or not.
      *
      * @see #isComplete(boolean)
      */

@@ -21,24 +21,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ELockType;
-import com.helger.commons.annotation.IsSPIImplementation;
-import com.helger.commons.annotation.MustBeLocked;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.ELockType;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.concurrent.MustBeLocked;
+import com.helger.annotation.style.IsSPIImplementation;
+import com.helger.annotation.style.OverrideOnDemand;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.state.ESuccess;
+import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.config.IConfig;
 import com.helger.peppol.reporting.api.PeppolReportingHelper;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
@@ -46,6 +43,8 @@ import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Transaction;
@@ -83,7 +82,7 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
   protected JedisPool createJedisPool (@Nonnull final IConfig aConfig)
   {
     final String sHost = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_REDIS_HOST);
-    if (StringHelper.hasNoText (sHost))
+    if (StringHelper.isEmpty (sHost))
     {
       LOGGER.error ("The Redis host name is missing in the configuration. See property '" +
                     CONFIG_PEPPOL_REPORTING_REDIS_HOST +
@@ -108,7 +107,7 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
                  ":" +
                  nPort +
                  "'" +
-                 (StringHelper.hasText (sUserName) ? " using username '" + sUserName + "'" : ""));
+                 (StringHelper.isNotEmpty (sUserName) ? " using username '" + sUserName + "'" : ""));
 
     return new JedisPool (sHost, nPort, sUserName, sPassword);
   }

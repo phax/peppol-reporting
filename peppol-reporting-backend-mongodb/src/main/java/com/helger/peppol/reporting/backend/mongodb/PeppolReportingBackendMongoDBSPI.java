@@ -18,23 +18,20 @@ package com.helger.peppol.reporting.backend.mongodb;
 
 import java.time.LocalDate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.IsSPIImplementation;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.annotation.UsedViaReflection;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.style.IsSPIImplementation;
+import com.helger.annotation.style.OverrideOnDemand;
+import com.helger.annotation.style.UsedViaReflection;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.state.ESuccess;
+import com.helger.base.string.StringHelper;
 import com.helger.config.IConfig;
 import com.helger.peppol.reporting.api.PeppolReportingHelper;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
@@ -46,6 +43,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Sorts;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for MongoDB. This backend supports the
@@ -85,7 +85,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   {
     // Get connection string from configuration
     final String sConnectionString = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING);
-    if (StringHelper.hasNoText (sConnectionString))
+    if (StringHelper.isEmpty (sConnectionString))
     {
       LOGGER.error ("The MongoDB connection string is missing in the configuration. See property '" +
                     CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING +
@@ -95,7 +95,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
 
     // Get database name from configuration
     final String sDBName = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME);
-    if (StringHelper.hasNoText (sDBName))
+    if (StringHelper.isEmpty (sDBName))
     {
       LOGGER.error ("The MongoDB database name is missing in the configuration. See property '" +
                     CONFIG_PEPPOL_REPORTING_MONGODB_DBNAME +
@@ -142,7 +142,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
 
       // Configured collection introduced in 2.2.1
       m_sCollection = getMongoCollectionName (aConfig);
-      if (StringHelper.hasNoText (m_sCollection))
+      if (StringHelper.isEmpty (m_sCollection))
         throw new IllegalStateException ("The Peppol Reporting MongoDB backend collection name may not be empty");
 
       // It may take some time, until the "DB writable" field returns true

@@ -19,13 +19,11 @@ package com.helger.peppol.reporting.tsr.model;
 import java.math.BigInteger;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.impl.CommonsTreeMap;
-import com.helger.commons.collection.impl.ICommonsSortedMap;
-import com.helger.commons.math.MathHelper;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.numeric.BigHelper;
+import com.helger.collection.commons.CommonsTreeMap;
+import com.helger.collection.commons.ICommonsSortedMap;
 import com.helger.peppol.reporting.api.CPeppolReporting;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.jaxb.tsr.v101.IncomingOutgoingType;
@@ -33,9 +31,11 @@ import com.helger.peppol.reporting.jaxb.tsr.v101.SubtotalKeyType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.SubtotalType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
 
+import jakarta.annotation.Nonnull;
+
 /**
- * This class represents a set of {@link PeppolReportingItem} objects for a
- * single Reporting Period used to create TSR reports.
+ * This class represents a set of {@link PeppolReportingItem} objects for a single Reporting Period
+ * used to create TSR reports.
  *
  * @author Philip Helger
  * @since 1.2.0
@@ -62,13 +62,13 @@ public class TSRReportingItemList
     @Nonnull
     public BigInteger getIncomingCount ()
     {
-      return MathHelper.toBigInteger (m_nIncoming);
+      return BigHelper.toBigInteger (m_nIncoming);
     }
 
     @Nonnull
     public BigInteger getOutgoingCount ()
     {
-      return MathHelper.toBigInteger (m_nOutgoing);
+      return BigHelper.toBigInteger (m_nOutgoing);
     }
   }
 
@@ -130,8 +130,8 @@ public class TSRReportingItemList
     // Add Total
     {
       final IncomingOutgoingType aFullSet = new IncomingOutgoingType ();
-      aFullSet.setIncoming (MathHelper.toBigInteger (nTotalIncoming));
-      aFullSet.setOutgoing (MathHelper.toBigInteger (nTotalOutgoing));
+      aFullSet.setIncoming (BigHelper.toBigInteger (nTotalIncoming));
+      aFullSet.setOutgoing (BigHelper.toBigInteger (nTotalOutgoing));
       aReport.setTotal (aFullSet);
     }
 

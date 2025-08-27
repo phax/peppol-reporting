@@ -20,27 +20,27 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.annotation.Nonnull;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.datetime.PDTFactory;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.mutable.MutableInt;
-import com.helger.commons.state.ESuccess;
+import com.helger.base.numeric.mutable.MutableInt;
+import com.helger.base.state.ESuccess;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.config.Config;
 import com.helger.config.IConfig;
-import com.helger.config.source.res.ConfigurationSourceProperties;
+import com.helger.config.source.resource.properties.ConfigurationSourceProperties;
+import com.helger.datetime.helper.PDTFactory;
+import com.helger.io.resource.ClassPathResource;
 import com.helger.peppol.reporting.api.EReportingDirection;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackend;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Test class for class {@link PeppolReportingBackendSqlSPI}.

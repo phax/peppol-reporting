@@ -16,27 +16,27 @@
  */
 package com.helger.peppol.reporting.api.backend;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.functional.IThrowingConsumer;
-import com.helger.commons.lang.ServiceLoaderHelper;
-import com.helger.commons.state.ESuccess;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.functional.IThrowingConsumer;
+import com.helger.base.spi.ServiceLoaderHelper;
+import com.helger.base.state.ESuccess;
 import com.helger.config.IConfig;
 import com.helger.peppol.reporting.api.PeppolReportingAPIVersion;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
- * This is the entry class for the reporting backend. It uses the SPI mechanism
- * to load an instance of {@link IPeppolReportingBackendSPI} which is then
- * accessible via {@link #getBackendService()}.
+ * This is the entry class for the reporting backend. It uses the SPI mechanism to load an instance
+ * of {@link IPeppolReportingBackendSPI} which is then accessible via {@link #getBackendService()}.
  *
  * @author Philip Helger
  */
@@ -55,7 +55,7 @@ public class PeppolReportingBackend
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Loading IPeppolReportingBackendSPI implementation");
 
-    final ICommonsList <IPeppolReportingBackendSPI> aBackends = ServiceLoaderHelper.getAllSPIImplementations (IPeppolReportingBackendSPI.class);
+    final List <IPeppolReportingBackendSPI> aBackends = ServiceLoaderHelper.getAllSPIImplementations (IPeppolReportingBackendSPI.class);
     final int nBackends = aBackends.size ();
     if (nBackends != 1)
     {
@@ -68,7 +68,7 @@ public class PeppolReportingBackend
       return null;
     }
 
-    final IPeppolReportingBackendSPI ret = aBackends.getFirstOrNull ();
+    final IPeppolReportingBackendSPI ret = aBackends.get (0);
     LOGGER.info ("Using IPeppolReportingBackendSPI implementation '" +
                  ret.getDisplayName () +
                  "/" +
@@ -81,8 +81,8 @@ public class PeppolReportingBackend
   {}
 
   /**
-   * @return The loaded reporting backend implementation. May be
-   *         <code>null</code> if no SPI implementation is registered.
+   * @return The loaded reporting backend implementation. May be <code>null</code> if no SPI
+   *         implementation is registered.
    */
   @Nullable
   public static IPeppolReportingBackendSPI getBackendService ()
@@ -105,8 +105,7 @@ public class PeppolReportingBackend
   }
 
   /**
-   * @return <code>true</code> if a backend service is configured,
-   *         <code>false</code> if not.
+   * @return <code>true</code> if a backend service is configured, <code>false</code> if not.
    * @since 2.1.1
    */
   public static boolean isBackendServiceConfigured ()
@@ -116,16 +115,14 @@ public class PeppolReportingBackend
 
   /**
    * This is a helper method that ensures that all activities with an
-   * {@link IPeppolReportingBackendSPI} are wrapped in the proper init and
-   * shutdown method calls. Make sure to not call this method in a nested
-   * fashion or in multiple threads. This method is primarily helpful for tests
-   * and single-threaded applications. To use the reporting backend in a multi
-   * threaded environment, it is highly recommended that you extract the init
-   * and shutdown calls into your application framework.
+   * {@link IPeppolReportingBackendSPI} are wrapped in the proper init and shutdown method calls.
+   * Make sure to not call this method in a nested fashion or in multiple threads. This method is
+   * primarily helpful for tests and single-threaded applications. To use the reporting backend in a
+   * multi threaded environment, it is highly recommended that you extract the init and shutdown
+   * calls into your application framework.
    *
    * @param aConfig
-   *        The configuration required to start the backend. May not be
-   *        <code>null</code>.
+   *        The configuration required to start the backend. May not be <code>null</code>.
    * @param aBackendConsumer
    *        The consumer for the backend. May not be <code>null</code>.
    * @return {@link ESuccess} if it was successful or not.

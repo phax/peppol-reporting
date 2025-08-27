@@ -16,14 +16,14 @@
  */
 package com.helger.peppol.reporting.api;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.regex.RegExHelper;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.cache.regex.RegExHelper;
 import com.helger.peppolid.IDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.PeppolIdentifierHelper;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Miscellaneous helper methods regarding Peppol Reporting

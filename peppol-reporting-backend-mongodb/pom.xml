@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2022-2025 Philip Helger
@@ -21,13 +22,12 @@
   <parent>
     <groupId>com.helger.peppol</groupId>
     <artifactId>peppol-reporting-parent-pom</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>4.0.0</version>
   </parent>
   <artifactId>peppol-reporting-backend-mongodb</artifactId>
   <packaging>bundle</packaging>
   <inceptionYear>2023</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-mongodb</url>
-
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -35,7 +35,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <developers>
     <developer>
       <id>philip</id>
@@ -44,12 +43,9 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
- 
-  <!-- Do not bloat global scope -->
-  <properties>
+  <!-- Do not bloat global scope -->  <properties>
     <mongodb-client.version>5.5.1</mongodb-client.version>
   </properties>
- 
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
@@ -59,7 +55,6 @@
       <groupId>com.helger.peppol</groupId>
       <artifactId>peppol-reporting-api</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver-sync</artifactId>
@@ -76,8 +71,12 @@
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-unittest-support-ext</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -94,11 +93,12 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.peppol.reporting.backend.mongodb</Automatic-Module-Name>
-            <Export-Package>
-              com.helger.peppol.reporting.backend.mongodb,
-              com.helger.peppol.reporting.backend.mongodb.config
-            </Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Export-Package>com.helger.peppol.reporting.backend.mongodb,
+              com.helger.peppol.reporting.backend.mongodb.config</Export-Package>
+            <Import-Package>!jakarta.annotation.*,*</Import-Package>
+            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
+            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.commons.thirdparty.IThirdPartyModuleProviderSPI,
+osgi.serviceloader; osgi.serviceloader=com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI</Provide-Capability>
           </instructions>
         </configuration>
       </plugin>
