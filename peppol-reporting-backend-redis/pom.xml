@@ -44,8 +44,9 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
-  <!-- Do not bloat global scope -->  <properties>
-    <jedis.version>6.0.0</jedis.version>
+  <!-- Do not bloat global scope -->
+  <properties>
+    <jedis.version>6.1.0</jedis.version>
   </properties>
   <dependencies>
     <dependency>
