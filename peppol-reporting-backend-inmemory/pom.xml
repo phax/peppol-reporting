@@ -26,6 +26,7 @@
   </parent>
   <artifactId>peppol-reporting-backend-inmemory</artifactId>
   <packaging>bundle</packaging>
+  <name>peppol-reporting-backend-inmemory</name>
   <inceptionYear>2023</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-inmemory</url>
   <licenses>

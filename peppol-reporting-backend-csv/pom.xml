@@ -26,6 +26,7 @@
   </parent>
   <artifactId>peppol-reporting-backend-csv</artifactId>
   <packaging>bundle</packaging>
+  <name>peppol-reporting-backend-csv</name>
   <inceptionYear>2024</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-csv</url>
   <licenses>

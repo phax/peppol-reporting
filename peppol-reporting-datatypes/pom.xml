@@ -25,6 +25,7 @@
   </parent>
   <artifactId>peppol-reporting-datatypes</artifactId>
   <packaging>bundle</packaging>
+  <name>peppol-reporting-datatypes</name>
   <inceptionYear>2024</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-datatypes</url>
 

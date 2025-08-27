@@ -25,6 +25,7 @@
   </parent>
   <artifactId>peppol-reporting-api</artifactId>
   <packaging>bundle</packaging>
+  <name>peppol-reporting-api</name>
   <inceptionYear>2023</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-api</url>
 

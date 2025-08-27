@@ -26,6 +26,7 @@
   </parent>
   <artifactId>peppol-reporting-backend-redis</artifactId>
   <packaging>bundle</packaging>
+  <name>peppol-reporting-backend-redis</name>
   <inceptionYear>2023</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-redis</url>
   <licenses>

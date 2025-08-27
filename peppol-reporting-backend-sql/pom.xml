@@ -26,6 +26,7 @@
   </parent>
   <artifactId>peppol-reporting-backend-sql</artifactId>
   <packaging>bundle</packaging>
+  <name>peppol-reporting-backend-sql</name>
   <inceptionYear>2024</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-sql</url>
   <licenses>

@@ -26,6 +26,7 @@
   </parent>
   <artifactId>peppol-reporting-backend-mongodb</artifactId>
   <packaging>bundle</packaging>
+  <name>peppol-reporting-backend-mongodb</name>
   <inceptionYear>2023</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-mongodb</url>
   <licenses>

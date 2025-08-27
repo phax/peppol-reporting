@@ -25,6 +25,7 @@
   </parent>
   <artifactId>peppol-reporting-testfiles</artifactId>
   <packaging>bundle</packaging>
+  <name>peppol-reporting-testfiles</name>
   <inceptionYear>2024</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-testfiles</url>
 
