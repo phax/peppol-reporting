@@ -44,8 +44,7 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
-  <!-- Do not bloat global scope -->
-  <properties>
+  <!-- Do not bloat global scope -->  <properties>
     <jedis.version>6.0.0</jedis.version>
   </properties>
   <dependencies>
@@ -62,7 +61,6 @@
       <artifactId>jedis</artifactId>
       <version>${jedis.version}</version>
     </dependency>
-    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -99,7 +97,7 @@
               com.helger.peppol.reporting.backend.redis.config</Export-Package>
             <Import-Package>!jakarta.annotation.*,*</Import-Package>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
-            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.commons.thirdparty.IThirdPartyModuleProviderSPI,
+            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.base.thirdparty.IThirdPartyModuleProviderSPI,
 osgi.serviceloader; osgi.serviceloader=com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI</Provide-Capability>
           </instructions>
         </configuration>

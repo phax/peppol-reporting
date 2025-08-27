@@ -61,7 +61,6 @@
       <artifactId>mongodb-driver-sync</artifactId>
       <version>${mongodb-client.version}</version>
     </dependency>
-    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -98,7 +97,7 @@
               com.helger.peppol.reporting.backend.mongodb.config</Export-Package>
             <Import-Package>!jakarta.annotation.*,*</Import-Package>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
-            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.commons.thirdparty.IThirdPartyModuleProviderSPI,
+            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.base.thirdparty.IThirdPartyModuleProviderSPI,
 osgi.serviceloader; osgi.serviceloader=com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI</Provide-Capability>
           </instructions>
         </configuration>
