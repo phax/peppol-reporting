@@ -44,14 +44,11 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
-  <!-- Do not bloat global scope -->  <properties>
+  <!-- Do not bloat global scope -->
+  <properties>
     <mongodb-client.version>5.5.1</mongodb-client.version>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>com.helger.commons</groupId>
-      <artifactId>ph-commons</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.helger.peppol</groupId>
       <artifactId>peppol-reporting-api</artifactId>

@@ -44,15 +44,12 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
-  <!-- Do not bloat global scope -->  <properties>
+  <!-- Do not bloat global scope -->
+  <properties>
     <flyway.version>11.11.2</flyway.version>
     <ph-db.version>8.0.0</ph-db.version>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>com.helger.commons</groupId>
-      <artifactId>ph-commons</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.helger.peppol</groupId>
       <artifactId>peppol-reporting-api</artifactId>
