@@ -216,7 +216,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-v4.0.1 - work in progress
+v4.0.1 - 2025-09-19
 * [SQL] Updated to ph-db 8.0.1 to fix an error with schema name masking for MySQL
 
 v4.0.0 - 2025-08-27
