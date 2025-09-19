@@ -47,8 +47,9 @@
   <!-- Do not bloat global scope -->
   <properties>
     <flyway.version>11.13.1</flyway.version>
-    <ph-db.version>8.0.0</ph-db.version>
+    <ph-db.version>8.0.1</ph-db.version>
   </properties>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.peppol</groupId>
@@ -102,6 +103,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
   <build>
     <plugins>
       <plugin>

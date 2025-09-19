@@ -216,6 +216,9 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+v4.0.1 - work in progress
+* [SQL] Updated to ph-db 8.0.1 to fix an error with schema name masking for MySQL
+
 v4.0.0 - 2025-08-27
 * Requires Java 17 as the minimum version
 * Updated to ph-commons 12.0.0

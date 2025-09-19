@@ -31,7 +31,6 @@ import com.helger.annotation.style.UsedViaReflection;
 import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.ESuccess;
-import com.helger.base.string.StringHelper;
 import com.helger.base.string.StringImplode;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
@@ -39,6 +38,7 @@ import com.helger.config.IConfig;
 import com.helger.db.api.EDatabaseSystemType;
 import com.helger.db.api.config.IJdbcConfiguration;
 import com.helger.db.api.flyway.FlywayConfiguration;
+import com.helger.db.api.helper.DBSystemHelper;
 import com.helger.db.api.helper.DBValueHelper;
 import com.helger.db.jdbc.DataSourceProviderFromJdbcConfiguration;
 import com.helger.db.jdbc.callback.ConstantPreparedStatementDataProvider;
@@ -84,26 +84,6 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   public String getDisplayName ()
   {
     return "SQL";
-  }
-
-  @Nonnull
-  public static String getTableNamePrefix (@Nonnull final EDatabaseSystemType eDBType,
-                                           @Nonnull final String sJdbcSchema)
-  {
-    final String sSchemaName = StringHelper.trim (sJdbcSchema);
-    if (StringHelper.isNotEmpty (sSchemaName))
-    {
-      if (eDBType == EDatabaseSystemType.MYSQL)
-      {
-        // MySQL does not like quotes
-        return sSchemaName + ".";
-      }
-
-      // Quotes are required for PostgreSQL when schema contains a dash
-      return "\"" + sSchemaName + "\".";
-    }
-    // May not be null
-    return "";
   }
 
   @Nullable
@@ -154,7 +134,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
       m_aDSP = createReportingDataSourceProvider (aJdbcConfig);
       if (m_aDSP == null)
         throw new IllegalStateException ("Failed to create Peppol Reporting SQL DB DataSource provider");
-      m_sTableNamePrefix = getTableNamePrefix (eDBType, aJdbcConfig.getJdbcSchema ());
+      m_sTableNamePrefix = DBSystemHelper.getTableNamePrefix (eDBType, aJdbcConfig.getJdbcSchema ());
     });
 
     if (!isInitialized ())
