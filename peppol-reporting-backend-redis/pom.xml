@@ -29,6 +29,7 @@
   <name>peppol-reporting-backend-redis</name>
   <inceptionYear>2023</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-redis</url>
+
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -36,6 +37,7 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
   <developers>
     <developer>
       <id>philip</id>
@@ -44,10 +46,12 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  
   <!-- Do not bloat global scope -->
   <properties>
-    <jedis.version>6.2.0</jedis.version>
+    <jedis.version>7.0.0</jedis.version>
   </properties>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.peppol</groupId>
@@ -74,6 +78,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
   <build>
     <plugins>
       <plugin>
