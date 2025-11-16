@@ -216,6 +216,10 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+v4.1.0 - 2025-11-16
+* Updated to ph-commons 12.1.0
+* Using JSpecify annotations
+
 v4.0.1 - 2025-09-19
 * [SQL] Updated to ph-db 8.0.1 to fix an error with schema name masking for MySQL
 * Removed `PeppolReportingBackendSqlSPI.getTableNamePrefix` in favour of `DBSystemHelper.getTableNamePrefix` (incompatible change)

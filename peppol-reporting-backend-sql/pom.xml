@@ -36,6 +36,7 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  
   <developers>
     <developer>
       <id>philip</id>
@@ -44,10 +45,11 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  
   <!-- Do not bloat global scope -->
   <properties>
     <flyway.version>11.17.0</flyway.version>
-    <ph-db.version>8.0.1</ph-db.version>
+    <ph-db.version>8.1.0</ph-db.version>
   </properties>
   
   <dependencies>
@@ -94,7 +96,7 @@
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
-      <version>9.4.0</version>
+      <version>9.5.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

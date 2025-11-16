@@ -36,7 +36,7 @@ public final class ThirdPartyModuleProvider_prb_sql implements IThirdPartyModule
   private static final IThirdPartyModule FLYWAY = new ThirdPartyModule ("Flyway",
                                                                         "Red Gate Software Ltd",
                                                                         ELicense.APACHE2,
-                                                                        new Version (11, 13, 1),
+                                                                        new Version (11, 17, 0),
                                                                         "https://github.com/flyway/flyway");
 
   @Nullable
