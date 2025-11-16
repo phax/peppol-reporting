@@ -16,13 +16,13 @@
  */
 package com.helger.peppol.reporting.eusr.model;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.style.MustImplementEqualsAndHashcode;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Single Peppol EUSR Key for "Document Type ID, Process ID and End User
@@ -42,11 +42,11 @@ public final class SubsetKeyDT_PR_EUC implements IEUSRSubsetKey <SubsetKeyDT_PR_
   private final String m_sProcessIDValue;
   private final String m_sEndUserCC;
 
-  public SubsetKeyDT_PR_EUC (@Nonnull @Nonempty final String sDocTypeIDScheme,
-                             @Nonnull @Nonempty final String sDocTypeIDValue,
-                             @Nonnull @Nonempty final String sProcessIDScheme,
-                             @Nonnull @Nonempty final String sProcessIDValue,
-                             @Nonnull @Nonempty final String sEndUserCC)
+  public SubsetKeyDT_PR_EUC (@NonNull @Nonempty final String sDocTypeIDScheme,
+                             @NonNull @Nonempty final String sDocTypeIDValue,
+                             @NonNull @Nonempty final String sProcessIDScheme,
+                             @NonNull @Nonempty final String sProcessIDValue,
+                             @NonNull @Nonempty final String sEndUserCC)
   {
     ValueEnforcer.notEmpty (sDocTypeIDScheme, "DocTypeIDScheme");
     ValueEnforcer.notEmpty (sDocTypeIDValue, "DocTypeIDValue");
@@ -60,42 +60,42 @@ public final class SubsetKeyDT_PR_EUC implements IEUSRSubsetKey <SubsetKeyDT_PR_
     m_sEndUserCC = sEndUserCC;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDocTypeIDScheme ()
   {
     return m_sDocTypeIDScheme;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDocTypeIDValue ()
   {
     return m_sDocTypeIDValue;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getProcessIDScheme ()
   {
     return m_sProcessIDScheme;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getProcessIDValue ()
   {
     return m_sProcessIDValue;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getEndUserCountryCode ()
   {
     return m_sEndUserCC;
   }
 
-  public int compareTo (@Nonnull final SubsetKeyDT_PR_EUC rhs)
+  public int compareTo (@NonNull final SubsetKeyDT_PR_EUC rhs)
   {
     int ret = m_sDocTypeIDScheme.compareTo (rhs.m_sDocTypeIDScheme);
     if (ret == 0)

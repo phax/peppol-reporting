@@ -19,6 +19,7 @@ package com.helger.peppol.reporting.backend.inmemory;
 import java.time.LocalDate;
 import java.util.Iterator;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +40,6 @@ import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for Redis.
  *
@@ -59,15 +58,15 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
   @GuardedBy ("m_aRWLock")
   private final ICommonsMap <LocalDate, ICommonsList <PeppolReportingItem>> m_aMap = new CommonsHashMap <> ();
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDisplayName ()
   {
     return "InMemory";
   }
 
-  @Nonnull
-  public ESuccess initBackend (@Nonnull final IConfig aConfig)
+  @NonNull
+  public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
     return ESuccess.SUCCESS;
   }
@@ -80,7 +79,7 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
   public void shutdownBackend ()
   {}
 
-  public void storeReportingItem (@Nonnull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
+  public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
@@ -107,9 +106,9 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
 
   }
 
-  @Nonnull
-  public Iterable <PeppolReportingItem> iterateReportingItems (@Nonnull final LocalDate aStartDateIncl,
-                                                               @Nonnull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  @NonNull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
+                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
@@ -166,7 +165,7 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
         return true;
       }
 
-      @Nonnull
+      @NonNull
       public PeppolReportingItem next ()
       {
         final PeppolReportingItem ret = m_aAllItemsOfDate.get (m_nDateIndex);

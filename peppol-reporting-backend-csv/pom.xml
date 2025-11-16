@@ -29,6 +29,7 @@
   <name>peppol-reporting-backend-csv</name>
   <inceptionYear>2024</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-csv</url>
+  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -36,6 +37,7 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  
   <developers>
     <developer>
       <id>philip</id>
@@ -44,10 +46,11 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
-      <artifactId>ph-commons</artifactId>
+      <artifactId>ph-csv</artifactId>
     </dependency>
     <dependency>
       <groupId>com.helger.peppol</groupId>
@@ -69,6 +72,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
   <build>
     <plugins>
       <plugin>
@@ -86,7 +90,7 @@
           <instructions>
             <Automatic-Module-Name>com.helger.peppol.reporting.backend.csv</Automatic-Module-Name>
             <Export-Package>com.helger.peppol.reporting.backend.csv</Export-Package>
-            <Import-Package>!jakarta.annotation.*,*</Import-Package>
+            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
             <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI</Provide-Capability>
           </instructions>

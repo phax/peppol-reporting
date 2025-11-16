@@ -16,7 +16,7 @@
  */
 package com.helger.peppol.reporting.api.backend;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Special Peppol Reporting Backend exception
@@ -26,12 +26,12 @@ import jakarta.annotation.Nonnull;
  */
 public class PeppolReportingBackendException extends Exception
 {
-  public PeppolReportingBackendException (@Nonnull final String sMsg)
+  public PeppolReportingBackendException (@NonNull final String sMsg)
   {
     super (sMsg);
   }
 
-  public PeppolReportingBackendException (@Nonnull final String sMsg, @Nonnull final Exception aCause)
+  public PeppolReportingBackendException (@NonNull final String sMsg, @NonNull final Exception aCause)
   {
     super (sMsg, aCause);
   }

@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.EnumSet;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +53,6 @@ import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for SQL. This backend supports the lazy
  * gathering of report items through an Iterator.
@@ -79,7 +78,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   public PeppolReportingBackendSqlSPI ()
   {}
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDisplayName ()
   {
@@ -88,13 +87,13 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
   @Nullable
   @OverrideOnDemand
-  protected DataSourceProviderFromJdbcConfiguration createReportingDataSourceProvider (@Nonnull final IJdbcConfiguration aJdbcConfig)
+  protected DataSourceProviderFromJdbcConfiguration createReportingDataSourceProvider (@NonNull final IJdbcConfiguration aJdbcConfig)
   {
     return new DataSourceProviderFromJdbcConfiguration (aJdbcConfig);
   }
 
-  @Nonnull
-  public ESuccess initBackend (@Nonnull final IConfig aConfig)
+  @NonNull
+  public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
     m_aRWLock.writeLocked ( () -> {
       if (m_aDSP != null)
@@ -174,13 +173,13 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
       LOGGER.warn ("The Peppol Reporting SQL DB backend cannot be shutdown, because it was never properly initialized");
   }
 
-  @Nonnull
+  @NonNull
   private DBExecutor _newExecutor ()
   {
     return new ReportingDBExecutor (m_aDSP, m_aJdbcConfig);
   }
 
-  public void storeReportingItem (@Nonnull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
+  public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
@@ -241,9 +240,9 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
     }
   }
 
-  @Nonnull
-  public Iterable <PeppolReportingItem> iterateReportingItems (@Nonnull final LocalDate aStartDateIncl,
-                                                               @Nonnull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  @NonNull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
+                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");

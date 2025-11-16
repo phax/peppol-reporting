@@ -19,6 +19,8 @@ package com.helger.peppol.reporting.eusr.model;
 import java.math.BigInteger;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
@@ -32,8 +34,6 @@ import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.FullSetType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetKeyType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetType;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This class represents a set of {@link PeppolReportingItem} objects for a single Reporting Period
@@ -54,7 +54,7 @@ public class EUSRReportingItemList
     private final ICommonsSet <String> m_aReceivers = new CommonsHashSet <> ();
     private final ICommonsSet <String> m_aSendersOrReceivers = new CommonsHashSet <> ();
 
-    public void inc (@Nonnull @Nonempty final String sEndUserID, final boolean bSending)
+    public void inc (@NonNull @Nonempty final String sEndUserID, final boolean bSending)
     {
       if (bSending)
         m_aSenders.add (sEndUserID);
@@ -63,29 +63,29 @@ public class EUSRReportingItemList
       m_aSendersOrReceivers.add (sEndUserID);
     }
 
-    @Nonnull
+    @NonNull
     public BigInteger getSendingEndUserCount ()
     {
       return BigHelper.toBigInteger (m_aSenders.size ());
     }
 
-    @Nonnull
+    @NonNull
     public BigInteger getReceivingEndUserCount ()
     {
       return BigHelper.toBigInteger (m_aReceivers.size ());
     }
 
-    @Nonnull
+    @NonNull
     public BigInteger getSendingOrReceivingEndUserCount ()
     {
       return BigHelper.toBigInteger (m_aSendersOrReceivers.size ());
     }
   }
 
-  @Nonnull
-  private static SubsetKeyType _createSubsetKey (@Nonnull @Nonempty final String sMetaSchemeID,
-                                                 @Nonnull @Nonempty final String sSchemeID,
-                                                 @Nonnull @Nonempty final String sValue)
+  @NonNull
+  private static SubsetKeyType _createSubsetKey (@NonNull @Nonempty final String sMetaSchemeID,
+                                                 @NonNull @Nonempty final String sSchemeID,
+                                                 @NonNull @Nonempty final String sValue)
   {
     final SubsetKeyType ret = new SubsetKeyType ();
     ret.setMetaSchemeID (sMetaSchemeID);
@@ -94,8 +94,8 @@ public class EUSRReportingItemList
     return ret;
   }
 
-  public static void fillReportSubsets (@Nonnull final Iterable <? extends PeppolReportingItem> aReportingItems,
-                                        @Nonnull final EndUserStatisticsReportType aReport)
+  public static void fillReportSubsets (@NonNull final Iterable <? extends PeppolReportingItem> aReportingItems,
+                                        @NonNull final EndUserStatisticsReportType aReport)
   {
     ValueEnforcer.notNull (aReportingItems, "ReportingItems");
     ValueEnforcer.notNull (aReport, "Report");

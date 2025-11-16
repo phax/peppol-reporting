@@ -16,14 +16,14 @@
  */
 package com.helger.peppol.reporting.backend.mongodb.config;
 
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.style.IsSPIImplementation;
 import com.helger.base.thirdparty.ELicense;
 import com.helger.base.thirdparty.IThirdPartyModule;
 import com.helger.base.thirdparty.IThirdPartyModuleProviderSPI;
 import com.helger.base.thirdparty.ThirdPartyModule;
 import com.helger.base.version.Version;
-
-import jakarta.annotation.Nullable;
 
 /**
  * Implement this SPI interface if your JAR file contains external third party modules.
@@ -36,7 +36,7 @@ public final class ThirdPartyModuleProvider_prb_mongodb implements IThirdPartyMo
   private static final IThirdPartyModule MONGODB_JAVA_DRIVERS = new ThirdPartyModule ("MongoDB Java Drivers",
                                                                                       "MongoDB, Inc.",
                                                                                       ELicense.APACHE2,
-                                                                                      new Version (5, 1, 0),
+                                                                                      new Version (5, 6, 1),
                                                                                       "https://www.mongodb.com/docs/drivers/java/sync/current/");
 
   @Nullable

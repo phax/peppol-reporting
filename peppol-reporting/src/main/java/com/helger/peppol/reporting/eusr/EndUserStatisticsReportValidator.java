@@ -16,12 +16,12 @@
  */
 package com.helger.peppol.reporting.eusr;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.exception.InitializationException;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This class can be used to trigger Schematron validation of EUSR documents.
@@ -49,7 +49,7 @@ public final class EndUserStatisticsReportValidator
    * @return Schematron EUSR v1.1.5
    * @since 2.2.3
    */
-  @Nonnull
+  @NonNull
   public static ISchematronResource getSchematronEUSR_115 ()
   {
     return SCH_EUSR_115;
@@ -59,7 +59,7 @@ public final class EndUserStatisticsReportValidator
    * @return Schematron EUSR v1.1 latest micro version
    * @since 2.1.3
    */
-  @Nonnull
+  @NonNull
   public static ISchematronResource getSchematronEUSR_11 ()
   {
     return getSchematronEUSR_115 ();
@@ -69,7 +69,7 @@ public final class EndUserStatisticsReportValidator
    * @return Schematron EUSR v1 latest minor and micro version
    * @since 2.1.3
    */
-  @Nonnull
+  @NonNull
   public static ISchematronResource getSchematronEUSR_1 ()
   {
     return getSchematronEUSR_11 ();

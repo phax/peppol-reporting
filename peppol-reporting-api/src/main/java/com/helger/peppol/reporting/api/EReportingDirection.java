@@ -16,12 +16,12 @@
  */
 package com.helger.peppol.reporting.api;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.id.IHasID;
 import com.helger.base.lang.EnumHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This enum defines the overall reporting direction
@@ -41,12 +41,12 @@ public enum EReportingDirection implements IHasID <String>
 
   private final String m_sID;
 
-  EReportingDirection (@Nonnull @Nonempty final String sID)
+  EReportingDirection (@NonNull @Nonempty final String sID)
   {
     m_sID = sID;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getID ()
   {
@@ -69,7 +69,7 @@ public enum EReportingDirection implements IHasID <String>
     return EnumHelper.getFromIDOrNull (EReportingDirection.class, sID);
   }
 
-  @Nonnull
+  @NonNull
   public static EReportingDirection getFromIDOrThrow (@Nullable final String sID)
   {
     return EnumHelper.getFromIDOrThrow (EReportingDirection.class, sID);

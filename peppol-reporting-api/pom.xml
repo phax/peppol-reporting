@@ -109,7 +109,7 @@
             <Automatic-Module-Name>com.helger.peppol.reporting.api</Automatic-Module-Name>
             <Export-Package>com.helger.peppol.reporting.api,
               com.helger.peppol.reporting.api.backend</Export-Package>
-            <Import-Package>!jakarta.annotation.*,*</Import-Package>
+            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
             <Include-Resource>{maven-resources},peppol-reporting-api-version.properties=target/classes/peppol-reporting-api-version.properties</Include-Resource>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.processor)",
 osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI)"; cardinality:=multiple; resolution:=optional</Require-Capability>

@@ -16,14 +16,14 @@
  */
 package com.helger.peppol.reporting.api;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.cache.regex.RegExHelper;
 import com.helger.peppolid.IDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.PeppolIdentifierHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Miscellaneous helper methods regarding Peppol Reporting
@@ -67,7 +67,7 @@ public final class PeppolReportingHelper
    * @return <code>false</code> if the document type is not suitable for
    *         reporting, <code>true</code> otherwise.
    */
-  public static boolean isDocumentTypeEligableForReporting (@Nonnull final IDocumentTypeIdentifier aDocTypeID)
+  public static boolean isDocumentTypeEligableForReporting (@NonNull final IDocumentTypeIdentifier aDocTypeID)
   {
     ValueEnforcer.notNull (aDocTypeID, "DocTypeID");
 

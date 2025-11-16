@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +41,10 @@ import com.helger.base.state.ESuccess;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
-import com.helger.commons.csv.CCSV;
-import com.helger.commons.csv.CSVReader;
-import com.helger.commons.csv.CSVWriter;
 import com.helger.config.IConfig;
+import com.helger.csv.CCSV;
+import com.helger.csv.CSVReader;
+import com.helger.csv.CSVWriter;
 import com.helger.datetime.format.PDTFromString;
 import com.helger.io.file.FileHelper;
 import com.helger.peppol.reporting.api.EReportingDirection;
@@ -52,8 +53,6 @@ import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for CSV.
@@ -78,14 +77,14 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
   @GuardedBy ("m_aRWLock")
   private CSVWriter m_aCSVWriter;
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDisplayName ()
   {
     return "CSV";
   }
 
-  private static char _asChar (@Nonnull final IConfig aConfig, final String sProperty, final char cDefault)
+  private static char _asChar (@NonNull final IConfig aConfig, final String sProperty, final char cDefault)
   {
     final String sValue = aConfig.getAsString (sProperty);
     if (StringHelper.isEmpty (sValue))
@@ -99,8 +98,8 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
     return sValue.charAt (0);
   }
 
-  @Nonnull
-  public ESuccess initBackend (@Nonnull final IConfig aConfig)
+  @NonNull
+  public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
     final String sFilename = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_CSV_FILENAME);
     if (StringHelper.isEmpty (sFilename))
@@ -176,9 +175,9 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
       LOGGER.warn ("The Peppol Reporting CSV backend cannot be shutdown, because it was never properly initialized");
   }
 
-  @Nonnull
+  @NonNull
   @VisibleForTesting
-  static ICommonsList <String> asCSV (@Nonnull final PeppolReportingItem aValue)
+  static ICommonsList <String> asCSV (@NonNull final PeppolReportingItem aValue)
   {
     ValueEnforcer.notNull (aValue, "Value");
 
@@ -202,13 +201,13 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   private String _getCSVFilename ()
   {
     return m_aRWLock.readLockedGet ( () -> m_aCSVFile == null ? "" : m_aCSVFile.getAbsolutePath ());
   }
 
-  public void storeReportingItem (@Nonnull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
+  public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
@@ -249,9 +248,9 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
     }
   }
 
-  @Nonnull
+  @NonNull
   @VisibleForTesting
-  static PeppolReportingItem asItem (@Nonnull final ICommonsList <String> aValue)
+  static PeppolReportingItem asItem (@NonNull final ICommonsList <String> aValue)
   {
     ValueEnforcer.notNull (aValue, "Value");
 
@@ -272,9 +271,9 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
                               .build ();
   }
 
-  public void forEachReportingItem (@Nonnull final LocalDate aStartDateIncl,
-                                    @Nonnull final LocalDate aEndDateIncl,
-                                    @Nonnull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
+  public void forEachReportingItem (@NonNull final LocalDate aStartDateIncl,
+                                    @NonNull final LocalDate aEndDateIncl,
+                                    @NonNull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
@@ -322,9 +321,9 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
       LOGGER.debug ("Found a total of " + nCounter + " matching documents in CSV '" + sCSVFilename + "'");
   }
 
-  @Nonnull
-  public Iterable <PeppolReportingItem> iterateReportingItems (@Nonnull final LocalDate aStartDateIncl,
-                                                               @Nonnull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  @NonNull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
+                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
   {
     final ICommonsList <PeppolReportingItem> ret = new CommonsArrayList <> ();
     forEachReportingItem (aStartDateIncl, aEndDateIncl, ret::add);

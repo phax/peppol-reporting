@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +41,6 @@ import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 import com.helger.peppolid.peppol.process.EPredefinedProcessIdentifier;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * Test class for class {@link PeppolReportingBackendSqlSPI}.
  *
@@ -51,7 +50,7 @@ public final class PeppolReportingBackendJdbcSPITest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendJdbcSPITest.class);
 
-  private void _runTests (@Nonnull final IConfig aConfig) throws PeppolReportingBackendException
+  private void _runTests (@NonNull final IConfig aConfig) throws PeppolReportingBackendException
   {
     // The default configuration uses e.g.
     // src/test/resources/application.properties for the configuration

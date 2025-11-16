@@ -16,14 +16,13 @@
  */
 package com.helger.peppol.reporting.backend.sql;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.db.api.config.JdbcConfigurationConfig;
 import com.helger.db.jdbc.IHasDataSource;
 import com.helger.db.jdbc.executor.DBExecutor;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * The Reporting specific DB Executor
@@ -34,8 +33,8 @@ public final class ReportingDBExecutor extends DBExecutor
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (ReportingDBExecutor.class);
 
-  public ReportingDBExecutor (@Nonnull final IHasDataSource aDataSourceProvider,
-                              @Nonnull final JdbcConfigurationConfig aJdbcConfig)
+  public ReportingDBExecutor (@NonNull final IHasDataSource aDataSourceProvider,
+                              @NonNull final JdbcConfigurationConfig aJdbcConfig)
   {
     super (aDataSourceProvider);
 

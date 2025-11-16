@@ -19,6 +19,8 @@ package com.helger.peppol.reporting.tsr.model;
 import java.math.BigInteger;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.numeric.BigHelper;
@@ -30,8 +32,6 @@ import com.helger.peppol.reporting.jaxb.tsr.v101.IncomingOutgoingType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.SubtotalKeyType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.SubtotalType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This class represents a set of {@link PeppolReportingItem} objects for a single Reporting Period
@@ -59,23 +59,23 @@ public class TSRReportingItemList
         m_nOutgoing++;
     }
 
-    @Nonnull
+    @NonNull
     public BigInteger getIncomingCount ()
     {
       return BigHelper.toBigInteger (m_nIncoming);
     }
 
-    @Nonnull
+    @NonNull
     public BigInteger getOutgoingCount ()
     {
       return BigHelper.toBigInteger (m_nOutgoing);
     }
   }
 
-  @Nonnull
-  private static SubtotalKeyType _createSubtotalKey (@Nonnull @Nonempty final String sMetaSchemeID,
-                                                     @Nonnull @Nonempty final String sSchemeID,
-                                                     @Nonnull @Nonempty final String sValue)
+  @NonNull
+  private static SubtotalKeyType _createSubtotalKey (@NonNull @Nonempty final String sMetaSchemeID,
+                                                     @NonNull @Nonempty final String sSchemeID,
+                                                     @NonNull @Nonempty final String sValue)
   {
     final SubtotalKeyType ret = new SubtotalKeyType ();
     ret.setMetaSchemeID (sMetaSchemeID);
@@ -84,8 +84,8 @@ public class TSRReportingItemList
     return ret;
   }
 
-  public static void fillReportSubsets (@Nonnull final Iterable <? extends PeppolReportingItem> aList,
-                                        @Nonnull final TransactionStatisticsReportType aReport)
+  public static void fillReportSubsets (@NonNull final Iterable <? extends PeppolReportingItem> aList,
+                                        @NonNull final TransactionStatisticsReportType aReport)
   {
     long nTotalIncoming = 0;
     long nTotalOutgoing = 0;

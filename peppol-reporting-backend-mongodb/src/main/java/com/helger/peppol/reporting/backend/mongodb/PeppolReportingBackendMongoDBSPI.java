@@ -20,6 +20,8 @@ import java.time.LocalDate;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,9 +45,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Sorts;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for MongoDB. This backend supports the
@@ -73,7 +72,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   public PeppolReportingBackendMongoDBSPI ()
   {}
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDisplayName ()
   {
@@ -81,7 +80,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   }
 
   @Nullable
-  public static MongoClientWrapper createDefaultClientWrapper (@Nonnull final IConfig aConfig)
+  public static MongoClientWrapper createDefaultClientWrapper (@NonNull final IConfig aConfig)
   {
     // Get connection string from configuration
     final String sConnectionString = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_CONNECTIONSTRING);
@@ -109,7 +108,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
 
   @Nullable
   @OverrideOnDemand
-  protected MongoClientWrapper createClientWrapper (@Nonnull final IConfig aConfig)
+  protected MongoClientWrapper createClientWrapper (@NonNull final IConfig aConfig)
   {
     return createDefaultClientWrapper (aConfig);
   }
@@ -124,15 +123,15 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
    */
   @OverrideOnDemand
   @Nullable
-  protected String getMongoCollectionName (@Nonnull final IConfig aConfig)
+  protected String getMongoCollectionName (@NonNull final IConfig aConfig)
   {
     // Configured collection introduced in 2.2.1
     final String sConfiguredCollection = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_MONGODB_COLLECTION);
     return StringHelper.getNotEmpty (sConfiguredCollection, DEFAULT_COLLECTION);
   }
 
-  @Nonnull
-  public ESuccess initBackend (@Nonnull final IConfig aConfig)
+  @NonNull
+  public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
     m_aRWLock.writeLocked ( () -> {
       if (m_aClientWrapper != null)
@@ -201,7 +200,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
       LOGGER.warn ("The Peppol Reporting MongoDB backend cannot be shutdown, because it was never properly initialized");
   }
 
-  @Nonnull
+  @NonNull
   private MongoCollection <Document> _getCollection ()
   {
     return m_aRWLock.readLockedGet ( () -> m_aClientWrapper.getCollection (m_sCollection));
@@ -212,7 +211,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
     return m_aRWLock.readLockedBoolean ( () -> m_aClientWrapper.isDBWritable ());
   }
 
-  public void storeReportingItem (@Nonnull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
+  public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
@@ -244,9 +243,9 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
     }
   }
 
-  @Nonnull
-  public Iterable <PeppolReportingItem> iterateReportingItems (@Nonnull final LocalDate aStartDateIncl,
-                                                               @Nonnull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  @NonNull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
+                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bson.Document;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +42,6 @@ import com.mongodb.event.ClusterListener;
 import com.mongodb.event.CommandFailedEvent;
 import com.mongodb.event.CommandListener;
 import com.mongodb.event.CommandSucceededEvent;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * A provider for MongoDB collection.
@@ -117,7 +116,7 @@ public class MongoClientWrapper implements AutoCloseable
    * @param sDBName
    *        MongoDB database name. May neither be <code>null</code> nor empty.
    */
-  public MongoClientWrapper (@Nonnull @Nonempty final String sConnectionString, @Nonnull @Nonempty final String sDBName)
+  public MongoClientWrapper (@NonNull @Nonempty final String sConnectionString, @NonNull @Nonempty final String sDBName)
   {
     ValueEnforcer.notEmpty (sConnectionString, "ConnectionString");
     ValueEnforcer.notEmpty (sDBName, "DBName");
@@ -158,8 +157,8 @@ public class MongoClientWrapper implements AutoCloseable
    *        Collection name. May neither be <code>null</code> nor empty.
    * @return The collection with the specified name.
    */
-  @Nonnull
-  public MongoCollection <Document> getCollection (@Nonnull @Nonempty final String sName)
+  @NonNull
+  public MongoCollection <Document> getCollection (@NonNull @Nonempty final String sName)
   {
     ValueEnforcer.notEmpty (sName, "Name");
 

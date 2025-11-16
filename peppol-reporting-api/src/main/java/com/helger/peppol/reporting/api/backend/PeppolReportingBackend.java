@@ -18,6 +18,8 @@ package com.helger.peppol.reporting.api.backend;
 
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +32,6 @@ import com.helger.base.spi.ServiceLoaderHelper;
 import com.helger.base.state.ESuccess;
 import com.helger.config.IConfig;
 import com.helger.peppol.reporting.api.PeppolReportingAPIVersion;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This is the entry class for the reporting backend. It uses the SPI mechanism to load an instance
@@ -97,7 +96,7 @@ public class PeppolReportingBackend
    *        The backend service to use. May not be <code>null</code>.
    * @since 3.0.2
    */
-  public static void setBackendService (@Nonnull final IPeppolReportingBackendSPI aBackendService)
+  public static void setBackendService (@NonNull final IPeppolReportingBackendSPI aBackendService)
   {
     ValueEnforcer.notNull (aBackendService, "BackendService");
 
@@ -129,9 +128,9 @@ public class PeppolReportingBackend
    * @throws PeppolReportingBackendException
    *         if the backend consumer throws an exception
    */
-  @Nonnull
-  public static ESuccess withBackendDo (@Nonnull final IConfig aConfig,
-                                        @Nonnull final IThrowingConsumer <? super IPeppolReportingBackendSPI, PeppolReportingBackendException> aBackendConsumer) throws PeppolReportingBackendException
+  @NonNull
+  public static ESuccess withBackendDo (@NonNull final IConfig aConfig,
+                                        @NonNull final IThrowingConsumer <? super IPeppolReportingBackendSPI, PeppolReportingBackendException> aBackendConsumer) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aConfig, "Config");
     ValueEnforcer.notNull (aBackendConsumer, "BackendConsumer");

@@ -16,13 +16,13 @@
  */
 package com.helger.peppol.reporting.tsr.model;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.style.MustImplementEqualsAndHashcode;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Single Peppol TSR Key for "Transport Protocol".
@@ -37,20 +37,20 @@ public final class SubtotalKeyTP implements ITSRSubtotalKey <SubtotalKeyTP>
 
   private final String m_sTP;
 
-  public SubtotalKeyTP (@Nonnull @Nonempty final String sTP)
+  public SubtotalKeyTP (@NonNull @Nonempty final String sTP)
   {
     ValueEnforcer.notEmpty (sTP, "TransportProtocol");
     m_sTP = sTP;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getTransportProtocol ()
   {
     return m_sTP;
   }
 
-  public int compareTo (@Nonnull final SubtotalKeyTP rhs)
+  public int compareTo (@NonNull final SubtotalKeyTP rhs)
   {
     return m_sTP.compareTo (rhs.m_sTP);
   }

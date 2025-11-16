@@ -16,13 +16,13 @@
  */
 package com.helger.peppol.reporting.eusr.model;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.style.MustImplementEqualsAndHashcode;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Single Peppol EUSR Key for "Document Type ID and End User Country".
@@ -39,9 +39,9 @@ public final class SubsetKeyDT_EUC implements IEUSRSubsetKey <SubsetKeyDT_EUC>
   private final String m_sDocTypeIDValue;
   private final String m_sEndUserCC;
 
-  public SubsetKeyDT_EUC (@Nonnull @Nonempty final String sDocTypeIDScheme,
-                          @Nonnull @Nonempty final String sDocTypeIDValue,
-                          @Nonnull @Nonempty final String sEndUserCountry)
+  public SubsetKeyDT_EUC (@NonNull @Nonempty final String sDocTypeIDScheme,
+                          @NonNull @Nonempty final String sDocTypeIDValue,
+                          @NonNull @Nonempty final String sEndUserCountry)
   {
     ValueEnforcer.notEmpty (sDocTypeIDScheme, "DocTypeIDScheme");
     ValueEnforcer.notEmpty (sDocTypeIDValue, "DocTypeIDValue");
@@ -51,28 +51,28 @@ public final class SubsetKeyDT_EUC implements IEUSRSubsetKey <SubsetKeyDT_EUC>
     m_sEndUserCC = sEndUserCountry;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDocTypeIDScheme ()
   {
     return m_sDocTypeIDScheme;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDocTypeIDValue ()
   {
     return m_sDocTypeIDValue;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getEndUserCountryCode ()
   {
     return m_sEndUserCC;
   }
 
-  public int compareTo (@Nonnull final SubsetKeyDT_EUC rhs)
+  public int compareTo (@NonNull final SubsetKeyDT_EUC rhs)
   {
     int ret = m_sDocTypeIDScheme.compareTo (rhs.m_sDocTypeIDScheme);
     if (ret == 0)

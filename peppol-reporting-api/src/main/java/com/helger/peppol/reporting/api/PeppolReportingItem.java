@@ -22,6 +22,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +42,6 @@ import com.helger.peppol.smp.ISMPTransportProfile;
 import com.helger.peppolid.IDocumentTypeIdentifier;
 import com.helger.peppolid.IProcessIdentifier;
 import com.helger.peppolid.peppol.PeppolIdentifierHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This class represents a single Peppol Reporting raw data item. It contains the raw data for
@@ -89,18 +88,18 @@ public final class PeppolReportingItem
   // EUSR
   private final String m_sEndUserID;
 
-  public PeppolReportingItem (@Nonnull final OffsetDateTime aExchangeDT,
-                              @Nonnull final EReportingDirection eDirection,
-                              @Nonnull @Nonempty final String sC2ID,
-                              @Nonnull @Nonempty final String sC3ID,
-                              @Nonnull @Nonempty final String sDocTypeIDScheme,
-                              @Nonnull @Nonempty final String sDocTypeIDValue,
-                              @Nonnull @Nonempty final String sProcessIDScheme,
-                              @Nonnull @Nonempty final String sProcessIDValue,
-                              @Nonnull @Nonempty final String sTransportProtocol,
-                              @Nonnull @Nonempty final String sC1CC,
+  public PeppolReportingItem (@NonNull final OffsetDateTime aExchangeDT,
+                              @NonNull final EReportingDirection eDirection,
+                              @NonNull @Nonempty final String sC2ID,
+                              @NonNull @Nonempty final String sC3ID,
+                              @NonNull @Nonempty final String sDocTypeIDScheme,
+                              @NonNull @Nonempty final String sDocTypeIDValue,
+                              @NonNull @Nonempty final String sProcessIDScheme,
+                              @NonNull @Nonempty final String sProcessIDValue,
+                              @NonNull @Nonempty final String sTransportProtocol,
+                              @NonNull @Nonempty final String sC1CC,
                               @Nullable final String sC4CC,
-                              @Nonnull @Nonempty final String sEndUserID)
+                              @NonNull @Nonempty final String sEndUserID)
   {
     ValueEnforcer.notNull (aExchangeDT, "ExchangeDT");
     ValueEnforcer.notNull (eDirection, "Direction");
@@ -137,7 +136,7 @@ public final class PeppolReportingItem
   /**
    * @return The exchange date time in UTC. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public OffsetDateTime getExchangeDTUTC ()
   {
     return m_aExchangeDTUTC;
@@ -148,7 +147,7 @@ public final class PeppolReportingItem
    * @see #isSending()
    * @see #isReceiving()
    */
-  @Nonnull
+  @NonNull
   public EReportingDirection getDirection ()
   {
     return m_eDirection;
@@ -177,7 +176,7 @@ public final class PeppolReportingItem
   /**
    * @return The sending Service Provider (C2) ID. Neither <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getC2ID ()
   {
@@ -187,7 +186,7 @@ public final class PeppolReportingItem
   /**
    * @return The receiving Service Provider (C3) ID. Neither <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getC3ID ()
   {
@@ -202,7 +201,7 @@ public final class PeppolReportingItem
    * @see #getC2ID()
    * @see #getC3ID()
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getOtherServiceProviderID ()
   {
@@ -213,7 +212,7 @@ public final class PeppolReportingItem
    * @return The document type identifier scheme used. Neither <code>null</code> nor empty.
    * @see #getDocTypeIDValue()
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDocTypeIDScheme ()
   {
@@ -224,7 +223,7 @@ public final class PeppolReportingItem
    * @return The document type identifier value used. Neither <code>null</code> nor empty.
    * @see #getDocTypeIDScheme()
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDocTypeIDValue ()
   {
@@ -235,7 +234,7 @@ public final class PeppolReportingItem
    * @return The process identifier scheme used. Neither <code>null</code> nor empty.
    * @see #getProcessIDValue()
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getProcessIDScheme ()
   {
@@ -246,7 +245,7 @@ public final class PeppolReportingItem
    * @return The process identifier scheme value. Neither <code>null</code> nor empty.
    * @see #getProcessIDScheme()
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getProcessIDValue ()
   {
@@ -257,7 +256,7 @@ public final class PeppolReportingItem
    * @return The country code of C1. Neither <code>null</code> nor empty. C2 knows it via KYC, C3
    *         knows it, because it is transferred in the SBDH (since v2.0.0).
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getC1CountryCode ()
   {
@@ -286,7 +285,7 @@ public final class PeppolReportingItem
   /**
    * @return The transport protocol used. Neither <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getTransportProtocol ()
   {
@@ -301,7 +300,7 @@ public final class PeppolReportingItem
    * @see #getC1CountryCode()
    * @see #getC4CountryCode()
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getEndUserCountryCode ()
   {
@@ -312,7 +311,7 @@ public final class PeppolReportingItem
    * @return The end user ID. The exact layout is implementation specific and varies from Service
    *         Provider to Service Provider.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getEndUserID ()
   {
@@ -377,7 +376,7 @@ public final class PeppolReportingItem
                                        .getToString ();
   }
 
-  @Nonnull
+  @NonNull
   public static Builder builder ()
   {
     return new Builder ();
@@ -408,132 +407,132 @@ public final class PeppolReportingItem
     public Builder ()
     {}
 
-    @Nonnull
+    @NonNull
     public Builder exchangeDateTime (@Nullable final OffsetDateTime a)
     {
       m_aExchangeDT = a;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Builder exchangeDateTime (@Nullable final ZonedDateTime a)
     {
       return exchangeDateTime (a == null ? null : a.toOffsetDateTime ());
     }
 
-    @Nonnull
+    @NonNull
     public Builder exchangeDateTimeInUTC (@Nullable final LocalDateTime a)
     {
       return exchangeDateTime (a == null ? null : a.atOffset (ZoneOffset.UTC));
     }
 
-    @Nonnull
+    @NonNull
     public Builder direction (@Nullable final EReportingDirection e)
     {
       m_eDirection = e;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Builder directionSending ()
     {
       return direction (EReportingDirection.SENDING);
     }
 
-    @Nonnull
+    @NonNull
     public Builder directionReceiving ()
     {
       return direction (EReportingDirection.RECEIVING);
     }
 
-    @Nonnull
+    @NonNull
     public Builder c2ID (@Nullable final String s)
     {
       m_sC2ID = s;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Builder c3ID (@Nullable final String s)
     {
       m_sC3ID = s;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Builder docTypeIDScheme (@Nullable final String s)
     {
       m_sDocTypeIDScheme = s;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Builder docTypeIDValue (@Nullable final String s)
     {
       m_sDocTypeIDValue = s;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Builder docTypeID (@Nullable final IDocumentTypeIdentifier a)
     {
       return docTypeIDScheme (a == null ? null : a.getScheme ()).docTypeIDValue (a == null ? null : a.getValue ());
     }
 
-    @Nonnull
+    @NonNull
     public Builder processIDScheme (@Nullable final String s)
     {
       m_sProcessIDScheme = s;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Builder processIDValue (@Nullable final String s)
     {
       m_sProcessIDValue = s;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Builder processID (@Nullable final IProcessIdentifier a)
     {
       return processIDScheme (a == null ? null : a.getScheme ()).processIDValue (a == null ? null : a.getValue ());
     }
 
-    @Nonnull
+    @NonNull
     public Builder transportProtocol (@Nullable final String s)
     {
       m_sTransportProtocol = s;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Builder transportProtocol (@Nullable final ISMPTransportProfile a)
     {
       return transportProtocol (a == null ? null : a.getID ());
     }
 
-    @Nonnull
+    @NonNull
     public Builder transportProtocolPeppolAS4v2 ()
     {
       return transportProtocol (ESMPTransportProfile.TRANSPORT_PROFILE_PEPPOL_AS4_V2);
     }
 
-    @Nonnull
+    @NonNull
     public Builder c1CountryCode (@Nullable final String s)
     {
       m_sC1CountryCode = s;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Builder c4CountryCode (@Nullable final String s)
     {
       m_sC4CountryCode = s;
       return this;
     }
 
-    @Nonnull
+    @NonNull
     public Builder endUserID (@Nullable final String s)
     {
       m_sEndUserID = s;
@@ -689,7 +688,7 @@ public final class PeppolReportingItem
       return true;
     }
 
-    @Nonnull
+    @NonNull
     public PeppolReportingItem build ()
     {
       if (!isComplete (true))

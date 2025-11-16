@@ -16,11 +16,11 @@
  */
 package com.helger.peppol.reporting.backend.sql;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.config.IConfig;
 import com.helger.db.api.config.JdbcConfigurationConfig;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Peppol Reporting JDBC configuration with lazy initialization.
@@ -32,7 +32,7 @@ public class ReportingJdbcConfiguration extends JdbcConfigurationConfig
 {
   public static final String CONFIG_PREFIX = "peppol.reporting.jdbc.";
 
-  public ReportingJdbcConfiguration (@Nonnull final IConfig aConfig)
+  public ReportingJdbcConfiguration (@NonNull final IConfig aConfig)
   {
     super (aConfig, CONFIG_PREFIX);
   }

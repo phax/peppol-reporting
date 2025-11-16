@@ -16,9 +16,9 @@
  */
 package com.helger.peppol.reporting.testfiles;
 
-import com.helger.annotation.concurrent.Immutable;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.annotation.concurrent.Immutable;
 
 @Immutable
 public final class CReportingTestFiles
@@ -26,7 +26,7 @@ public final class CReportingTestFiles
   private CReportingTestFiles ()
   {}
 
-  @Nonnull
+  @NonNull
   public static ClassLoader getTestClassLoader ()
   {
     return CReportingTestFiles.class.getClassLoader ();

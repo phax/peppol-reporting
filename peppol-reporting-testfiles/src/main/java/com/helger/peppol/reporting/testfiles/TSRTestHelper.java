@@ -16,13 +16,13 @@
  */
 package com.helger.peppol.reporting.testfiles;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.ClassPathResource;
-
-import jakarta.annotation.Nonnull;
 
 @Immutable
 public final class TSRTestHelper
@@ -30,7 +30,7 @@ public final class TSRTestHelper
   private TSRTestHelper ()
   {}
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public static ICommonsList <ClassPathResource> getAllGoodFiles ()
   {

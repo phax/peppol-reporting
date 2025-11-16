@@ -16,13 +16,13 @@
  */
 package com.helger.peppol.reporting.tsr.model;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.style.MustImplementEqualsAndHashcode;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Single Peppol TSR Key for "Service Provider, Document Type ID and Process
@@ -42,11 +42,11 @@ public final class SubtotalKeySP_DT_PR implements ITSRSubtotalKey <SubtotalKeySP
   private final String m_sProcessIDScheme;
   private final String m_sProcessIDValue;
 
-  public SubtotalKeySP_DT_PR (@Nonnull @Nonempty final String sOtherSPID,
-                              @Nonnull @Nonempty final String sDocTypeIDScheme,
-                              @Nonnull @Nonempty final String sDocTypeIDValue,
-                              @Nonnull @Nonempty final String sProcessIDScheme,
-                              @Nonnull @Nonempty final String sProcessIDValue)
+  public SubtotalKeySP_DT_PR (@NonNull @Nonempty final String sOtherSPID,
+                              @NonNull @Nonempty final String sDocTypeIDScheme,
+                              @NonNull @Nonempty final String sDocTypeIDValue,
+                              @NonNull @Nonempty final String sProcessIDScheme,
+                              @NonNull @Nonempty final String sProcessIDValue)
   {
     ValueEnforcer.notEmpty (sOtherSPID, "OtherSPID");
     ValueEnforcer.notEmpty (sDocTypeIDScheme, "DocTypeIDScheme");
@@ -60,42 +60,42 @@ public final class SubtotalKeySP_DT_PR implements ITSRSubtotalKey <SubtotalKeySP
     m_sProcessIDValue = sProcessIDValue;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getServiceProviderID ()
   {
     return m_sOtherSPID;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDocTypeIDScheme ()
   {
     return m_sDocTypeIDScheme;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDocTypeIDValue ()
   {
     return m_sDocTypeIDValue;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getProcessIDScheme ()
   {
     return m_sProcessIDScheme;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getProcessIDValue ()
   {
     return m_sProcessIDValue;
   }
 
-  public int compareTo (@Nonnull final SubtotalKeySP_DT_PR rhs)
+  public int compareTo (@NonNull final SubtotalKeySP_DT_PR rhs)
   {
     int ret = m_sOtherSPID.compareTo (rhs.m_sOtherSPID);
     if (ret == 0)

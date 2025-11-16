@@ -97,7 +97,7 @@
             <Automatic-Module-Name>com.helger.peppol.reporting.backend.redis</Automatic-Module-Name>
             <Export-Package>com.helger.peppol.reporting.backend.redis,
               com.helger.peppol.reporting.backend.redis.config</Export-Package>
-            <Import-Package>!jakarta.annotation.*,*</Import-Package>
+            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
             <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.base.thirdparty.IThirdPartyModuleProviderSPI,
 osgi.serviceloader; osgi.serviceloader=com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI</Provide-Capability>

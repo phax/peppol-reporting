@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,6 @@ import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Test class for class {@link EndUserStatisticsReportValidator}.
@@ -82,8 +81,8 @@ public final class EndUserStatisticsReportValidatorTest
     assertEquals ("Found errors: " + aList.toString (), 0, aList.size ());
   }
 
-  @Nonnull
-  private static ICommonsSet <String> _getAllFailedIDs (@Nonnull final String sFilename) throws Exception
+  @NonNull
+  private static ICommonsSet <String> _getAllFailedIDs (@NonNull final String sFilename) throws Exception
   {
     final ClassPathResource f = new ClassPathResource ("external/eusr/bad/" + sFilename,
                                                        CReportingTestFiles.getTestClassLoader ());
@@ -104,7 +103,7 @@ public final class EndUserStatisticsReportValidatorTest
     return new CommonsHashSet <> (aList, AbstractSVRLMessage::getID);
   }
 
-  private static boolean _checkFailedID (@Nonnull final String sFilename, final String sExpected) throws Exception
+  private static boolean _checkFailedID (@NonNull final String sFilename, final String sExpected) throws Exception
   {
     final ICommonsSet <String> aFailed = _getAllFailedIDs (sFilename);
     final boolean bRet = aFailed.contains (sExpected);

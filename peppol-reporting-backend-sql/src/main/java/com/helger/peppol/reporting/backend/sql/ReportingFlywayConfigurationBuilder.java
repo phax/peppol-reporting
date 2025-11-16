@@ -16,10 +16,10 @@
  */
 package com.helger.peppol.reporting.backend.sql;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.config.IConfig;
 import com.helger.db.api.flyway.FlywayConfigurationBuilderConfig;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * The specific Flyway Configuration builder for Peppol Reporting.
@@ -31,8 +31,8 @@ public class ReportingFlywayConfigurationBuilder extends FlywayConfigurationBuil
 {
   public static final String FLYWAY_CONFIG_PREFIX = "peppol.reporting.flyway.";
 
-  public ReportingFlywayConfigurationBuilder (@Nonnull final IConfig aConfig,
-                                              @Nonnull final ReportingJdbcConfiguration aJdbcConfig)
+  public ReportingFlywayConfigurationBuilder (@NonNull final IConfig aConfig,
+                                              @NonNull final ReportingJdbcConfiguration aJdbcConfig)
   {
     super (aConfig, FLYWAY_CONFIG_PREFIX);
 

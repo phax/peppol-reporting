@@ -20,6 +20,8 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.YearMonth;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +38,6 @@ import com.helger.peppol.reporting.jaxb.tsr.v101.ReportPeriodType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
 import com.helger.peppol.reporting.tsr.model.TSRReportingItemList;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Builder for Peppol Transaction Statistics Report objects.
  *
@@ -54,7 +53,7 @@ public final class TransactionStatisticsReport
   /**
    * @return A new builder for TSR 1.9 reports and never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public static Builder10 builder ()
   {
     return new Builder10 ();
@@ -96,7 +95,7 @@ public final class TransactionStatisticsReport
      *        New value. May be <code>null</code>.
      * @return this for chaining
      */
-    @Nonnull
+    @NonNull
     public Builder10 customizationID (@Nullable final String s)
     {
       m_sCustomizationID = s;
@@ -110,7 +109,7 @@ public final class TransactionStatisticsReport
      *        New value. May be <code>null</code>.
      * @return this for chaining
      */
-    @Nonnull
+    @NonNull
     public Builder10 profileID (@Nullable final String s)
     {
       m_sProfileID = s;
@@ -124,7 +123,7 @@ public final class TransactionStatisticsReport
      *        New value. May be <code>null</code>.
      * @return this for chaining
      */
-    @Nonnull
+    @NonNull
     public Builder10 startDate (@Nullable final LocalDate a)
     {
       m_aStartDate = a;
@@ -138,7 +137,7 @@ public final class TransactionStatisticsReport
      *        New value. May be <code>null</code>.
      * @return this for chaining
      */
-    @Nonnull
+    @NonNull
     public Builder10 endDate (@Nullable final LocalDate a)
     {
       m_aEndDate = a;
@@ -155,7 +154,7 @@ public final class TransactionStatisticsReport
      * @see #startDate(LocalDate)
      * @see #endDate(LocalDate)
      */
-    @Nonnull
+    @NonNull
     public Builder10 monthOf (@Nullable final LocalDate a)
     {
       return startDate (a == null ? null : a.withDayOfMonth (1)).endDate (a == null ? null : a.plusMonths (1)
@@ -173,7 +172,7 @@ public final class TransactionStatisticsReport
      * @see #startDate(LocalDate)
      * @see #endDate(LocalDate)
      */
-    @Nonnull
+    @NonNull
     public Builder10 monthOf (@Nullable final OffsetDate a)
     {
       return monthOf (a == null ? null : a.toLocalDate ());
@@ -189,7 +188,7 @@ public final class TransactionStatisticsReport
      * @see #startDate(LocalDate)
      * @see #endDate(LocalDate)
      */
-    @Nonnull
+    @NonNull
     public Builder10 monthOf (@Nullable final OffsetDateTime a)
     {
       return monthOf (a == null ? null : a.toLocalDate ());
@@ -205,7 +204,7 @@ public final class TransactionStatisticsReport
      * @see #startDate(LocalDate)
      * @see #endDate(LocalDate)
      */
-    @Nonnull
+    @NonNull
     public Builder10 monthOf (@Nullable final XMLOffsetDate a)
     {
       return monthOf (a == null ? null : a.toLocalDate ());
@@ -221,7 +220,7 @@ public final class TransactionStatisticsReport
      * @see #startDate(LocalDate)
      * @see #endDate(LocalDate)
      */
-    @Nonnull
+    @NonNull
     public Builder10 monthOf (@Nullable final YearMonth a)
     {
       return startDate (a == null ? null : a.atDay (1)).endDate (a == null ? null : a.plusMonths (1)
@@ -236,7 +235,7 @@ public final class TransactionStatisticsReport
      *        New value. May be <code>null</code>.
      * @return this for chaining
      */
-    @Nonnull
+    @NonNull
     public Builder10 reportingServiceProviderIDScheme (@Nullable final String s)
     {
       m_sReportingServiceProviderIDScheme = s;
@@ -251,7 +250,7 @@ public final class TransactionStatisticsReport
      *        New value. May be <code>null</code>.
      * @return this for chaining
      */
-    @Nonnull
+    @NonNull
     public Builder10 reportingServiceProviderID (@Nullable final String s)
     {
       m_sReportingServiceProviderID = s;
@@ -266,7 +265,7 @@ public final class TransactionStatisticsReport
      *        <code>null</code>.
      * @return this for chaining
      */
-    @Nonnull
+    @NonNull
     public Builder10 reportingItemList (@Nullable final Iterable <? extends PeppolReportingItem> aItems)
     {
       m_aReportingItems = aItems;
@@ -342,7 +341,7 @@ public final class TransactionStatisticsReport
      *
      * @see #isComplete(boolean)
      */
-    @Nonnull
+    @NonNull
     public TransactionStatisticsReportType build ()
     {
       if (!isComplete (true))

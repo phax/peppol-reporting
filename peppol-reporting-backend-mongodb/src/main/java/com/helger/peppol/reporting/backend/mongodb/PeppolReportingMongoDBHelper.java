@@ -20,14 +20,13 @@ import java.time.OffsetDateTime;
 import java.util.Date;
 
 import org.bson.Document;
+import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.peppol.reporting.api.EReportingDirection;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.typeconvert.impl.TypeConverter;
-
-import jakarta.annotation.Nonnull;
 
 @Immutable
 public final class PeppolReportingMongoDBHelper
@@ -56,8 +55,8 @@ public final class PeppolReportingMongoDBHelper
    *        The Reporting item to be converted. May not be <code>null</code>.
    * @return The created BSON document and never <code>null</code>.
    */
-  @Nonnull
-  public static Document toBson (@Nonnull final PeppolReportingItem aValue)
+  @NonNull
+  public static Document toBson (@NonNull final PeppolReportingItem aValue)
   {
     ValueEnforcer.notNull (aValue, "Value");
 
@@ -86,8 +85,8 @@ public final class PeppolReportingMongoDBHelper
    * @throws IllegalStateException
    *         if the Peppol reporting item is not complete
    */
-  @Nonnull
-  public static PeppolReportingItem toDomain (@Nonnull final Document aDoc)
+  @NonNull
+  public static PeppolReportingItem toDomain (@NonNull final Document aDoc)
   {
     ValueEnforcer.notNull (aDoc, "Doc");
 

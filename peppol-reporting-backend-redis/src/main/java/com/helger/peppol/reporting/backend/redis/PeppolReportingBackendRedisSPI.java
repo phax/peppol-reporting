@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +45,6 @@ import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Transaction;
@@ -70,7 +70,7 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
   @GuardedBy ("m_aRWLock")
   private JedisPool m_aPool;
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getDisplayName ()
   {
@@ -79,7 +79,7 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
 
   @Nullable
   @OverrideOnDemand
-  protected JedisPool createJedisPool (@Nonnull final IConfig aConfig)
+  protected JedisPool createJedisPool (@NonNull final IConfig aConfig)
   {
     final String sHost = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_REDIS_HOST);
     if (StringHelper.isEmpty (sHost))
@@ -112,8 +112,8 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
     return new JedisPool (sHost, nPort, sUserName, sPassword);
   }
 
-  @Nonnull
-  public ESuccess initBackend (@Nonnull final IConfig aConfig)
+  @NonNull
+  public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
     m_aRWLock.writeLocked ( () -> {
       if (m_aPool != null)
@@ -173,16 +173,16 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
       LOGGER.warn ("The Peppol Reporting Redis backend cannot be shutdown, because it was never properly initialized");
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
-  private static String _getDayKey (@Nonnull final LocalDate aDate)
+  private static String _getDayKey (@NonNull final LocalDate aDate)
   {
     return StringHelper.getLeadingZero (aDate.getYear (), 4) +
            StringHelper.getLeadingZero (aDate.getMonthValue (), 2) +
            StringHelper.getLeadingZero (aDate.getDayOfMonth (), 2);
   }
 
-  public void storeReportingItem (@Nonnull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
+  public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
@@ -228,9 +228,9 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
     }
   }
 
-  public void forEachReportingItem (@Nonnull final LocalDate aStartDateIncl,
-                                    @Nonnull final LocalDate aEndDateIncl,
-                                    @Nonnull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
+  public void forEachReportingItem (@NonNull final LocalDate aStartDateIncl,
+                                    @NonNull final LocalDate aEndDateIncl,
+                                    @NonNull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
@@ -269,9 +269,9 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
       LOGGER.debug ("Found a total of " + nCounter + " matching documents in Redis");
   }
 
-  @Nonnull
-  public Iterable <PeppolReportingItem> iterateReportingItems (@Nonnull final LocalDate aStartDateIncl,
-                                                               @Nonnull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  @NonNull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
+                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
   {
     final ICommonsList <PeppolReportingItem> ret = new CommonsArrayList <> ();
     forEachReportingItem (aStartDateIncl, aEndDateIncl, ret::add);

@@ -16,13 +16,13 @@
  */
 package com.helger.peppol.reporting.eusr.model;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.style.MustImplementEqualsAndHashcode;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Single Peppol EUSR Key for "End User Country".
@@ -37,20 +37,20 @@ public final class SubsetKeyEUC implements IEUSRSubsetKey <SubsetKeyEUC>
 
   private final String m_sEndUserCC;
 
-  public SubsetKeyEUC (@Nonnull @Nonempty final String sEndUserCountry)
+  public SubsetKeyEUC (@NonNull @Nonempty final String sEndUserCountry)
   {
     ValueEnforcer.notEmpty (sEndUserCountry, "EndUserCountry");
     m_sEndUserCC = sEndUserCountry;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getEndUserCountryCode ()
   {
     return m_sEndUserCC;
   }
 
-  public int compareTo (@Nonnull final SubsetKeyEUC rhs)
+  public int compareTo (@NonNull final SubsetKeyEUC rhs)
   {
     return m_sEndUserCC.compareTo (rhs.m_sEndUserCC);
   }

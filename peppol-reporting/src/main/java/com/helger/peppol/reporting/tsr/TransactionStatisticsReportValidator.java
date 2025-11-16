@@ -16,12 +16,12 @@
  */
 package com.helger.peppol.reporting.tsr;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.exception.InitializationException;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This class can be used to trigger Schematron validation of TSR documents.
@@ -49,7 +49,7 @@ public final class TransactionStatisticsReportValidator
    * @return Schematron TSR v1.0.5
    * @since 2.2.3
    */
-  @Nonnull
+  @NonNull
   public static ISchematronResource getSchematronTSR_105 ()
   {
     return SCH_TSR_105;
@@ -59,7 +59,7 @@ public final class TransactionStatisticsReportValidator
    * @return Schematron TSR v1.0 latest micro version
    * @since 2.1.3
    */
-  @Nonnull
+  @NonNull
   public static ISchematronResource getSchematronTSR_10 ()
   {
     return getSchematronTSR_105 ();
@@ -69,7 +69,7 @@ public final class TransactionStatisticsReportValidator
    * @return Schematron TSR v1 latest minor and micro version
    * @since 2.1.3
    */
-  @Nonnull
+  @NonNull
   public static ISchematronResource getSchematronTSR_1 ()
   {
     return getSchematronTSR_10 ();

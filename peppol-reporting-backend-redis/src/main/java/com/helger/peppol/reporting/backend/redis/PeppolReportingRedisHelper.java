@@ -19,14 +19,14 @@ package com.helger.peppol.reporting.backend.redis;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.datetime.format.PDTFromString;
 import com.helger.peppol.reporting.api.EReportingDirection;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
-
-import jakarta.annotation.Nonnull;
 
 @Immutable
 public final class PeppolReportingRedisHelper
@@ -55,8 +55,8 @@ public final class PeppolReportingRedisHelper
    *        The Reporting item to be converted. May not be <code>null</code>.
    * @return The created Map and never <code>null</code>.
    */
-  @Nonnull
-  public static Map <String, String> toMap (@Nonnull final PeppolReportingItem aValue)
+  @NonNull
+  public static Map <String, String> toMap (@NonNull final PeppolReportingItem aValue)
   {
     ValueEnforcer.notNull (aValue, "Value");
 
@@ -88,8 +88,8 @@ public final class PeppolReportingRedisHelper
    * @throws IllegalStateException
    *         if the Peppol reporting item is not complete
    */
-  @Nonnull
-  public static PeppolReportingItem toDomain (@Nonnull final Map <String, String> aDoc)
+  @NonNull
+  public static PeppolReportingItem toDomain (@NonNull final Map <String, String> aDoc)
   {
     ValueEnforcer.notNull (aDoc, "Doc");
 
