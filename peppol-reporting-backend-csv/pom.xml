@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.peppol</groupId>
     <artifactId>peppol-reporting-parent-pom</artifactId>
-    <version>4.0.2-SNAPSHOT</version>
+    <version>4.1.0</version>
   </parent>
   <artifactId>peppol-reporting-backend-csv</artifactId>
   <packaging>bundle</packaging>
