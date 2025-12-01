@@ -2,7 +2,8 @@
 target/
 bin/
 
-.project
 .classpath
+.DS_Store
+.project
 zz
 peppol-network-reporting.csv
