@@ -49,7 +49,7 @@
   
   <!-- Do not bloat global scope -->
   <properties>
-    <jedis.version>7.0.0</jedis.version>
+    <jedis.version>7.1.0</jedis.version>
   </properties>
   
   <dependencies>
