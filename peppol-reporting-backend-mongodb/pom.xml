@@ -48,7 +48,7 @@
   
   <!-- Do not bloat global scope -->
   <properties>
-    <mongodb-client.version>5.6.1</mongodb-client.version>
+    <mongodb-client.version>5.6.2</mongodb-client.version>
   </properties>
   
   <dependencies>
