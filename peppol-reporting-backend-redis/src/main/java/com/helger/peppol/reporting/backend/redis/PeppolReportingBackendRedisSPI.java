@@ -30,6 +30,7 @@ import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.ELockType;
 import com.helger.annotation.concurrent.GuardedBy;
 import com.helger.annotation.concurrent.MustBeLocked;
+import com.helger.annotation.misc.ChangeNextMajorRelease;
 import com.helger.annotation.style.IsSPIImplementation;
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.base.concurrent.SimpleReadWriteLock;
@@ -45,9 +46,9 @@ import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Transaction;
+import redis.clients.jedis.AbstractTransaction;
+import redis.clients.jedis.DefaultJedisClientConfig;
+import redis.clients.jedis.RedisClient;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
@@ -68,7 +69,7 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
 
   private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("m_aRWLock")
-  private JedisPool m_aPool;
+  private RedisClient m_aRedisClient;
 
   @NonNull
   @Nonempty
@@ -79,7 +80,8 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
 
   @Nullable
   @OverrideOnDemand
-  protected JedisPool createJedisPool (@NonNull final IConfig aConfig)
+  @ChangeNextMajorRelease ("Rename to 'createRedisClient'")
+  protected RedisClient createJedisPool (@NonNull final IConfig aConfig)
   {
     final String sHost = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_REDIS_HOST);
     if (StringHelper.isEmpty (sHost))
@@ -109,27 +111,30 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
                  "'" +
                  (StringHelper.isNotEmpty (sUserName) ? " using username '" + sUserName + "'" : ""));
 
-    return new JedisPool (sHost, nPort, sUserName, sPassword);
+    return RedisClient.builder ()
+                      .hostAndPort (sHost, nPort)
+                      .clientConfig (DefaultJedisClientConfig.builder ().user (sUserName).password (sPassword).build ())
+                      .build ();
   }
 
   @NonNull
   public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
     m_aRWLock.writeLocked ( () -> {
-      if (m_aPool != null)
+      if (m_aRedisClient != null)
         throw new IllegalStateException ("The Peppol Reporting Redis backend was already initialized");
 
-      m_aPool = createJedisPool (aConfig);
+      m_aRedisClient = createJedisPool (aConfig);
     });
 
-    final JedisPool aPool = m_aRWLock.readLockedGet ( () -> m_aPool);
-    if (aPool == null)
+    final RedisClient aRedisClient = m_aRWLock.readLockedGet ( () -> m_aRedisClient);
+    if (aRedisClient == null)
       return ESuccess.FAILURE;
 
     // Check connectivity
-    try (final Jedis aJedis = aPool.getResource ())
+    try
     {
-      aJedis.ping ();
+      aRedisClient.ping ();
     }
     catch (final JedisException ex)
     {
@@ -150,14 +155,14 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
 
   public boolean isInitialized ()
   {
-    return m_aRWLock.readLockedBoolean ( () -> m_aPool != null);
+    return m_aRWLock.readLockedBoolean ( () -> m_aRedisClient != null);
   }
 
   @MustBeLocked (ELockType.WRITE)
   private void _shutdown ()
   {
-    m_aPool.close ();
-    m_aPool = null;
+    m_aRedisClient.close ();
+    m_aRedisClient = null;
   }
 
   public void shutdownBackend ()
@@ -195,20 +200,21 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
       if (!isInitialized ())
         throw new IllegalStateException ("The Peppol Reporting Redis backend is not initialized");
 
-      try (final Jedis aJedis = m_aPool.getResource ())
+      try
       {
         // Get new unique ID
-        final long nID = aJedis.incr ("peppol:reporting:itemidx");
+        final long nID = m_aRedisClient.incr ("peppol:reporting:itemidx");
 
-        final Transaction t = aJedis.multi ();
+        try (final AbstractTransaction t = m_aRedisClient.multi ())
+        {
+          // Store main data
+          final String sMapKey = "peppol:reporting:item:" + nID;
+          t.hset (sMapKey, PeppolReportingRedisHelper.toMap (aReportingItem));
 
-        // Store main data
-        final String sMapKey = "peppol:reporting:item:" + nID;
-        t.hset (sMapKey, PeppolReportingRedisHelper.toMap (aReportingItem));
-
-        // add reference to list of entries per day
-        t.lpush ("peppol:reporting:" + _getDayKey (aReportingItem.getExchangeDTUTC ().toLocalDate ()), sMapKey);
-        t.exec ();
+          // add reference to list of entries per day
+          t.lpush ("peppol:reporting:" + _getDayKey (aReportingItem.getExchangeDTUTC ().toLocalDate ()), sMapKey);
+          t.exec ();
+        }
       }
       catch (final JedisException ex)
       {
@@ -244,25 +250,23 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
       throw new IllegalStateException ("The Peppol Reporting Redis backend is not initialized");
 
     int nCounter = 0;
-    try (final Jedis aJedis = m_aPool.getResource ())
+    // Find between date, but order by exchange date and time
+    LocalDate aCurDate = aStartDateIncl;
+    while (aCurDate.compareTo (aEndDateIncl) <= 0)
     {
-      // Find between date, but order by exchange date and time
-      LocalDate aCurDate = aStartDateIncl;
-      while (aCurDate.compareTo (aEndDateIncl) <= 0)
+      final String sListKey = "peppol:reporting:" + _getDayKey (aCurDate);
+      final List <String> aAllHashKeys = m_aRedisClient.lrange (sListKey, 0, -1);
+      for (final String sKey : aAllHashKeys)
       {
-        final String sListKey = "peppol:reporting:" + _getDayKey (aCurDate);
-        final List <String> aAllHashKeys = aJedis.lrange (sListKey, 0, -1);
-        for (final String sKey : aAllHashKeys)
-        {
-          final Map <String, String> aHashMap = aJedis.hgetAll (sKey);
-          final PeppolReportingItem aReportingItem = PeppolReportingRedisHelper.toDomain (aHashMap);
-          aConsumer.accept (aReportingItem);
+        final Map <String, String> aHashMap = m_aRedisClient.hgetAll (sKey);
+        final PeppolReportingItem aReportingItem = PeppolReportingRedisHelper.toDomain (aHashMap);
+        aConsumer.accept (aReportingItem);
 
-          nCounter++;
-        }
-
-        aCurDate = aCurDate.plusDays (1);
+        nCounter++;
       }
+
+      // Next day
+      aCurDate = aCurDate.plusDays (1);
     }
 
     if (LOGGER.isDebugEnabled ())
