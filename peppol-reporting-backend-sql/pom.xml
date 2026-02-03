@@ -48,7 +48,7 @@
   
   <!-- Do not bloat global scope -->
   <properties>
-    <flyway.version>11.20.3</flyway.version>
+    <flyway.version>12.0.0</flyway.version>
     <ph-db.version>8.1.1</ph-db.version>
   </properties>
   
@@ -96,7 +96,7 @@
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
-      <version>9.5.0</version>
+      <version>9.6.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
