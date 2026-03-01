@@ -28,6 +28,25 @@ jobs:
         java: [ 17, 21, 25 ]
     name: Java ${{ matrix.java }} build
 
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          # The MySQL docker container requires these environment variables to be set
+          # so we can create and migrate the test database.
+          # See: https://hub.docker.com/_/mysql
+          MYSQL_DATABASE: peppol-db
+          MYSQL_ROOT_PASSWORD: peppol
+          # Additional properties for testing
+          MYSQL_USER: peppol
+          MYSQL_PASSWORD: peppol
+        ports:
+          # Opens port 3306 on service container and host
+          # https://docs.github.com/en/actions/using-containerized-services/about-service-containers
+          - 3306:3306
+          # Before continuing, verify the mysql container is reachable from the ubuntu host
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
     - name: Login to Docker Hub
       uses: docker/login-action@v3
@@ -67,14 +86,6 @@ jobs:
         database: peppol-db
         port: 5432
       id: postgres
-        
-    - name: Start MySQL
-      uses: mirromutth/mysql-action@v1.1
-      with:
-        mysql version: '8.0'
-        mysql database: 'peppol-db'
-        mysql user: 'peppol'
-        mysql password: 'peppol'
               
     - name: Build and deploy with Maven
       run: mvn --batch-mode --update-snapshots -P release-snapshot deploy
