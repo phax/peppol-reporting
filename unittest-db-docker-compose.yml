@@ -47,7 +47,7 @@ services:
       POSTGRES_USER: peppol
       POSTGRES_PASSWORD: peppol
     volumes:
-      - pgdata:/var/lib/postgresql/data 
+      - pg18data:/var/lib/postgresql 
  
 #  pg-adminer:
 #    image: adminer
@@ -58,15 +58,14 @@ services:
   mysql:
     image: mysql:8
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: peppol
       MYSQL_DATABASE: peppol-reporting
-      MYSQL_USER: reporting
-      MYSQL_PASSWORD: reporting
+      MYSQL_USER: peppol
+      MYSQL_PASSWORD: peppol
     ports:
       - "3306:3306"
 
 volumes:
   redis:
     driver: local
-  pgdata:
-
+  pg18data:
