@@ -6,6 +6,8 @@
 Peppol Reporting support library.
 Peppol Reporting is the process of collecting, aggregating and transmitting Peppol Reports to OpenPeppol. 
 
+peppol-reporting is part of my Peppol solution stack. See https://github.com/phax/peppol for other components and libraries in that area.
+
 This library supports the following reports:
 * Peppol Transaction Statistics Report 1.0.1 (March 2023)
     * Specification link: https://docs.peppol.eu/edelivery/specs/reporting/tsr/
