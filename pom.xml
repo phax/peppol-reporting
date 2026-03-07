@@ -153,9 +153,4 @@
     <module>peppol-reporting-backend-redis</module>
     <module>peppol-reporting-backend-sql</module>
   </modules>
-
-  <build>
-    <plugins>
-    </plugins>
-  </build>
 </project>

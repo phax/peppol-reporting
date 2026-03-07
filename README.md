@@ -114,8 +114,8 @@ Submodule `peppol-reporting-backend-sql` stores data in relational databases.
 This submodule was introduced in version 3.0.1.
 
 It supports the following configuration properties:
-* **`peppol.reporting.jdbc.database-type`**: the SQL database type to operate on. Currently supported are `postgresql` and `mysql`. The value is case-insensitive.
-* **`peppol.reporting.jdbc.driver`**: contains the fully qualified class name of the JDBC driver to be used. E.g. `org.postgresql.Driver` for PostgreSQL or `com.mysql.cj.jdbc.Driver` for MySQL
+* **`peppol.reporting.jdbc.database-type`**: the SQL database type to operate on. Currently supported are `postgresql`, `mysql` and `sqlserver`. The value is case-insensitive.
+* **`peppol.reporting.jdbc.driver`**: contains the fully qualified class name of the JDBC driver to be used. E.g. `org.postgresql.Driver` for PostgreSQL, `com.mysql.cj.jdbc.Driver` for MySQL or `com.microsoft.sqlserver.jdbc.SQLServerDriver` for SQL Server
 * **`peppol.reporting.jdbc.url`**: contains the full JDBC connection URL to connect to the database
 * **`peppol.reporting.jdbc.user`** (optional): the database username to use
 * **`peppol.reporting.jdbc.password`** (optional): the database password to use
@@ -152,6 +152,15 @@ MySQL:
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
+      <version>x.y.z</version>
+    </dependency>
+```
+
+SQL Server:
+```xml
+    <dependency>
+      <groupId>com.microsoft.sqlserver</groupId>
+      <artifactId>mssql-jdbc</artifactId>
       <version>x.y.z</version>
     </dependency>
 ```
@@ -218,38 +227,39 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-v4.1.1 - work in progress
-* [Redis] Updated to Jedis 7.2.0 and using `RedisClient` instead of `Jedis` and `JedisPool`
+v4.1.1 - 2026-03-07
+* (Redis) Updated to Jedis 7.2.0 and using `RedisClient` instead of `Jedis` and `JedisPool`
+* (SQL) Added support for SQL Server as a database backend
 
 v4.1.0 - 2025-11-16
 * Updated to ph-commons 12.1.0
 * Using JSpecify annotations
 
 v4.0.1 - 2025-09-19
-* [SQL] Updated to ph-db 8.0.1 to fix an error with schema name masking for MySQL
-* [SQL] Removed `PeppolReportingBackendSqlSPI.getTableNamePrefix` in favour of `DBSystemHelper.getTableNamePrefix` (incompatible change)
+* (SQL) Updated to ph-db 8.0.1 to fix an error with schema name masking for MySQL
+* (SQL) Removed `PeppolReportingBackendSqlSPI.getTableNamePrefix` in favour of `DBSystemHelper.getTableNamePrefix` (incompatible change)
 
 v4.0.0 - 2025-08-27
 * Requires Java 17 as the minimum version
 * Updated to ph-commons 12.0.0
 * Removed all code marked as deprecated for removal
-* [SQL] Updated to Flyway 11.x
+* (SQL) Updated to Flyway 11.x
 
 v3.1.0 - 2025-04-11
-* [SQL] Requires ph-db 7.1.0
+* (SQL) Requires ph-db 7.1.0
 * [MongoDB] Extended `PeppolReportingBackendMongoDBSPI` API
-* [SQL] Renamed class `EDatabaseType` to `EReportingDatabaseType` (internal backwards incompatible change)
-* [SQL] Renamed class `FlywayMigrator` to `ReportingFlywayMigrator` (internal backwards incompatible change)
-* [SQL] Removed class `ReportingFlywayConfiguration` in favour of `ReportingFlywayConfigurationBuilder`
-* [SQL] Replaced class `EReportingDatabaseType` with `EDatabaseSystemType` from ph-db
-* [SQL] Reworked class `ReportingJdbcConfiguration` to be based on a new shared class from ph-db
+* (SQL) Renamed class `EDatabaseType` to `EReportingDatabaseType` (internal backwards incompatible change)
+* (SQL) Renamed class `FlywayMigrator` to `ReportingFlywayMigrator` (internal backwards incompatible change)
+* (SQL) Removed class `ReportingFlywayConfiguration` in favour of `ReportingFlywayConfigurationBuilder`
+* (SQL) Replaced class `EReportingDatabaseType` with `EDatabaseSystemType` from ph-db
+* (SQL) Reworked class `ReportingJdbcConfiguration` to be based on a new shared class from ph-db
 
 v3.0.3 - 2024-11-27
 * Calling the `PeppolReportingHelper.isDocumentTypeEligableForReporting` method in all backends to avoid the need for outside filtering
 
 v3.0.2 - 2024-10-31
 * Added new method `PeppolReportingBackend.setBackendService(IPeppolReportingBackendSPI)` to explicitly set the backend
-* [CSV] Added missing write locking in CSV backend
+* (CSV) Added missing write locking in CSV backend
 
 v3.0.1 - 2024-08-12
 * Added new submodule `peppol-reporting-backend-sql` to support PostgreSQL and MySQL

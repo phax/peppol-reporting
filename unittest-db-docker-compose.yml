@@ -54,7 +54,7 @@ services:
 #    restart: always
 #    ports:
 #      - 8080:8080
- 
+
   mysql:
     image: mysql:8
     environment:
@@ -64,6 +64,27 @@ services:
       MYSQL_PASSWORD: peppol
     ports:
       - "3306:3306"
+ 
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Peppol_Strong!Pass1"
+    ports:
+      - "1433:1433"
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Peppol_Strong!Pass1" -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    entrypoint: /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P "Peppol_Strong!Pass1" -C -Q "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'peppol-reporting') CREATE DATABASE [peppol-reporting];"
 
 volumes:
   redis:

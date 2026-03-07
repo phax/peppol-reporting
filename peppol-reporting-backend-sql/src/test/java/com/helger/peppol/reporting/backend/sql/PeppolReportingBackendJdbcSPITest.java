@@ -110,4 +110,10 @@ public final class PeppolReportingBackendJdbcSPITest
   {
     _runTests (new Config (new ConfigurationSourceProperties (new ClassPathResource ("application-postgresql.properties"))));
   }
+
+  @Test
+  public void testSQLServer () throws PeppolReportingBackendException
+  {
+    _runTests (new Config (new ConfigurationSourceProperties (new ClassPathResource ("application-sqlserver.properties"))));
+  }
 }

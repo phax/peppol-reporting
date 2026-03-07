@@ -64,7 +64,8 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendSqlSPI.class);
   private static final EnumSet <EDatabaseSystemType> ALLOWED_DB_TYPES = EnumSet.of (EDatabaseSystemType.MYSQL,
-                                                                                    EDatabaseSystemType.POSTGRESQL);
+                                                                                    EDatabaseSystemType.POSTGRESQL,
+                                                                                    EDatabaseSystemType.SQLSERVER);
 
   private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("m_aRWLock")

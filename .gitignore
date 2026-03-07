@@ -1,3 +1,4 @@
+.claude/
 .settings/
 target/
 bin/
@@ -5,5 +6,6 @@ bin/
 .classpath
 .DS_Store
 .project
-zz
+CLAUDE.md
 peppol-network-reporting.csv
+zz
