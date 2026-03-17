@@ -1,7 +1,9 @@
 # peppol-reporting
 
-[![javadoc](https://javadoc.io/badge2/com.helger.peppol/peppol-reporting-api/javadoc.svg)](https://javadoc.io/doc/com.helger.peppol/peppol-reporting-api)
-[![Maven Central](https://img.shields.io/maven-central/v/com.helger.peppol/peppol-reporting.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.helger.peppol%22%20AND%20a%3A%22peppol-reporting%22)
+<!-- ph-badge-start -->
+[![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.helger.peppol/peppol-reporting-parent-pom/badge.svg)](https://maven-badges.sml.io/sonatype-central/com.helger.peppol/peppol-reporting-parent-pom/)
+[![javadoc](https://javadoc.io/badge2/com.helger.peppol/peppol-reporting-testfiles/javadoc.svg)](https://javadoc.io/doc/com.helger.peppol/peppol-reporting-testfiles)
+<!-- ph-badge-end -->
 
 Peppol Reporting support library.
 Peppol Reporting is the process of collecting, aggregating and transmitting Peppol Reports to OpenPeppol. 
