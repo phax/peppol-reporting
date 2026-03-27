@@ -47,6 +47,15 @@ jobs:
           # Before continuing, verify the mysql container is reachable from the ubuntu host
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "Peppol_Strong!Pass1"
+        ports:
+          - 1433:1433
+        options: --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Peppol_Strong!Pass1' -C -Q 'SELECT 1' || exit 1" --health-interval=10s --health-timeout=5s --health-retries=10 --health-start-period=10s
+
     steps:
     - name: Login to Docker Hub
       uses: docker/login-action@v3
@@ -86,7 +95,10 @@ jobs:
         database: peppol-db
         port: 5432
       id: postgres
-              
+
+    - name: Create SQL Server database
+      run: docker exec $(docker ps -q --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest") /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Peppol_Strong!Pass1' -C -Q "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'peppol-reporting') CREATE DATABASE [peppol-reporting];"
+
     - name: Build and deploy with Maven
       run: mvn --batch-mode --update-snapshots -P release-snapshot deploy
       if: matrix.java == 17
