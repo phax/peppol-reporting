@@ -229,6 +229,10 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+v4.1.2 - 2026-03-28
+* (SQL) Updated Flyway to 12.2.0
+* Added SQL Server to CI build pipeline
+
 v4.1.1 - 2026-03-07
 * (Redis) Updated to Jedis 7.2.0 and using `RedisClient` instead of `Jedis` and `JedisPool`
 * (SQL) Added support for SQL Server as a database backend
