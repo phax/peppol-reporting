@@ -56,7 +56,10 @@ services:
 #      - 8080:8080
 
   mysql:
-    image: mysql:8
+    image: mysql:8.4
+    command: >
+      --plugin-load-add=mysql_native_password.so
+      --mysql-native-password=FORCE_PLUS_PERMANENT
     environment:
       MYSQL_ROOT_PASSWORD: peppol
       MYSQL_DATABASE: peppol-reporting
