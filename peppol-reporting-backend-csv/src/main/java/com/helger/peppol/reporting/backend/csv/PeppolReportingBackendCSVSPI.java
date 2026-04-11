@@ -293,7 +293,7 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
     if (!isInitialized ())
       throw new IllegalStateException ("The Peppol Reporting CSV backend '" + sCSVFilename + "' is not initialized");
 
-    final int nCounter = 0;
+    int nCounter = 0;
     try (final CSVReader aReader = new CSVReader (new FileReader (m_aCSVFile, StandardCharsets.UTF_8)))
     {
       aReader.setSeparatorChar (m_cSeparatorChar).setQuoteChar (m_cQuoteChar).setEscapeChar (m_cEscapeChar);
@@ -309,6 +309,7 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
           // Build only on match
           final PeppolReportingItem aReportingItem = asItem (aLine);
           aConsumer.accept (aReportingItem);
+          ++nCounter;
         }
       }
     }
