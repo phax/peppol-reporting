@@ -211,8 +211,10 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
           final String sMapKey = "peppol:reporting:item:" + nID;
           t.hset (sMapKey, PeppolReportingRedisHelper.toMap (aReportingItem));
 
-          // add reference to list of entries per day
-          t.lpush ("peppol:reporting:" + _getDayKey (aReportingItem.getExchangeDTUTC ().toLocalDate ()), sMapKey);
+          // Append reference to list of entries per day. RPUSH (not LPUSH) is
+          // used so that subsequent LRANGE 0 -1 reads return the items in
+          // insertion order, matching the behaviour of the other backends.
+          t.rpush ("peppol:reporting:" + _getDayKey (aReportingItem.getExchangeDTUTC ().toLocalDate ()), sMapKey);
           t.exec ();
         }
       }

@@ -83,9 +83,15 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
   void storeReportingItem (@NonNull PeppolReportingItem aReportingItem) throws PeppolReportingBackendException;
 
   /**
-   * Iterate all {@link PeppolReportingItem} objects in the provided date range,
-   * in the correct order. If the iteration is lazy or eager depends on the
-   * backing implementation.
+   * Iterate all {@link PeppolReportingItem} objects in the provided date range.
+   * Both the start and the end date are <b>inclusive</b>. If the iteration is
+   * lazy or eager depends on the backing implementation.
+   * <p>
+   * <b>Ordering is unspecified.</b> Different backends return matching items in
+   * different orders (e.g. insertion order, storage order, or sorted by
+   * exchange timestamp). Callers that require a specific order must sort the
+   * result themselves. The only guarantee is that all items whose exchange
+   * date (in UTC) falls within the inclusive range are returned exactly once.
    *
    * @param aStartDateIncl
    *        The date to start iterating, including this date. May not be
@@ -103,9 +109,10 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
                                                         @NonNull LocalDate aEndDateIncl) throws PeppolReportingBackendException;
 
   /**
-   * Iterate all {@link PeppolReportingItem} objects in the provided month, in
-   * the correct order. If the iteration is lazy or eager depends on the backing
-   * implementation.
+   * Iterate all {@link PeppolReportingItem} objects in the provided month. If
+   * the iteration is lazy or eager depends on the backing implementation. As
+   * with {@link #iterateReportingItems(LocalDate, LocalDate)} the ordering of
+   * the returned items is <b>unspecified</b>.
    *
    * @param aYearMonth
    *        The year and month to iterate. May not be <code>null</code>.

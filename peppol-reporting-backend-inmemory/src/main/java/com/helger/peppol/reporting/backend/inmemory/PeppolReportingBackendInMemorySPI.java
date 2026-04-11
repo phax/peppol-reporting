@@ -41,7 +41,9 @@ import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
 
 /**
- * SPI implementation of {@link IPeppolReportingBackendSPI} for Redis.
+ * SPI implementation of {@link IPeppolReportingBackendSPI} that keeps all
+ * reporting items in memory. Intended for testing only — data is lost on JVM
+ * restart.
  *
  * @author Philip Helger
  */
@@ -57,6 +59,8 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
   private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("m_aRWLock")
   private final ICommonsMap <LocalDate, ICommonsList <PeppolReportingItem>> m_aMap = new CommonsHashMap <> ();
+  @GuardedBy ("m_aRWLock")
+  private boolean m_bInitialized = false;
 
   @NonNull
   @Nonempty
@@ -68,16 +72,22 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
   @NonNull
   public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
+    m_aRWLock.writeLocked ( () -> m_bInitialized = true);
     return ESuccess.SUCCESS;
   }
 
   public boolean isInitialized ()
   {
-    return true;
+    return m_aRWLock.readLockedBoolean ( () -> m_bInitialized);
   }
 
   public void shutdownBackend ()
-  {}
+  {
+    m_aRWLock.writeLocked ( () -> {
+      m_aMap.clear ();
+      m_bInitialized = false;
+    });
+  }
 
   public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
@@ -88,6 +98,9 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
     {
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Trying to store Peppol Reporting Item in memory");
+
+      if (!isInitialized ())
+        throw new IllegalStateException ("The Peppol Reporting InMemory backend is not initialized");
 
       m_aRWLock.writeLocked ( () -> m_aMap.computeIfAbsent (aReportingItem.getExchangeDTUTC ().toLocalDate (),
                                                             k -> new CommonsArrayList <> ())
@@ -119,6 +132,9 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
                     aStartDateIncl +
                     " and " +
                     aEndDateIncl);
+
+    if (!isInitialized ())
+      throw new IllegalStateException ("The Peppol Reporting InMemory backend is not initialized");
 
     final Iterator <PeppolReportingItem> it = new Iterator <> ()
     {
