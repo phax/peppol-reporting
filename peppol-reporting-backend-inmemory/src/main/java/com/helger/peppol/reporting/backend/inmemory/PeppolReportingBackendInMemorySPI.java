@@ -41,19 +41,14 @@ import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
 
 /**
- * SPI implementation of {@link IPeppolReportingBackendSPI} that keeps all
- * reporting items in memory. Intended for testing only — data is lost on JVM
- * restart.
+ * SPI implementation of {@link IPeppolReportingBackendSPI} that keeps all reporting items in
+ * memory. Intended for testing only — data is lost on JVM restart.
  *
  * @author Philip Helger
  */
 @IsSPIImplementation
 public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBackendSPI
 {
-  public static final String CONFIG_PEPPOL_REPORTING_REDIS_HOST = "peppol.reporting.redis.host";
-  public static final String CONFIG_PEPPOL_REPORTING_REDIS_PORT = "peppol.reporting.redis.port";
-  public static final int DEFAULT_REDIS_PORT = 6379;
-
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendInMemorySPI.class);
 
   private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
@@ -103,8 +98,7 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
         throw new IllegalStateException ("The Peppol Reporting InMemory backend is not initialized");
 
       m_aRWLock.writeLocked ( () -> m_aMap.computeIfAbsent (aReportingItem.getExchangeDTUTC ().toLocalDate (),
-                                                            k -> new CommonsArrayList <> ())
-                                          .add (aReportingItem));
+                                                            k -> new CommonsArrayList <> ()).add (aReportingItem));
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Successfully stored Peppol Reporting Item in memory");
@@ -116,7 +110,6 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
                                               aReportingItem.getDocTypeIDValue ()) +
                    ")");
     }
-
   }
 
   @NonNull
