@@ -234,6 +234,7 @@ v4.1.3 - work in progress
 * (InMemory) `isInitialized()` now tracks real initialization state instead of always returning `true`; `shutdownBackend()` clears stored data and resets to uninitialized; store and query calls before `initBackend()` now throw `IllegalStateException`, consistent with all other backends
 * (Redis) Fixed item ordering within a single day: changed `LPUSH` to `RPUSH` so that `LRANGE 0 -1` returns items in insertion order instead of reverse insertion order
 * Replaced individual ad-hoc test classes with thin subclasses of the shared `AbstractPeppolReportingBackendSPITest`, providing extensive contract tests per backend covering lifecycle, validation, date-range semantics, non-eligible doctype filtering, and multiset store/retrieve consistency
+* (SQL) `ReportingFlywayMigrator` now honours the `FlywayConfiguration` history table setting
 
 v4.1.2 - 2026-03-28
 * (SQL) Updated Flyway to 12.2.0
