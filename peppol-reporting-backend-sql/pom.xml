@@ -49,7 +49,7 @@
   <!-- Do not bloat global scope -->
   <properties>
     <flyway.version>12.3.0</flyway.version>
-    <ph-db.version>8.1.3</ph-db.version>
+    <ph-db.version>8.2.0-SNAPSHOT</ph-db.version>
   </properties>
   
   <dependencies>
@@ -60,6 +60,11 @@
     <dependency>
       <groupId>com.helger.db</groupId>
       <artifactId>ph-db-jdbc</artifactId>
+      <version>${ph-db.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.db</groupId>
+      <artifactId>ph-db-flyway</artifactId>
       <version>${ph-db.version}</version>
     </dependency>
     <dependency>

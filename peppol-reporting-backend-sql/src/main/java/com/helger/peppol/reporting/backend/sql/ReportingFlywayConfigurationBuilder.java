@@ -19,7 +19,7 @@ package com.helger.peppol.reporting.backend.sql;
 import org.jspecify.annotations.NonNull;
 
 import com.helger.config.IConfig;
-import com.helger.db.api.flyway.FlywayConfigurationBuilderConfig;
+import com.helger.db.flyway.FlywayConfigurationBuilderConfig;
 
 /**
  * The specific Flyway Configuration builder for Peppol Reporting.
