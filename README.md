@@ -230,12 +230,13 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-v4.1.3 - work in progress
+v4.1.3 - 2026-04-12
 * Added new submodule `peppol-reporting-test` containing shared SPI contract tests (`AbstractPeppolReportingBackendSPITest`) that all backend implementations can extend to ensure consistent behaviour
 * (InMemory) `isInitialized()` now tracks real initialization state instead of always returning `true`; `shutdownBackend()` clears stored data and resets to uninitialized; store and query calls before `initBackend()` now throw `IllegalStateException`, consistent with all other backends
 * (Redis) Fixed item ordering within a single day: changed `LPUSH` to `RPUSH` so that `LRANGE 0 -1` returns items in insertion order instead of reverse insertion order
 * Replaced individual ad-hoc test classes with thin subclasses of the shared `AbstractPeppolReportingBackendSPITest`, providing extensive contract tests per backend covering lifecycle, validation, date-range semantics, non-eligible doctype filtering, and multiset store/retrieve consistency
 * (SQL) `ReportingFlywayMigrator` now honours the `FlywayConfiguration` history table setting
+* (SQL) Updated to ph-db 8.2.0, using the new shared `FlywayMigrationRunner` from `ph-db-flyway`
 
 v4.1.2 - 2026-03-28
 * (SQL) Updated Flyway to 12.2.0
