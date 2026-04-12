@@ -24,6 +24,7 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.style.IsSPIInterface;
+import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.name.IHasDisplayName;
 import com.helger.base.state.ESuccess;
 import com.helger.config.IConfig;
@@ -149,6 +150,11 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
                                      @NonNull final LocalDate aEndDateIncl,
                                      @NonNull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
   {
+    // Validate the consumer eagerly here so that all backends behave the
+    // same way regardless of whether iterateReportingItems is lazy or eager.
+    // (Lazy iterables — e.g. MongoDB cursors — would otherwise silently
+    // accept a null consumer when the result set is empty.)
+    ValueEnforcer.notNull (aConsumer, "Consumer");
     iterateReportingItems (aStartDateIncl, aEndDateIncl).forEach (aConsumer);
   }
 

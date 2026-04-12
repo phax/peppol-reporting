@@ -82,7 +82,12 @@
       <artifactId>flyway-sqlserver</artifactId>
       <version>${flyway.version}</version>
     </dependency>
-    
+
+    <dependency>
+      <groupId>com.helger.peppol</groupId>
+      <artifactId>peppol-reporting-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

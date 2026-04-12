@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.peppol.reporting.backend.mongodb;
+package com.helger.peppol.reporting.backend.inmemory;
 
 import org.jspecify.annotations.NonNull;
 
@@ -22,18 +22,16 @@ import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.testbackend.AbstractPeppolReportingBackendSPITest;
 
 /**
- * SPI contract test for {@link PeppolReportingBackendMongoDBSPI}. The whole
- * suite is skipped (via {@link org.junit.Assume}) when no MongoDB instance is
- * reachable on the configured host.
+ * SPI contract test for {@link PeppolReportingBackendInMemorySPI}.
  *
  * @author Philip Helger
  */
-public final class PeppolReportingBackendMongoDBSPITest extends AbstractPeppolReportingBackendSPITest
+public final class PeppolReportingBackendInMemorySPITest extends AbstractPeppolReportingBackendSPITest
 {
   @Override
   @NonNull
   protected IPeppolReportingBackendSPI createBackend ()
   {
-    return new PeppolReportingBackendMongoDBSPI ();
+    return new PeppolReportingBackendInMemorySPI ();
   }
 }

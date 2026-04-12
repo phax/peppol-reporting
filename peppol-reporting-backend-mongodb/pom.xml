@@ -48,7 +48,7 @@
   
   <!-- Do not bloat global scope -->
   <properties>
-    <mongodb-client.version>5.6.4</mongodb-client.version>
+    <mongodb-client.version>5.6.5</mongodb-client.version>
   </properties>
   
   <dependencies>
@@ -61,7 +61,12 @@
       <artifactId>mongodb-driver-sync</artifactId>
       <version>${mongodb-client.version}</version>
     </dependency>
-    
+
+    <dependency>
+      <groupId>com.helger.peppol</groupId>
+      <artifactId>peppol-reporting-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

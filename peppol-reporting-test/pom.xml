@@ -24,11 +24,12 @@
     <artifactId>peppol-reporting-parent-pom</artifactId>
     <version>4.1.3-SNAPSHOT</version>
   </parent>
-  <artifactId>peppol-reporting-backend-inmemory</artifactId>
+  <artifactId>peppol-reporting-test</artifactId>
   <packaging>bundle</packaging>
-  <name>peppol-reporting-backend-inmemory</name>
-  <inceptionYear>2023</inceptionYear>
-  <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-inmemory</url>
+  <name>peppol-reporting-test</name>
+  <description>Shared SPI contract test base for Peppol Reporting backends. Intended to be consumed in test scope by backend modules.</description>
+  <inceptionYear>2026</inceptionYear>
+  <url>https://github.com/phax/peppol-reporting/peppol-reporting-test</url>
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -49,25 +50,17 @@
       <groupId>com.helger.peppol</groupId>
       <artifactId>peppol-reporting-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.helger.peppol</groupId>
-      <artifactId>peppol-reporting-test</artifactId>
-      <scope>test</scope>
-    </dependency>
+    <!-- This module exists to be consumed in test scope by backend modules,
+         so JUnit and SLF4J are required at compile time. -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.commons</groupId>
-      <artifactId>ph-unittest-support-ext</artifactId>
-      <scope>test</scope>
+      <artifactId>slf4j-api</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <build>
@@ -85,11 +78,9 @@
         </executions>
         <configuration>
           <instructions>
-            <Automatic-Module-Name>com.helger.peppol.reporting.backend.inmemory</Automatic-Module-Name>
-            <Export-Package>com.helger.peppol.reporting.backend.inmemory</Export-Package>
+            <Automatic-Module-Name>com.helger.peppol.reporting.testbackend</Automatic-Module-Name>
+            <Export-Package>com.helger.peppol.reporting.testbackend</Export-Package>
             <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
-            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
-            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI</Provide-Capability>
           </instructions>
         </configuration>
       </plugin>

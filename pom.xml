@@ -111,6 +111,11 @@
       </dependency>
       <dependency>
         <groupId>com.helger.peppol</groupId>
+        <artifactId>peppol-reporting-test</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.peppol</groupId>
         <artifactId>peppol-reporting</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -146,6 +151,7 @@
     <module>peppol-reporting-testfiles</module>
     <module>peppol-reporting-datatypes</module>
     <module>peppol-reporting-api</module>
+    <module>peppol-reporting-test</module>
     <module>peppol-reporting</module>
     <module>peppol-reporting-backend-csv</module>
     <module>peppol-reporting-backend-inmemory</module>

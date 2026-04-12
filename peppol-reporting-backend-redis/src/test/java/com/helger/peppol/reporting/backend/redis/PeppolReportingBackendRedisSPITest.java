@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.peppol.reporting.backend.mongodb;
+package com.helger.peppol.reporting.backend.redis;
 
 import org.jspecify.annotations.NonNull;
 
@@ -22,18 +22,18 @@ import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.testbackend.AbstractPeppolReportingBackendSPITest;
 
 /**
- * SPI contract test for {@link PeppolReportingBackendMongoDBSPI}. The whole
- * suite is skipped (via {@link org.junit.Assume}) when no MongoDB instance is
+ * SPI contract test for {@link PeppolReportingBackendRedisSPI}. The whole
+ * suite is skipped (via {@link org.junit.Assume}) when no Redis instance is
  * reachable on the configured host.
  *
  * @author Philip Helger
  */
-public final class PeppolReportingBackendMongoDBSPITest extends AbstractPeppolReportingBackendSPITest
+public final class PeppolReportingBackendRedisSPITest extends AbstractPeppolReportingBackendSPITest
 {
   @Override
   @NonNull
   protected IPeppolReportingBackendSPI createBackend ()
   {
-    return new PeppolReportingBackendMongoDBSPI ();
+    return new PeppolReportingBackendRedisSPI ();
   }
 }
