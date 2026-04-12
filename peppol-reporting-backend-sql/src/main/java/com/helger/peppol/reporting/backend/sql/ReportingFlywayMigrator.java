@@ -52,6 +52,8 @@ final class ReportingFlywayMigrator
                   @NonNull final FlywayConfiguration aFlywayConfig)
   {
     ValueEnforcer.notNull (eDBType, "DBType");
+    ValueEnforcer.notNull (aJdbcConfig, "JdbcConfig");
+    ValueEnforcer.notNull (aFlywayConfig, "FlywayConfig");
 
     FlywayMigrationRunner.runFlyway (aJdbcConfig,
                                      aFlywayConfig,
