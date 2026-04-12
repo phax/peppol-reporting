@@ -138,6 +138,7 @@ It can be configured as followed:
 * **`peppol.reporting.flyway.jdbc.password`** (optional): allows a specific JDBC password for usage with Flyway. If none is provided, the value of `peppol.reporting.jdbc.password` is used instead.
 * **`peppol.reporting.flyway.jdbc.schema-create`** (optional): `true` if the DB schema as defined in `peppol.reporting.jdbc.schema` should be automatically created by Flyway. Defaults to `false`.
 * **`peppol.reporting.flyway.baseline.version`** (optional): the Flyway baseline version to use. Defaults to `0`.
+* **`peppol.reporting.flyway.history-table`** (since v4.1.3; optional): the name of the Flyway history table. Defaults to `flyway_schema_history`.
 
 By default it is not bound to any specific DB engine, so you need to provide the necessary driver dependency manually.
 PostgreSQL:
