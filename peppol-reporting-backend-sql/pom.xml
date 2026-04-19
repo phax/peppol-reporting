@@ -48,8 +48,8 @@
   
   <!-- Do not bloat global scope -->
   <properties>
-    <flyway.version>12.3.0</flyway.version>
-    <ph-db.version>8.2.0</ph-db.version>
+    <flyway.version>12.4.0</flyway.version>
+    <ph-db.version>8.2.1</ph-db.version>
   </properties>
   
   <dependencies>
