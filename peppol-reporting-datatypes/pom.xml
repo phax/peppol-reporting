@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2023-2026 Philip Helger
@@ -24,11 +25,10 @@
     <version>4.1.4-SNAPSHOT</version>
   </parent>
   <artifactId>peppol-reporting-datatypes</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>peppol-reporting-datatypes</name>
   <inceptionYear>2024</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-datatypes</url>
-
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -36,7 +36,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <developers>
     <developer>
       <id>philip</id>
@@ -45,7 +44,6 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
- 
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
@@ -59,7 +57,6 @@
       <groupId>com.helger.commons</groupId>
       <artifactId>ph-jaxb-adapter</artifactId>
     </dependency>
-
     <dependency>
       <groupId>com.helger.peppol</groupId>
       <artifactId>peppol-reporting-testfiles</artifactId>
@@ -81,33 +78,8 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <goals>
-              <goal>manifest</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <instructions>
-            <Automatic-Module-Name>com.helger.peppol.reporting.datatypes</Automatic-Module-Name>
-            <Export-Package>
-              com.helger.peppol.reporting.jaxb.eusr,
-              com.helger.peppol.reporting.jaxb.eusr.v110,
-              com.helger.peppol.reporting.jaxb.tsr,
-              com.helger.peppol.reporting.jaxb.tsr.v101
-            </Export-Package>
-            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>${jaxb-plugin.group}</groupId>
         <artifactId>${jaxb-plugin.artifact}</artifactId>
@@ -157,7 +129,7 @@
             ${project.build.sourceDirectory}:${project.build.directory}/generated-sources/xjc
           </sourcepath>
         </configuration>
-      </plugin> 
+      </plugin>
     </plugins>
   </build>
 </project>

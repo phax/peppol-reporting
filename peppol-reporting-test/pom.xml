@@ -25,7 +25,7 @@
     <version>4.1.4-SNAPSHOT</version>
   </parent>
   <artifactId>peppol-reporting-test</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>peppol-reporting-test</name>
   <description>Shared SPI contract test base for Peppol Reporting backends. Intended to be consumed in test scope by backend modules.</description>
   <inceptionYear>2026</inceptionYear>
@@ -63,27 +63,4 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <goals>
-              <goal>manifest</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <instructions>
-            <Automatic-Module-Name>com.helger.peppol.reporting.testbackend</Automatic-Module-Name>
-            <Export-Package>com.helger.peppol.reporting.testbackend</Export-Package>
-            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

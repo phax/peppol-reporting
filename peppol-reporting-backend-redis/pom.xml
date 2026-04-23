@@ -25,11 +25,10 @@
     <version>4.1.4-SNAPSHOT</version>
   </parent>
   <artifactId>peppol-reporting-backend-redis</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>peppol-reporting-backend-redis</name>
   <inceptionYear>2023</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-redis</url>
-
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -37,7 +36,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <developers>
     <developer>
       <id>philip</id>
@@ -46,12 +44,10 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
-  
   <!-- Do not bloat global scope -->
   <properties>
     <jedis.version>7.4.1</jedis.version>
   </properties>
-  
   <dependencies>
     <dependency>
       <groupId>com.helger.peppol</groupId>
@@ -83,32 +79,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <goals>
-              <goal>manifest</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <instructions>
-            <Automatic-Module-Name>com.helger.peppol.reporting.backend.redis</Automatic-Module-Name>
-            <Export-Package>com.helger.peppol.reporting.backend.redis,
-              com.helger.peppol.reporting.backend.redis.config</Export-Package>
-            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
-            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
-            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.base.thirdparty.IThirdPartyModuleProviderSPI,
-osgi.serviceloader; osgi.serviceloader=com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI</Provide-Capability>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

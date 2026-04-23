@@ -232,6 +232,9 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+v4.1.4 - work in progress
+* Removed OSGI bundling
+
 v4.1.3 - 2026-04-12
 * Added new submodule `peppol-reporting-test` containing shared SPI contract tests (`AbstractPeppolReportingBackendSPITest`) that all backend implementations can extend to ensure consistent behaviour
 * (InMemory) `isInitialized()` now tracks real initialization state instead of always returning `true`; `shutdownBackend()` clears stored data and resets to uninitialized; store and query calls before `initBackend()` now throw `IllegalStateException`, consistent with all other backends

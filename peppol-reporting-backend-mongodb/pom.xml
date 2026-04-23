@@ -25,7 +25,7 @@
     <version>4.1.4-SNAPSHOT</version>
   </parent>
   <artifactId>peppol-reporting-backend-mongodb</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>peppol-reporting-backend-mongodb</name>
   <inceptionYear>2023</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-mongodb</url>
@@ -36,7 +36,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  
   <developers>
     <developer>
       <id>philip</id>
@@ -45,12 +44,10 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
-  
   <!-- Do not bloat global scope -->
   <properties>
     <mongodb-client.version>5.6.5</mongodb-client.version>
   </properties>
-  
   <dependencies>
     <dependency>
       <groupId>com.helger.peppol</groupId>
@@ -61,7 +58,6 @@
       <artifactId>mongodb-driver-sync</artifactId>
       <version>${mongodb-client.version}</version>
     </dependency>
-
     <dependency>
       <groupId>com.helger.peppol</groupId>
       <artifactId>peppol-reporting-test</artifactId>
@@ -83,32 +79,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <goals>
-              <goal>manifest</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <instructions>
-            <Automatic-Module-Name>com.helger.peppol.reporting.backend.mongodb</Automatic-Module-Name>
-            <Export-Package>com.helger.peppol.reporting.backend.mongodb,
-              com.helger.peppol.reporting.backend.mongodb.config</Export-Package>
-            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
-            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
-            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.base.thirdparty.IThirdPartyModuleProviderSPI,
-osgi.serviceloader; osgi.serviceloader=com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI</Provide-Capability>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
