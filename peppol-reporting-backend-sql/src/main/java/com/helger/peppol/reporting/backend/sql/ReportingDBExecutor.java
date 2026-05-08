@@ -16,11 +16,13 @@
  */
 package com.helger.peppol.reporting.backend.sql;
 
+import java.time.Duration;
+
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.db.api.config.JdbcConfigurationConfig;
+import com.helger.db.api.config.IJdbcConfiguration;
 import com.helger.db.jdbc.IHasDataSource;
 import com.helger.db.jdbc.executor.DBExecutor;
 
@@ -34,7 +36,7 @@ public final class ReportingDBExecutor extends DBExecutor
   private static final Logger LOGGER = LoggerFactory.getLogger (ReportingDBExecutor.class);
 
   public ReportingDBExecutor (@NonNull final IHasDataSource aDataSourceProvider,
-                              @NonNull final JdbcConfigurationConfig aJdbcConfig)
+                              @NonNull final IJdbcConfiguration aJdbcConfig)
   {
     super (aDataSourceProvider);
 
@@ -45,19 +47,17 @@ public final class ReportingDBExecutor extends DBExecutor
 
     if (aJdbcConfig.isJdbcExecutionTimeWarningEnabled ())
     {
-      final long nMillis = aJdbcConfig.getJdbcExecutionTimeWarningMilliseconds ();
-      if (nMillis > 0)
-        setExecutionDurationWarnMS (nMillis);
+      final Duration aWarnDuration = aJdbcConfig.getJdbcExecutionTimeWarning ();
+      if (aWarnDuration.compareTo (Duration.ZERO) > 0)
+        setExecutionWarnDuration (aWarnDuration);
       else
         if (LOGGER.isDebugEnabled ())
-          LOGGER.debug ("Ignoring configuration key '" +
-                        aJdbcConfig.getConfigKeyJdbcExecutionTimeWarningMilliseconds () +
-                        "' because it is invalid.");
+          LOGGER.debug ("Ignoring JDBC Execution Time Warning Milliseconds because it is invalid.");
     }
     else
     {
       // Zero means none
-      setExecutionDurationWarnMS (0);
+      setExecutionWarnDuration (Duration.ZERO);
     }
   }
 }

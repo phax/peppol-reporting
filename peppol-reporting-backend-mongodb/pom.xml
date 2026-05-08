@@ -44,10 +44,12 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  
   <!-- Do not bloat global scope -->
   <properties>
-    <mongodb-client.version>5.6.5</mongodb-client.version>
+    <mongodb-client.version>5.7.0</mongodb-client.version>
   </properties>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.peppol</groupId>
@@ -58,6 +60,7 @@
       <artifactId>mongodb-driver-sync</artifactId>
       <version>${mongodb-client.version}</version>
     </dependency>
+    
     <dependency>
       <groupId>com.helger.peppol</groupId>
       <artifactId>peppol-reporting-test</artifactId>

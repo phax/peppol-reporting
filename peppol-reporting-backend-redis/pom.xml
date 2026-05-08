@@ -44,10 +44,12 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  
   <!-- Do not bloat global scope -->
   <properties>
-    <jedis.version>7.4.1</jedis.version>
+    <jedis.version>7.5.0</jedis.version>
   </properties>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.peppol</groupId>
@@ -58,6 +60,7 @@
       <artifactId>jedis</artifactId>
       <version>${jedis.version}</version>
     </dependency>
+    
     <dependency>
       <groupId>com.helger.peppol</groupId>
       <artifactId>peppol-reporting-test</artifactId>

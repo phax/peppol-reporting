@@ -44,11 +44,13 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  
   <!-- Do not bloat global scope -->
   <properties>
-    <flyway.version>12.4.0</flyway.version>
-    <ph-db.version>8.2.1</ph-db.version>
+    <flyway.version>12.5.0</flyway.version>
+    <ph-db.version>8.4.0</ph-db.version>
   </properties>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.peppol</groupId>
@@ -84,6 +86,7 @@
       <artifactId>flyway-sqlserver</artifactId>
       <version>${flyway.version}</version>
     </dependency>
+    
     <dependency>
       <groupId>com.helger.peppol</groupId>
       <artifactId>peppol-reporting-test</artifactId>
@@ -102,7 +105,7 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.7.10</version>
+      <version>42.7.11</version>
       <scope>test</scope>
     </dependency>
     <dependency>
