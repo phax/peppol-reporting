@@ -186,6 +186,70 @@ Via the builder `EndUserStatisticsReport.builder ()`, the report of type `EndUse
 
 Via the builder `TransactionStatisticsReport.builder ()`, the report of type `TransactionStatisticsReportType` (TSR) can be created.
 
+### Batched (streaming) aggregation to prevent Out-Of-Memory errors
+
+When working with large datasets (e.g., millions of records stored in MongoDB or another database),
+loading all `PeppolReportingItem` objects into memory at once can cause Out-Of-Memory errors.
+To handle this, the library provides **accumulator classes** that let you feed items in batches:
+
+* `EUSRReportingItemAccumulator` – for EUSR reports
+* `TSRReportingItemAccumulator` – for TSR reports
+
+Both classes are **not thread-safe**; do not share an instance across threads without external synchronisation.
+
+**Example: paged EUSR aggregation (e.g., from MongoDB)**
+
+```java
+// 1. Build the report header
+EndUserStatisticsReportType aReport = EndUserStatisticsReport.builder ()
+    .monthOf (aNow)
+    .reportingServiceProviderID (MY_SPID)
+    .build ();  // note: reportingItemList() is NOT called - we fill the report ourselves
+
+// 2. Create the accumulator and feed pages of items
+EUSRReportingItemAccumulator accumulator = new EUSRReportingItemAccumulator ();
+
+int pageSize = 1000;
+int pageIndex = 0;
+List<PeppolReportingItem> page;
+do {
+    page = myRepository.findByMonth (yearMonth, pageIndex, pageSize); // your query
+    for (PeppolReportingItem item : page)
+        accumulator.accept (item);
+    pageIndex++;
+} while (!page.isEmpty ());
+
+// 3. Write the aggregated data into the report
+accumulator.fillReport (aReport);
+```
+
+**Example: paged TSR aggregation**
+
+```java
+TransactionStatisticsReportType aReport = TransactionStatisticsReport.builder ()
+    .monthOf (aNow)
+    .reportingServiceProviderID (MY_SPID)
+    .build ();
+
+TSRReportingItemAccumulator accumulator = new TSRReportingItemAccumulator ();
+
+int pageSize = 1000;
+int pageIndex = 0;
+List<PeppolReportingItem> page;
+do {
+    page = myRepository.findByMonth (yearMonth, pageIndex, pageSize);
+    for (PeppolReportingItem item : page)
+        accumulator.accept (item);
+    pageIndex++;
+} while (!page.isEmpty ());
+
+accumulator.fillReport (aReport);
+```
+
+The output produced by the accumulator-based approach is **functionally identical** to using
+`EndUserStatisticsReport.builder().reportingItemList(allItems).build()` or the equivalent TSR builder —
+all FullSet/Total counts and all Subset/Subtotal entries will match exactly.
+
 ## Report XML Serialization
 
 The JAXB generated domain model classes reside in the packages `com.helger.peppol.reporting.jaxb.eusr.v110` and `com.helger.peppol.reporting.jaxb.tsr.v101`.
@@ -234,6 +298,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 v4.1.4 - work in progress
 * Removed OSGI bundling
+* Added `EUSRReportingItemAccumulator` and `TSRReportingItemAccumulator` to support batched/streaming aggregation, preventing OOM errors when processing large datasets
 
 v4.1.3 - 2026-04-12
 * Added new submodule `peppol-reporting-test` containing shared SPI contract tests (`AbstractPeppolReportingBackendSPITest`) that all backend implementations can extend to ensure consistent behaviour
