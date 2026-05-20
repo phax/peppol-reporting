@@ -296,7 +296,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-v4.1.4 - work in progress
+v4.1.4 - 2026-05-20
 * Removed OSGI bundling
 * Added `EUSRReportingItemAccumulator` and `TSRReportingItemAccumulator` to support batched/streaming aggregation, preventing OOM errors when processing large datasets
 
