@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 
 import com.helger.collection.commons.CommonsArrayList;
@@ -41,17 +42,8 @@ public final class EUSRReportingItemAccumulatorTest
   private static final String MY_SPID = "PDE000001";
   private static final String OTHER_SPID = "POP000002";
 
-  private static final class TestUser
-  {
-    final String endUserID;
-    final String countryCode;
-
-    TestUser (final String endUserID, final String countryCode)
-    {
-      this.endUserID = endUserID;
-      this.countryCode = countryCode;
-    }
-  }
+  private static final record TestUser (String endUserID, String countryCode)
+  {}
 
   private static final TestUser [] TEST_USERS = { new TestUser ("a", "AT"),
                                                   new TestUser ("b", "BE"),
@@ -60,7 +52,8 @@ public final class EUSRReportingItemAccumulatorTest
                                                   new TestUser ("e", "BE"),
                                                   new TestUser ("f", "CY") };
 
-  private static ICommonsList <PeppolReportingItem> buildFixtures ()
+  @NonNull
+  private static ICommonsList <PeppolReportingItem> _buildFixtures ()
   {
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
     final ICommonsList <PeppolReportingItem> aList = new CommonsArrayList <> ();
@@ -101,14 +94,16 @@ public final class EUSRReportingItemAccumulatorTest
     return aList;
   }
 
-  private static EndUserStatisticsReportType _runViaList (final Iterable <? extends PeppolReportingItem> items)
+  @NonNull
+  private static EndUserStatisticsReportType _runViaList (@NonNull final Iterable <? extends PeppolReportingItem> items)
   {
     final EndUserStatisticsReportType aReport = new EndUserStatisticsReportType ();
     EUSRReportingItemList.fillReportSubsets (items, aReport);
     return aReport;
   }
 
-  private static EndUserStatisticsReportType _runViaAccumulator (final Iterable <? extends PeppolReportingItem> items)
+  @NonNull
+  private static EndUserStatisticsReportType _runViaAccumulator (@NonNull final Iterable <? extends PeppolReportingItem> items)
   {
     final EndUserStatisticsReportType aReport = new EndUserStatisticsReportType ();
     final EUSRReportingItemAccumulator acc = new EUSRReportingItemAccumulator ();
@@ -118,8 +113,8 @@ public final class EUSRReportingItemAccumulatorTest
     return aReport;
   }
 
-  private static void assertReportsEqual (final EndUserStatisticsReportType expected,
-                                          final EndUserStatisticsReportType actual)
+  private static void _assertReportsEqual (@NonNull final EndUserStatisticsReportType expected,
+                                           @NonNull final EndUserStatisticsReportType actual)
   {
     assertNotNull (actual.getFullSet ());
     assertEquals (expected.getFullSet ().getSendingEndUsers (), actual.getFullSet ().getSendingEndUsers ());
@@ -132,42 +127,42 @@ public final class EUSRReportingItemAccumulatorTest
   @Test
   public void testAccumulatorMatchesList ()
   {
-    final ICommonsList <PeppolReportingItem> fixtures = buildFixtures ();
-    assertReportsEqual (_runViaList (fixtures), _runViaAccumulator (fixtures));
+    final ICommonsList <PeppolReportingItem> fixtures = _buildFixtures ();
+    _assertReportsEqual (_runViaList (fixtures), _runViaAccumulator (fixtures));
   }
 
   @Test
   public void testMultiBatchMatchesList ()
   {
-    final ICommonsList <PeppolReportingItem> fixtures = buildFixtures ();
-    final int size = fixtures.size ();
-    final int third = size / 3;
+    final ICommonsList <PeppolReportingItem> aFixtures = _buildFixtures ();
+    final int nSize = aFixtures.size ();
+    final int nThird = nSize / 3;
 
-    final List <PeppolReportingItem> batch1 = fixtures.subList (0, third);
-    final List <PeppolReportingItem> batch2 = fixtures.subList (third, 2 * third);
-    final List <PeppolReportingItem> batch3 = fixtures.subList (2 * third, size);
+    final List <PeppolReportingItem> aBatch1 = aFixtures.subList (0, nThird);
+    final List <PeppolReportingItem> aBatch2 = aFixtures.subList (nThird, 2 * nThird);
+    final List <PeppolReportingItem> aBatch3 = aFixtures.subList (2 * nThird, nSize);
 
-    final EndUserStatisticsReportType expected = _runViaList (fixtures);
+    final EndUserStatisticsReportType eAxpected = _runViaList (aFixtures);
 
-    final EndUserStatisticsReportType actual = new EndUserStatisticsReportType ();
-    final EUSRReportingItemAccumulator acc = new EUSRReportingItemAccumulator ();
-    for (final PeppolReportingItem item : batch1)
-      acc.accept (item);
-    for (final PeppolReportingItem item : batch2)
-      acc.accept (item);
-    for (final PeppolReportingItem item : batch3)
-      acc.accept (item);
-    acc.fillReport (actual);
+    final EndUserStatisticsReportType aActual = new EndUserStatisticsReportType ();
+    final EUSRReportingItemAccumulator aAcc = new EUSRReportingItemAccumulator ();
+    for (final PeppolReportingItem item : aBatch1)
+      aAcc.accept (item);
+    for (final PeppolReportingItem item : aBatch2)
+      aAcc.accept (item);
+    for (final PeppolReportingItem item : aBatch3)
+      aAcc.accept (item);
+    aAcc.fillReport (aActual);
 
-    assertReportsEqual (expected, actual);
+    _assertReportsEqual (eAxpected, aActual);
   }
 
   @Test
   public void testEmptyInput ()
   {
     final EndUserStatisticsReportType aReport = new EndUserStatisticsReportType ();
-    final EUSRReportingItemAccumulator acc = new EUSRReportingItemAccumulator ();
-    acc.fillReport (aReport);
+    final EUSRReportingItemAccumulator aAcc = new EUSRReportingItemAccumulator ();
+    aAcc.fillReport (aReport);
 
     assertNotNull (aReport.getFullSet ());
     assertEquals (BigInteger.ZERO, aReport.getFullSet ().getSendingEndUsers ());
@@ -176,4 +171,3 @@ public final class EUSRReportingItemAccumulatorTest
     assertEquals (0, aReport.getSubsetCount ());
   }
 }
-

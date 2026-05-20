@@ -39,8 +39,8 @@ import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetType;
  * batches), then call {@link #fillReport(EndUserStatisticsReportType)} to populate the report.
  * </p>
  * <p>
- * <strong>Thread-safety:</strong> This class is <em>not</em> thread-safe. Callers must not share
- * an instance across threads without external synchronisation.
+ * <strong>Thread-safety:</strong> This class is <em>not</em> thread-safe. Callers must not share an
+ * instance across threads without external synchronisation.
  * </p>
  *
  * @author Philip Helger
@@ -128,8 +128,8 @@ public class EUSRReportingItemAccumulator
   }
 
   /**
-   * Write the accumulated data as FullSet and Subsets into the given report.
-   * Call this after all {@link #accept} calls have been made.
+   * Write the accumulated data as FullSet and Subsets into the given report. Call this after all
+   * {@link #accept} calls have been made.
    *
    * @param aReport
    *        The report to populate; must not be {@code null}.
@@ -153,8 +153,12 @@ public class EUSRReportingItemAccumulator
 
       final SubsetType aSubset = new SubsetType ();
       aSubset.setType (SubsetKeyDT_PR.TYPE);
-      aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_DT, aKey.getDocTypeIDScheme (), aKey.getDocTypeIDValue ()));
-      aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_PR, aKey.getProcessIDScheme (), aKey.getProcessIDValue ()));
+      aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_DT,
+                                        aKey.getDocTypeIDScheme (),
+                                        aKey.getDocTypeIDValue ()));
+      aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_PR,
+                                        aKey.getProcessIDScheme (),
+                                        aKey.getProcessIDValue ()));
       aSubset.setSendingEndUsers (BigHelper.toBigInteger (aVal.m_aSenders.size ()));
       aSubset.setReceivingEndUsers (BigHelper.toBigInteger (aVal.m_aReceivers.size ()));
       aSubset.setSendingOrReceivingEndUsers (BigHelper.toBigInteger (aVal.m_aSendersOrReceivers.size ()));
@@ -186,7 +190,9 @@ public class EUSRReportingItemAccumulator
 
       final SubsetType aSubset = new SubsetType ();
       aSubset.setType (SubsetKeyDT_EUC.TYPE);
-      aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_DT, aKey.getDocTypeIDScheme (), aKey.getDocTypeIDValue ()));
+      aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_DT,
+                                        aKey.getDocTypeIDScheme (),
+                                        aKey.getDocTypeIDValue ()));
       aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_CC,
                                         CEUSR.EUSR_SCHEME_CC_END_USER_COUNTRY,
                                         aKey.getEndUserCountryCode ()));
@@ -204,8 +210,12 @@ public class EUSRReportingItemAccumulator
 
       final SubsetType aSubset = new SubsetType ();
       aSubset.setType (SubsetKeyDT_PR_EUC.TYPE);
-      aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_DT, aKey.getDocTypeIDScheme (), aKey.getDocTypeIDValue ()));
-      aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_PR, aKey.getProcessIDScheme (), aKey.getProcessIDValue ()));
+      aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_DT,
+                                        aKey.getDocTypeIDScheme (),
+                                        aKey.getDocTypeIDValue ()));
+      aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_PR,
+                                        aKey.getProcessIDScheme (),
+                                        aKey.getProcessIDValue ()));
       aSubset.addKey (_createSubsetKey (CEUSR.EUSR_METASCHEME_CC,
                                         CEUSR.EUSR_SCHEME_CC_END_USER_COUNTRY,
                                         aKey.getEndUserCountryCode ()));
@@ -216,4 +226,3 @@ public class EUSRReportingItemAccumulator
     }
   }
 }
-

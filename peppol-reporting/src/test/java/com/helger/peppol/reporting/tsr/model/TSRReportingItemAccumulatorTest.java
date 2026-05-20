@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 
 import com.helger.collection.commons.CommonsArrayList;
@@ -41,7 +42,8 @@ public final class TSRReportingItemAccumulatorTest
   private static final String MY_SPID = "POP000360";
   private static final String OTHER_SPID = "POP000002";
 
-  private static ICommonsList <PeppolReportingItem> buildFixtures ()
+  @NonNull
+  private static ICommonsList <PeppolReportingItem> _buildFixtures ()
   {
     final OffsetDateTime aNow = PDTFactory.getCurrentOffsetDateTime ();
     final ICommonsList <PeppolReportingItem> aList = new CommonsArrayList <> ();
@@ -80,71 +82,73 @@ public final class TSRReportingItemAccumulatorTest
     return aList;
   }
 
-  private static TransactionStatisticsReportType _runViaList (final Iterable <? extends PeppolReportingItem> items)
+  @NonNull
+  private static TransactionStatisticsReportType _runViaList (@NonNull final Iterable <? extends PeppolReportingItem> items)
   {
     final TransactionStatisticsReportType aReport = new TransactionStatisticsReportType ();
     TSRReportingItemList.fillReportSubsets (items, aReport);
     return aReport;
   }
 
-  private static TransactionStatisticsReportType _runViaAccumulator (final Iterable <? extends PeppolReportingItem> items)
+  @NonNull
+  private static TransactionStatisticsReportType _runViaAccumulator (@NonNull final Iterable <? extends PeppolReportingItem> aItems)
   {
     final TransactionStatisticsReportType aReport = new TransactionStatisticsReportType ();
-    final TSRReportingItemAccumulator acc = new TSRReportingItemAccumulator ();
-    for (final PeppolReportingItem item : items)
-      acc.accept (item);
-    acc.fillReport (aReport);
+    final TSRReportingItemAccumulator aAcc = new TSRReportingItemAccumulator ();
+    for (final PeppolReportingItem aItem : aItems)
+      aAcc.accept (aItem);
+    aAcc.fillReport (aReport);
     return aReport;
   }
 
-  private static void assertReportsEqual (final TransactionStatisticsReportType expected,
-                                          final TransactionStatisticsReportType actual)
+  private static void _assertReportsEqual (@NonNull final TransactionStatisticsReportType aExpected,
+                                           @NonNull final TransactionStatisticsReportType aActual)
   {
-    assertNotNull (actual.getTotal ());
-    assertEquals (expected.getTotal ().getIncoming (), actual.getTotal ().getIncoming ());
-    assertEquals (expected.getTotal ().getOutgoing (), actual.getTotal ().getOutgoing ());
-    assertEquals (expected.getSubtotalCount (), actual.getSubtotalCount ());
+    assertNotNull (aActual.getTotal ());
+    assertEquals (aExpected.getTotal ().getIncoming (), aActual.getTotal ().getIncoming ());
+    assertEquals (aExpected.getTotal ().getOutgoing (), aActual.getTotal ().getOutgoing ());
+    assertEquals (aExpected.getSubtotalCount (), aActual.getSubtotalCount ());
   }
 
   @Test
   public void testAccumulatorMatchesList ()
   {
-    final ICommonsList <PeppolReportingItem> fixtures = buildFixtures ();
-    assertReportsEqual (_runViaList (fixtures), _runViaAccumulator (fixtures));
+    final ICommonsList <PeppolReportingItem> aFixtures = _buildFixtures ();
+    _assertReportsEqual (_runViaList (aFixtures), _runViaAccumulator (aFixtures));
   }
 
   @Test
   public void testMultiBatchMatchesList ()
   {
-    final ICommonsList <PeppolReportingItem> fixtures = buildFixtures ();
-    final int size = fixtures.size ();
-    final int third = size / 3;
+    final ICommonsList <PeppolReportingItem> aFixtures = _buildFixtures ();
+    final int nSize = aFixtures.size ();
+    final int nThird = nSize / 3;
 
-    final List <PeppolReportingItem> batch1 = fixtures.subList (0, third);
-    final List <PeppolReportingItem> batch2 = fixtures.subList (third, 2 * third);
-    final List <PeppolReportingItem> batch3 = fixtures.subList (2 * third, size);
+    final List <PeppolReportingItem> aBatch1 = aFixtures.subList (0, nThird);
+    final List <PeppolReportingItem> aBatch2 = aFixtures.subList (nThird, 2 * nThird);
+    final List <PeppolReportingItem> aBatch3 = aFixtures.subList (2 * nThird, nSize);
 
-    final TransactionStatisticsReportType expected = _runViaList (fixtures);
+    final TransactionStatisticsReportType aExpected = _runViaList (aFixtures);
 
-    final TransactionStatisticsReportType actual = new TransactionStatisticsReportType ();
-    final TSRReportingItemAccumulator acc = new TSRReportingItemAccumulator ();
-    for (final PeppolReportingItem item : batch1)
-      acc.accept (item);
-    for (final PeppolReportingItem item : batch2)
-      acc.accept (item);
-    for (final PeppolReportingItem item : batch3)
-      acc.accept (item);
-    acc.fillReport (actual);
+    final TransactionStatisticsReportType aActual = new TransactionStatisticsReportType ();
+    final TSRReportingItemAccumulator aAcc = new TSRReportingItemAccumulator ();
+    for (final PeppolReportingItem item : aBatch1)
+      aAcc.accept (item);
+    for (final PeppolReportingItem item : aBatch2)
+      aAcc.accept (item);
+    for (final PeppolReportingItem item : aBatch3)
+      aAcc.accept (item);
+    aAcc.fillReport (aActual);
 
-    assertReportsEqual (expected, actual);
+    _assertReportsEqual (aExpected, aActual);
   }
 
   @Test
   public void testEmptyInput ()
   {
     final TransactionStatisticsReportType aReport = new TransactionStatisticsReportType ();
-    final TSRReportingItemAccumulator acc = new TSRReportingItemAccumulator ();
-    acc.fillReport (aReport);
+    final TSRReportingItemAccumulator aAcc = new TSRReportingItemAccumulator ();
+    aAcc.fillReport (aReport);
 
     assertNotNull (aReport.getTotal ());
     assertEquals (BigInteger.ZERO, aReport.getTotal ().getIncoming ());
@@ -152,4 +156,3 @@ public final class TSRReportingItemAccumulatorTest
     assertEquals (0, aReport.getSubtotalCount ());
   }
 }
-
