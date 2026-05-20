@@ -298,7 +298,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 v4.1.4 - 2026-05-20
 * Removed OSGI bundling
-* Added `EUSRReportingItemAccumulator` and `TSRReportingItemAccumulator` to support batched/streaming aggregation, preventing OOM errors when processing large datasets
+* Added `EUSRReportingItemAccumulator` and `TSRReportingItemAccumulator` to support batched/streaming aggregation, preventing OOM errors when processing large datasets. See [#18](https://github.com/phax/peppol-reporting/pull/18) - thx @jaskiratsingh1792
 
 v4.1.3 - 2026-04-12
 * Added new submodule `peppol-reporting-test` containing shared SPI contract tests (`AbstractPeppolReportingBackendSPITest`) that all backend implementations can extend to ensure consistent behaviour
