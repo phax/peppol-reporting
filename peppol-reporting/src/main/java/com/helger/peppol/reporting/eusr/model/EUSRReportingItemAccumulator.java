@@ -31,6 +31,8 @@ import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.FullSetType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetKeyType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetType;
+import com.helger.peppolid.peppol.PeppolIdentifierHelper;
+import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 
 /**
  * Accumulator for EUSR reporting items that supports batched (streaming) input.
@@ -78,6 +80,12 @@ public class EUSRReportingItemAccumulator
   public EUSRReportingItemAccumulator ()
   {}
 
+  private static boolean _isMLSDocType (@NonNull final PeppolReportingItem aItem)
+  {
+    return PeppolIdentifierHelper.DOCUMENT_TYPE_SCHEME_BUSDOX_DOCID_QNS.equals (aItem.getDocTypeIDScheme ()) &&
+      EPredefinedDocumentTypeIdentifier.PEPPOL_MLS_1_0.getValue ().equals (aItem.getDocTypeIDValue ());
+  }
+
   /**
    * Accept a single {@link PeppolReportingItem} and accumulate its data into the internal state.
    * May be called multiple times, across multiple batches, before {@link #fillReport}.
@@ -87,32 +95,37 @@ public class EUSRReportingItemAccumulator
    */
   public void accept (@NonNull final PeppolReportingItem aItem)
   {
-    final SubsetKeyDT_PR aKeyDT_PR = new SubsetKeyDT_PR (aItem.getDocTypeIDScheme (),
-                                                         aItem.getDocTypeIDValue (),
-                                                         aItem.getProcessIDScheme (),
-                                                         aItem.getProcessIDValue ());
-    final SubsetKeyEUC aKeyEUC = new SubsetKeyEUC (aItem.getEndUserCountryCode ());
-    final SubsetKeyDT_EUC aKeyDT_EUC = new SubsetKeyDT_EUC (aItem.getDocTypeIDScheme (),
-                                                            aItem.getDocTypeIDValue (),
-                                                            aItem.getEndUserCountryCode ());
-    final SubsetKeyDT_PR_EUC aKeyDT_PR_EUC = new SubsetKeyDT_PR_EUC (aItem.getDocTypeIDScheme (),
-                                                                     aItem.getDocTypeIDValue (),
-                                                                     aItem.getProcessIDScheme (),
-                                                                     aItem.getProcessIDValue (),
-                                                                     aItem.getEndUserCountryCode ());
+    // explicit avoid counting MLS message for EUSR (see SPOG on MLS)
+    if (!_isMLSDocType (aItem))
+    {
+      final SubsetKeyDT_PR aKeyDT_PR = new SubsetKeyDT_PR (aItem.getDocTypeIDScheme (),
+                                                           aItem.getDocTypeIDValue (),
+                                                           aItem.getProcessIDScheme (),
+                                                           aItem.getProcessIDValue ());
 
-    final String sEndUserID = aItem.getEndUserID ();
-    final boolean bSending = aItem.isSending ();
-    m_aMapDT_PR.computeIfAbsent (aKeyDT_PR, x -> new EndUserCounter ()).inc (sEndUserID, bSending);
-    m_aMapEUC.computeIfAbsent (aKeyEUC, x -> new EndUserCounter ()).inc (sEndUserID, bSending);
-    m_aMapDT_EUC.computeIfAbsent (aKeyDT_EUC, x -> new EndUserCounter ()).inc (sEndUserID, bSending);
-    m_aMapDT_PR_EUC.computeIfAbsent (aKeyDT_PR_EUC, x -> new EndUserCounter ()).inc (sEndUserID, bSending);
+      final SubsetKeyEUC aKeyEUC = new SubsetKeyEUC (aItem.getEndUserCountryCode ());
+      final SubsetKeyDT_EUC aKeyDT_EUC = new SubsetKeyDT_EUC (aItem.getDocTypeIDScheme (),
+                                                              aItem.getDocTypeIDValue (),
+                                                              aItem.getEndUserCountryCode ());
+      final SubsetKeyDT_PR_EUC aKeyDT_PR_EUC = new SubsetKeyDT_PR_EUC (aItem.getDocTypeIDScheme (),
+                                                                       aItem.getDocTypeIDValue (),
+                                                                       aItem.getProcessIDScheme (),
+                                                                       aItem.getProcessIDValue (),
+                                                                       aItem.getEndUserCountryCode ());
 
-    if (bSending)
-      m_aSendingEndUsers.add (sEndUserID);
-    else
-      m_aReceivingEndUsers.add (sEndUserID);
-    m_aSendingOrReceivingEndUsers.add (sEndUserID);
+      final String sEndUserID = aItem.getEndUserID ();
+      final boolean bSending = aItem.isSending ();
+      m_aMapDT_PR.computeIfAbsent (aKeyDT_PR, x -> new EndUserCounter ()).inc (sEndUserID, bSending);
+      m_aMapEUC.computeIfAbsent (aKeyEUC, x -> new EndUserCounter ()).inc (sEndUserID, bSending);
+      m_aMapDT_EUC.computeIfAbsent (aKeyDT_EUC, x -> new EndUserCounter ()).inc (sEndUserID, bSending);
+      m_aMapDT_PR_EUC.computeIfAbsent (aKeyDT_PR_EUC, x -> new EndUserCounter ()).inc (sEndUserID, bSending);
+
+      if (bSending)
+        m_aSendingEndUsers.add (sEndUserID);
+      else
+        m_aReceivingEndUsers.add (sEndUserID);
+      m_aSendingOrReceivingEndUsers.add (sEndUserID);
+    }
   }
 
   @NonNull

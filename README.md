@@ -298,6 +298,9 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+v4.1.5 - 2026-07-05
+* Not counting MLS messages for EUSR (only for TSR)
+
 v4.1.4 - 2026-05-20
 * Removed OSGI bundling
 * Added `EUSRReportingItemAccumulator` and `TSRReportingItemAccumulator` to support batched/streaming aggregation, preventing OOM errors when processing large datasets. See [#18](https://github.com/phax/peppol-reporting/pull/18) - thx @jaskiratsingh1792
