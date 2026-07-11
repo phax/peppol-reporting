@@ -86,6 +86,12 @@
       <artifactId>flyway-sqlserver</artifactId>
       <version>${flyway.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-db2</artifactId>
+      <version>${flyway.version}</version>
+      <optional>true</optional>
+    </dependency>
     
     <dependency>
       <groupId>com.helger.peppol</groupId>
@@ -118,6 +124,12 @@
       <groupId>com.microsoft.sqlserver</groupId>
       <artifactId>mssql-jdbc</artifactId>
       <version>13.4.0.jre11</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.db2</groupId>
+      <artifactId>jcc</artifactId>
+      <version>11.5.9.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
