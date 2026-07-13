@@ -118,7 +118,7 @@ Submodule `peppol-reporting-backend-sql` stores data in relational databases.
 This submodule was introduced in version 3.0.1.
 
 It supports the following configuration properties:
-* **`peppol.reporting.jdbc.database-type`**: the SQL database type to operate on. Currently supported are `postgresql`, `mysql` and `sqlserver`. The value is case-insensitive.
+* **`peppol.reporting.jdbc.database-type`**: the SQL database type to operate on. Currently supported are `postgresql`, `mysql`, `sqlserver` and (experimentally) `db2`. The value is case-insensitive.
 * **`peppol.reporting.jdbc.driver`**: contains the fully qualified class name of the JDBC driver to be used. E.g. `org.postgresql.Driver` for PostgreSQL, `com.mysql.cj.jdbc.Driver` for MySQL or `com.microsoft.sqlserver.jdbc.SQLServerDriver` for SQL Server
 * **`peppol.reporting.jdbc.url`**: contains the full JDBC connection URL to connect to the database
 * **`peppol.reporting.jdbc.user`** (optional): the database username to use
@@ -169,6 +169,15 @@ SQL Server:
       <groupId>com.microsoft.sqlserver</groupId>
       <artifactId>mssql-jdbc</artifactId>
       <version>x.y.z</version>
+    </dependency>
+```
+
+DB2 (Experimental):
+```xml
+    <dependency>
+      <groupId>com.ibm.db2</groupId>
+      <artifactId>jcc</artifactId>
+      <version>11.5.9.0</version>
     </dependency>
 ```
 
