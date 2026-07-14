@@ -118,8 +118,8 @@ Submodule `peppol-reporting-backend-sql` stores data in relational databases.
 This submodule was introduced in version 3.0.1.
 
 It supports the following configuration properties:
-* **`peppol.reporting.jdbc.database-type`**: the SQL database type to operate on. Currently supported are `postgresql`, `mysql`, `sqlserver` and (experimentally) `db2`. The value is case-insensitive.
-* **`peppol.reporting.jdbc.driver`**: contains the fully qualified class name of the JDBC driver to be used. E.g. `org.postgresql.Driver` for PostgreSQL, `com.mysql.cj.jdbc.Driver` for MySQL or `com.microsoft.sqlserver.jdbc.SQLServerDriver` for SQL Server
+* **`peppol.reporting.jdbc.database-type`**: the SQL database type to operate on. Currently supported are `postgresql`, `mysql`, `sqlserver`, `db2` and `oracle`. The value is case-insensitive.
+* **`peppol.reporting.jdbc.driver`**: contains the fully qualified class name of the JDBC driver to be used. E.g. `org.postgresql.Driver` for PostgreSQL, `com.mysql.cj.jdbc.Driver` for MySQL, `com.microsoft.sqlserver.jdbc.SQLServerDriver` for SQL Server, `com.ibm.db2.jcc.DB2Driver` for DB2 or `oracle.jdbc.OracleDriver` for Oracle
 * **`peppol.reporting.jdbc.url`**: contains the full JDBC connection URL to connect to the database
 * **`peppol.reporting.jdbc.user`** (optional): the database username to use
 * **`peppol.reporting.jdbc.password`** (optional): the database password to use
@@ -144,12 +144,19 @@ It can be configured as followed:
 * **`peppol.reporting.flyway.debug-mode`** (since v4.1.3; optional): `true` to enable Flyway debug mode. Defaults to `false`.
 * **`peppol.reporting.flyway.repair-mode`** (since v4.1.3; optional): `true` to enable Flyway repair mode. Defaults to `false`.
 
-By default it is not bound to any specific DB engine, so you need to provide the necessary driver dependency manually.
+Because `peppol-reporting-backend-sql` is a library and not bound to any specific DB engine, both the JDBC driver and the matching Flyway database module are declared as `optional` (respectively `test` scope) and must be provided by the consuming application manually.
+Add the two dependencies matching your database engine:
+
 PostgreSQL:
 ```xml
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
+      <version>x.y.z</version>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
       <version>x.y.z</version>
     </dependency>
 ```
@@ -161,6 +168,11 @@ MySQL:
       <artifactId>mysql-connector-j</artifactId>
       <version>x.y.z</version>
     </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-mysql</artifactId>
+      <version>x.y.z</version>
+    </dependency>
 ```
 
 SQL Server:
@@ -170,14 +182,38 @@ SQL Server:
       <artifactId>mssql-jdbc</artifactId>
       <version>x.y.z</version>
     </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-sqlserver</artifactId>
+      <version>x.y.z</version>
+    </dependency>
 ```
 
-DB2 (Experimental):
+DB2:
 ```xml
     <dependency>
       <groupId>com.ibm.db2</groupId>
       <artifactId>jcc</artifactId>
-      <version>11.5.9.0</version>
+      <version>x.y.z</version>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-db2</artifactId>
+      <version>x.y.z</version>
+    </dependency>
+```
+
+Oracle:
+```xml
+    <dependency>
+      <groupId>com.oracle.database.jdbc</groupId>
+      <artifactId>ojdbc17</artifactId>
+      <version>x.y.z</version>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-oracle</artifactId>
+      <version>x.y.z</version>
     </dependency>
 ```
 
@@ -306,6 +342,11 @@ Usage as Maven BOM:
 Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
+
+v4.2.0 - work in progress
+* (SQL) Added support for IBM DB2 as a database backend. See [#21](https://github.com/phax/peppol-reporting/pull/21) - thx @dmaus2018
+* (SQL) Added support for Oracle as a database backend
+* (SQL) All database-specific Flyway modules are now `optional` dependencies, so consumers only pull in the one matching their database engine
 
 v4.1.5 - 2026-07-05
 * Not counting MLS messages for EUSR (only for TSR)

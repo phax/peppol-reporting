@@ -66,7 +66,8 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   private static final EnumSet <EDatabaseSystemType> ALLOWED_DB_TYPES = EnumSet.of (EDatabaseSystemType.MYSQL,
                                                                                     EDatabaseSystemType.POSTGRESQL,
                                                                                     EDatabaseSystemType.SQLSERVER,
-                                                                                    EDatabaseSystemType.DB2);
+                                                                                    EDatabaseSystemType.DB2,
+                                                                                    EDatabaseSystemType.ORACLE);
 
   private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("m_aRWLock")

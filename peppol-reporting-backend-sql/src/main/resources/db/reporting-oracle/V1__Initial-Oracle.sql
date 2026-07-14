@@ -17,18 +17,19 @@
 
 CREATE TABLE peppol_reporting_item (
   -- Use up to millisecond precision
-  exchangedt timestamp(3) NOT NULL,
-  sending    smallint     NOT NULL,
-  c2id       varchar(64)  NOT NULL,
-  c3id       varchar(64)  NOT NULL,
-  dtscheme   varchar(64)  NOT NULL,
-  dtvalue    varchar(500) NOT NULL,
-  procscheme varchar(64)  NOT NULL,
-  procvalue  varchar(200) NOT NULL,
-  tp         varchar(64)  NOT NULL,
-  c1cc       varchar(2)   NOT NULL,
-  c4cc       varchar(2)   DEFAULT NULL,
-  enduserid  varchar(256) NOT NULL
+  exchangedt timestamp(3)  NOT NULL,
+  -- Oracle has no boolean type - use number(1)
+  sending    number(1)     NOT NULL,
+  c2id       varchar2(64)  NOT NULL,
+  c3id       varchar2(64)  NOT NULL,
+  dtscheme   varchar2(64)  NOT NULL,
+  dtvalue    varchar2(500) NOT NULL,
+  procscheme varchar2(64)  NOT NULL,
+  procvalue  varchar2(200) NOT NULL,
+  tp         varchar2(64)  NOT NULL,
+  c1cc       varchar2(2)   NOT NULL,
+  c4cc       varchar2(2)   DEFAULT NULL,
+  enduserid  varchar2(256) NOT NULL
 );
 
 CREATE INDEX peppol_reporting_item_idx ON peppol_reporting_item (exchangedt);
