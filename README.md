@@ -260,10 +260,11 @@ int pageSize = 1000;
 int pageIndex = 0;
 List<PeppolReportingItem> page;
 do {
-    page = myRepository.findByMonth (yearMonth, pageIndex, pageSize); // your query
-    for (PeppolReportingItem item : page)
-        accumulator.accept (item);
-    pageIndex++;
+  // your query
+  page = myRepository.findByMonth (yearMonth, pageIndex, pageSize);
+  for (PeppolReportingItem item : page)
+    accumulator.accept (item);
+  pageIndex++;
 } while (!page.isEmpty ());
 
 // 3. Write the aggregated data into the report
@@ -284,10 +285,10 @@ int pageSize = 1000;
 int pageIndex = 0;
 List<PeppolReportingItem> page;
 do {
-    page = myRepository.findByMonth (yearMonth, pageIndex, pageSize);
-    for (PeppolReportingItem item : page)
-        accumulator.accept (item);
-    pageIndex++;
+  page = myRepository.findByMonth (yearMonth, pageIndex, pageSize);
+  for (PeppolReportingItem item : page)
+    accumulator.accept (item);
+  pageIndex++;
 } while (!page.isEmpty ());
 
 accumulator.fillReport (aReport);
