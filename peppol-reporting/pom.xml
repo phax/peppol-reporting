@@ -29,6 +29,7 @@
   <name>peppol-reporting</name>
   <inceptionYear>2022</inceptionYear>
   <url>https://github.com/phax/peppol-reporting/peppol-reporting</url>
+  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -36,6 +37,7 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
   <developers>
     <developer>
       <id>philip</id>
@@ -44,6 +46,7 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
@@ -59,7 +62,7 @@
     </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-xslt</artifactId>
+      <artifactId>ph-schematron-isosch</artifactId>
     </dependency>
     <dependency>
       <groupId>com.helger.peppol</groupId>
@@ -69,6 +72,7 @@
       <groupId>com.helger.peppol</groupId>
       <artifactId>peppol-reporting-api</artifactId>
     </dependency>
+    
     <dependency>
       <groupId>com.helger.peppol</groupId>
       <artifactId>peppol-reporting-testfiles</artifactId>

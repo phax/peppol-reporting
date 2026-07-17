@@ -33,7 +33,8 @@ public final class EndUserStatisticsReportValidator
 {
   public static final String SCH_EUSR_115_PATH = "external/schematron/peppol-end-user-statistics-reporting-1.1.5.sch";
 
-  private static final ISchematronResource SCH_EUSR_115 = SchematronResourceSCH.fromClassPath (SCH_EUSR_115_PATH);
+  private static final ISchematronResource SCH_EUSR_115 = SchematronResourceSCH.builderFromClassPath (SCH_EUSR_115_PATH)
+                                                                               .build ();
 
   static
   {
