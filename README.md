@@ -344,6 +344,9 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+v4.2.0 - 2026-07-17
+* Updated to ph-schematron v10.x
+
 v4.1.6 - 2026-07-16
 * (SQL) Added support for IBM DB2 as a database backend. See [#21](https://github.com/phax/peppol-reporting/pull/21) - thx @dmaus2018
 * (SQL) Added support for Oracle as a database backend
