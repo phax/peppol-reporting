@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.peppol</groupId>
     <artifactId>peppol-reporting-parent-pom</artifactId>
-    <version>4.2.1-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
   <artifactId>peppol-reporting-api</artifactId>
   <packaging>jar</packaging>
@@ -48,6 +48,10 @@
     <dependency>
       <groupId>com.helger.commons</groupId>
       <artifactId>ph-config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-json</artifactId>
     </dependency>
     <dependency>
       <groupId>com.helger.peppol</groupId>
