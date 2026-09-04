@@ -26,13 +26,13 @@ import com.helger.collection.commons.CommonsHashSet;
 import com.helger.collection.commons.CommonsTreeMap;
 import com.helger.collection.commons.ICommonsSet;
 import com.helger.collection.commons.ICommonsSortedMap;
+import com.helger.peppol.reporting.api.EPeppolReportType;
+import com.helger.peppol.reporting.api.PeppolReportingHelper;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.FullSetType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetKeyType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.SubsetType;
-import com.helger.peppolid.peppol.PeppolIdentifierHelper;
-import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
 
 /**
  * Accumulator for EUSR reporting items that supports batched (streaming) input.
@@ -80,12 +80,6 @@ public class EUSRReportingItemAccumulator
   public EUSRReportingItemAccumulator ()
   {}
 
-  private static boolean _isMLSDocType (@NonNull final PeppolReportingItem aItem)
-  {
-    return PeppolIdentifierHelper.DOCUMENT_TYPE_SCHEME_BUSDOX_DOCID_QNS.equals (aItem.getDocTypeIDScheme ()) &&
-      EPredefinedDocumentTypeIdentifier.PEPPOL_MLS_1_0.getValue ().equals (aItem.getDocTypeIDValue ());
-  }
-
   /**
    * Accept a single {@link PeppolReportingItem} and accumulate its data into the internal state.
    * May be called multiple times, across multiple batches, before {@link #fillReport}.
@@ -95,8 +89,10 @@ public class EUSRReportingItemAccumulator
    */
   public void accept (@NonNull final PeppolReportingItem aItem)
   {
-    // explicit avoid counting MLS message for EUSR (see SPOG on MLS)
-    if (!_isMLSDocType (aItem))
+    // Explicitly avoid counting e.g. MLS messages for EUSR (see SPOG on MLS)
+    if (PeppolReportingHelper.isDocumentTypeEligableForReporting (EPeppolReportType.EUSR_V11,
+                                                                  aItem.getDocTypeIDScheme (),
+                                                                  aItem.getDocTypeIDValue ()))
     {
       final SubsetKeyDT_PR aKeyDT_PR = new SubsetKeyDT_PR (aItem.getDocTypeIDScheme (),
                                                            aItem.getDocTypeIDValue (),

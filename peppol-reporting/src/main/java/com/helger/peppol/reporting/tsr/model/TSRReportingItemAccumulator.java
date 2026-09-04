@@ -25,6 +25,8 @@ import com.helger.base.numeric.BigHelper;
 import com.helger.collection.commons.CommonsTreeMap;
 import com.helger.collection.commons.ICommonsSortedMap;
 import com.helger.peppol.reporting.api.CPeppolReporting;
+import com.helger.peppol.reporting.api.EPeppolReportType;
+import com.helger.peppol.reporting.api.PeppolReportingHelper;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.jaxb.tsr.v101.IncomingOutgoingType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.SubtotalKeyType;
@@ -82,33 +84,39 @@ public class TSRReportingItemAccumulator
    */
   public void accept (@NonNull final PeppolReportingItem aItem)
   {
-    final SubtotalKeyTP aKeyTP = new SubtotalKeyTP (aItem.getTransportProtocol ());
-    final SubtotalKeySP_DT_PR aKeySP_DT_PR = new SubtotalKeySP_DT_PR (aItem.getOtherServiceProviderID (),
-                                                                      aItem.getDocTypeIDScheme (),
-                                                                      aItem.getDocTypeIDValue (),
-                                                                      aItem.getProcessIDScheme (),
-                                                                      aItem.getProcessIDValue ());
-
-    final boolean bIncoming = aItem.isReceiving ();
-    m_aMapTP.computeIfAbsent (aKeyTP, x -> new TransactionCounter ()).inc (bIncoming);
-    m_aMapSP_DT_PR.computeIfAbsent (aKeySP_DT_PR, x -> new TransactionCounter ()).inc (bIncoming);
-
-    if (bIncoming)
+    // Explicitly avoid counting e.g. TSR and EUSR messages for TSR
+    if (PeppolReportingHelper.isDocumentTypeEligableForReporting (EPeppolReportType.TSR_V10,
+                                                                  aItem.getDocTypeIDScheme (),
+                                                                  aItem.getDocTypeIDValue ()))
     {
-      m_nTotalIncoming++;
+      final SubtotalKeyTP aKeyTP = new SubtotalKeyTP (aItem.getTransportProtocol ());
+      final SubtotalKeySP_DT_PR aKeySP_DT_PR = new SubtotalKeySP_DT_PR (aItem.getOtherServiceProviderID (),
+                                                                        aItem.getDocTypeIDScheme (),
+                                                                        aItem.getDocTypeIDValue (),
+                                                                        aItem.getProcessIDScheme (),
+                                                                        aItem.getProcessIDValue ());
 
-      // This can only be counted for incoming messages, as senders never have the C4 ID
-      final SubtotalKeySP_DT_PR_CC aKeySP_DT_PR_CC = new SubtotalKeySP_DT_PR_CC (aItem.getOtherServiceProviderID (),
-                                                                                 aItem.getDocTypeIDScheme (),
-                                                                                 aItem.getDocTypeIDValue (),
-                                                                                 aItem.getProcessIDScheme (),
-                                                                                 aItem.getProcessIDValue (),
-                                                                                 aItem.getC1CountryCode (),
-                                                                                 aItem.getC4CountryCode ());
-      m_aMapSP_DT_PR_CC.computeIfAbsent (aKeySP_DT_PR_CC, x -> new TransactionCounter ()).inc (bIncoming);
+      final boolean bIncoming = aItem.isReceiving ();
+      m_aMapTP.computeIfAbsent (aKeyTP, x -> new TransactionCounter ()).inc (bIncoming);
+      m_aMapSP_DT_PR.computeIfAbsent (aKeySP_DT_PR, x -> new TransactionCounter ()).inc (bIncoming);
+
+      if (bIncoming)
+      {
+        m_nTotalIncoming++;
+
+        // This can only be counted for incoming messages, as senders never have the C4 ID
+        final SubtotalKeySP_DT_PR_CC aKeySP_DT_PR_CC = new SubtotalKeySP_DT_PR_CC (aItem.getOtherServiceProviderID (),
+                                                                                   aItem.getDocTypeIDScheme (),
+                                                                                   aItem.getDocTypeIDValue (),
+                                                                                   aItem.getProcessIDScheme (),
+                                                                                   aItem.getProcessIDValue (),
+                                                                                   aItem.getC1CountryCode (),
+                                                                                   aItem.getC4CountryCode ());
+        m_aMapSP_DT_PR_CC.computeIfAbsent (aKeySP_DT_PR_CC, x -> new TransactionCounter ()).inc (bIncoming);
+      }
+      else
+        m_nTotalOutgoing++;
     }
-    else
-      m_nTotalOutgoing++;
   }
 
   @NonNull

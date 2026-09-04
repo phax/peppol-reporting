@@ -60,6 +60,39 @@ Each `PeppolReportingItem` consists of the following elements:
 
 To facilitate this collection, the submodule `peppol-reporting-api` exists.
 
+### JSON serialization
+
+To transfer `PeppolReportingItem` objects over the wire, the class `PeppolReportingJsonHelper` (in the submodule
+`peppol-reporting-api`) provides a default JSON serialization:
+
+```java
+final String sJson = PeppolReportingJsonHelper.toJsonString (aReportingItem);
+final PeppolReportingItem aReadBack = PeppolReportingJsonHelper.toDomain (sJson);
+```
+
+Each created JSON object contains the field `version` with the value `1`, so that the layout can be extended in a
+backwards compatible way later on. Reading a JSON object with an unsupported layout version throws an
+`IllegalArgumentException`. An example serialization looks like this:
+
+```json
+{
+  "version":1,
+  "exchangedt":"2026-09-04T10:15:30.123Z",
+  "direction":"send",
+  "c2id":"POP000001",
+  "c3id":"POP000002",
+  "dtidscheme":"busdox-docid-qns",
+  "dtidvalue":"urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1",
+  "procidscheme":"cenbii-procid-ubl",
+  "procidvalue":"urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+  "transportid":"peppol-transport-as4-v2_0",
+  "c1cc":"FI",
+  "enduserid":"abc"
+}
+```
+
+The field `c4cc` is only present for received messages.
+
 ## Data storage
 
 The created reporting item must be stored somewhere, to be able to retrieve them later.
@@ -343,6 +376,15 @@ Usage as Maven BOM:
 Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
+
+v4.3.0 - work in progress
+* Added new enum `EPeppolReportType` to the `peppol-reporting-api` submodule
+* Extended `PeppolReportingHelper.isDocumentTypeEligableForReporting` with new overloads that take the `EPeppolReportType` to check the eligibility for
+* The existing `PeppolReportingHelper.isDocumentTypeEligableForReporting` overloads without a report type now check the eligibility for at least one of the report types - that is the check to be used when storing reporting items
+* Moved the "MLS is not counted for EUSR" rule from `EUSRReportingItemAccumulator` into `PeppolReportingHelper`
+* `TSRReportingItemAccumulator` now also ignores document types that are not eligible for TSR (backwards incompatible change)
+* Added class `PeppolReportingJsonHelper` to convert `PeppolReportingItem` objects from and to a default JSON representation, containing a `version` field for extensibility
+* The submodule `peppol-reporting-api` now depends on `ph-json`
 
 v4.2.0 - 2026-07-17
 * Updated to ph-schematron v10.x
