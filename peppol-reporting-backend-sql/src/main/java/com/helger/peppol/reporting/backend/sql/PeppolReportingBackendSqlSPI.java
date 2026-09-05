@@ -44,6 +44,7 @@ import com.helger.db.api.helper.DBValueHelper;
 import com.helger.db.flyway.FlywayConfiguration;
 import com.helger.db.jdbc.DataSourceProviderFromJdbcConfiguration;
 import com.helger.db.jdbc.callback.ConstantPreparedStatementDataProvider;
+import com.helger.db.jdbc.callback.IResultSetRowCallback;
 import com.helger.db.jdbc.executor.DBExecutor;
 import com.helger.peppol.reporting.api.EReportingDirection;
 import com.helger.peppol.reporting.api.PeppolReportingHelper;
@@ -97,7 +98,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   @NonNull
   public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
-    m_aRWLock.writeLocked ( () -> {
+    m_aRWLock.writeLocked (() -> {
       if (m_aDSP != null)
         throw new IllegalStateException ("The Peppol Reporting SQL DB backend was already initialized");
 
@@ -149,14 +150,14 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
 
   public boolean isInitialized ()
   {
-    return m_aRWLock.readLockedBoolean ( () -> m_aConfig != null && m_aDSP != null && m_sTableNamePrefix != null);
+    return m_aRWLock.readLockedBoolean (() -> m_aConfig != null && m_aDSP != null && m_sTableNamePrefix != null);
   }
 
   public void shutdownBackend ()
   {
     if (isInitialized ())
     {
-      m_aRWLock.writeLocked ( () -> {
+      m_aRWLock.writeLocked (() -> {
         LOGGER.info ("Shutting down Peppol Reporting SQL DB client");
         m_aConfig = null;
         if (m_aDSP != null)
@@ -195,7 +196,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
         throw new IllegalStateException ("The Peppol Reporting SQL DB backend is not initialized");
 
       final DBExecutor aExecutor = _newExecutor ();
-      final ESuccess eSuccess = aExecutor.performInTransaction ( () -> {
+      final ESuccess eSuccess = aExecutor.performInTransaction (() -> {
         // Create new
         final long nCreated = aExecutor.insertOrUpdateOrDelete ("INSERT INTO " +
                                                                 m_sTableNamePrefix +
@@ -248,7 +249,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
-    ValueEnforcer.isTrue ( () -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
+    ValueEnforcer.isTrue (() -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Querying Peppol Reporting Items from SQL DB between " + aStartDateIncl + " and " + aEndDateIncl);
@@ -259,6 +260,21 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
     // Map each row while the ResultSet is open, avoiding a second list containing
     // a cloned DBResultRow and its column wrappers for every reporting item.
     final ICommonsList <PeppolReportingItem> ret = new CommonsArrayList <> ();
+    final IResultSetRowCallback aResultRowCallback = aRow -> ret.add (PeppolReportingItem.builder ()
+                                                                                         .exchangeDateTimeInUTC (aRow.getAsLocalDateTime (0))
+                                                                                         .direction (aRow.getAsBoolean (1) ? EReportingDirection.SENDING
+                                                                                                                           : EReportingDirection.RECEIVING)
+                                                                                         .c2ID (aRow.getAsString (2))
+                                                                                         .c3ID (aRow.getAsString (3))
+                                                                                         .docTypeIDScheme (aRow.getAsString (4))
+                                                                                         .docTypeIDValue (aRow.getAsString (5))
+                                                                                         .processIDScheme (aRow.getAsString (6))
+                                                                                         .processIDValue (aRow.getAsString (7))
+                                                                                         .transportProtocol (aRow.getAsString (8))
+                                                                                         .c1CountryCode (aRow.getAsString (9))
+                                                                                         .c4CountryCode (aRow.getAsString (10))
+                                                                                         .endUserID (aRow.getAsString (11))
+                                                                                         .build ());
     final ESuccess eSuccess = _newExecutor ().queryAll ("SELECT exchangedt, sending, c2id, c3id, dtscheme, dtvalue, procscheme, procvalue, tp, c1cc, c4cc, enduserid" +
                                                         " FROM " +
                                                         m_sTableNamePrefix +
@@ -267,21 +283,7 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
                                                         new ConstantPreparedStatementDataProvider (DBValueHelper.toTimestamp (aStartDateIncl.atStartOfDay ()),
                                                                                                    DBValueHelper.toTimestamp (aEndDateIncl.plusDays (1)
                                                                                                                                           .atStartOfDay ())),
-                                                        aRow -> ret.add (PeppolReportingItem.builder ()
-                                                                                           .exchangeDateTimeInUTC (aRow.getAsLocalDateTime (0))
-                                                                                           .direction (aRow.getAsBoolean (1) ? EReportingDirection.SENDING
-                                                                                                                             : EReportingDirection.RECEIVING)
-                                                                                           .c2ID (aRow.getAsString (2))
-                                                                                           .c3ID (aRow.getAsString (3))
-                                                                                           .docTypeIDScheme (aRow.getAsString (4))
-                                                                                           .docTypeIDValue (aRow.getAsString (5))
-                                                                                           .processIDScheme (aRow.getAsString (6))
-                                                                                           .processIDValue (aRow.getAsString (7))
-                                                                                           .transportProtocol (aRow.getAsString (8))
-                                                                                           .c1CountryCode (aRow.getAsString (9))
-                                                                                           .c4CountryCode (aRow.getAsString (10))
-                                                                                           .endUserID (aRow.getAsString (11))
-                                                                                           .build ()));
+                                                        aResultRowCallback);
     if (eSuccess.isFailure ())
       throw new PeppolReportingBackendException ("Failed to query Peppol Reporting items from SQL DB");
 

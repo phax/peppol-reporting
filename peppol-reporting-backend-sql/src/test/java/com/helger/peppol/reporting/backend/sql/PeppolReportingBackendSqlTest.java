@@ -39,10 +39,14 @@ public final class PeppolReportingBackendSqlTest
   public void testFailedQueryDoesNotReturnAnEmptyReport () throws Exception
   {
     // An unavailable driver fails deterministically before any network access.
-    final Map <String, String> aSettings = Map.of ("peppol.reporting.jdbc.database-type", "postgresql",
-                                                  "peppol.reporting.jdbc.driver", "unavailable.jdbc.Driver",
-                                                  "peppol.reporting.jdbc.url", "jdbc:unavailable:reporting",
-                                                  "peppol.reporting.flyway.enabled", "false");
+    final Map <String, String> aSettings = Map.of ("peppol.reporting.jdbc.database-type",
+                                                   "postgresql",
+                                                   "peppol.reporting.jdbc.driver",
+                                                   "unavailable.jdbc.Driver",
+                                                   "peppol.reporting.jdbc.url",
+                                                   "jdbc:unavailable:reporting",
+                                                   "peppol.reporting.flyway.enabled",
+                                                   "false");
     final PeppolReportingBackendSqlSPI aBackend = new PeppolReportingBackendSqlSPI ();
     try
     {

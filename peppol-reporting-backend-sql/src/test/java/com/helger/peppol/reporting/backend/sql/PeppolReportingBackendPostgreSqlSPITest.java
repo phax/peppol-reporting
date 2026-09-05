@@ -19,8 +19,7 @@ package com.helger.peppol.reporting.backend.sql;
 import org.jspecify.annotations.NonNull;
 
 /**
- * SPI contract test for {@link PeppolReportingBackendSqlSPI} against
- * PostgreSQL.
+ * SPI contract test for {@link PeppolReportingBackendSqlSPI} against PostgreSQL.
  *
  * @author Philip Helger
  */

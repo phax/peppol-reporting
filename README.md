@@ -385,6 +385,9 @@ v4.3.0 - work in progress
 * `TSRReportingItemAccumulator` now also ignores document types that are not eligible for TSR (backwards incompatible change)
 * Added class `PeppolReportingJsonHelper` to convert `PeppolReportingItem` objects from and to a default JSON representation, containing a `version` field for extensibility
 * The submodule `peppol-reporting-api` now depends on `ph-json`
+* EUSR and TSR Schematron validation now uses precompiled XSLTs instead of compiling the Schematron at runtime, heavily improving the initialization time. The submodule `peppol-reporting` therefore depends on `ph-schematron-xslt` instead of `ph-schematron-isosch`. See [#22](https://github.com/phax/peppol-reporting/pull/22) - thx @gregjotau
+* Removed the outdated EUSR 1.1.4 Schematron file from the resources
+* (SQL) Reporting items are now created while iterating the open `ResultSet`, so no intermediate row objects are kept in memory. A failed query now throws a `PeppolReportingBackendException` instead of silently returning an empty list. See [#23](https://github.com/phax/peppol-reporting/pull/23) - thx @gregjotau
 
 v4.2.0 - 2026-07-17
 * Updated to ph-schematron v10.x
