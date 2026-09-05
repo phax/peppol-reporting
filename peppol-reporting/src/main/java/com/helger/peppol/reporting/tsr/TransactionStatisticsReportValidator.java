@@ -21,7 +21,7 @@ import org.jspecify.annotations.NonNull;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.exception.InitializationException;
 import com.helger.schematron.ISchematronResource;
-import com.helger.schematron.sch.SchematronResourceSCH;
+import com.helger.schematron.xslt.SchematronResourceXSLT;
 
 /**
  * This class can be used to trigger Schematron validation of TSR documents.
@@ -33,8 +33,9 @@ public final class TransactionStatisticsReportValidator
 {
   public static final String SCH_TSR_105_PATH = "external/schematron/peppol-transaction-statistics-reporting-1.0.5.sch";
 
-  private static final ISchematronResource SCH_TSR_105 = SchematronResourceSCH.builderFromClassPath (SCH_TSR_105_PATH)
-                                                                              .build ();
+  private static final ISchematronResource SCH_TSR_105 = SchematronResourceXSLT
+    .builderFromClassPath (SCH_TSR_105_PATH.replace (".sch", ".xslt"))
+    .build ();
 
   static
   {

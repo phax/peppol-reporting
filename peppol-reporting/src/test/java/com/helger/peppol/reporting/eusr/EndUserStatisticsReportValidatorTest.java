@@ -33,6 +33,7 @@ import com.helger.io.resource.ClassPathResource;
 import com.helger.peppol.reporting.jaxb.eusr.EndUserStatisticsReport110Marshaller;
 import com.helger.peppol.reporting.testfiles.CReportingTestFiles;
 import com.helger.peppol.reporting.testfiles.EUSRTestHelper;
+import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
@@ -47,6 +48,16 @@ public final class EndUserStatisticsReportValidatorTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (EndUserStatisticsReportValidatorTest.class);
 
+  private static void _assertMatchesSource (final ClassPathResource aFile,
+                                           final SchematronOutputType aActual) throws Exception
+  {
+    final SchematronOutputType aExpected = SchematronResourceSCH
+      .builderFromClassPath (EndUserStatisticsReportValidator.SCH_EUSR_115_PATH)
+      .build ()
+      .applySchematronValidationToSVRL (aFile);
+    assertEquals (aFile.getPath (), aExpected, aActual);
+  }
+
   @Test
   public void testEUSRGoodCases () throws Exception
   {
@@ -55,6 +66,7 @@ public final class EndUserStatisticsReportValidatorTest
       final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
                                                                          .applySchematronValidationToSVRL (f);
       assertNotNull (aSVRL);
+      _assertMatchesSource (f, aSVRL);
 
       if (false)
         LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
@@ -73,6 +85,7 @@ public final class EndUserStatisticsReportValidatorTest
     final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
                                                                        .applySchematronValidationToSVRL (f);
     assertNotNull (aSVRL);
+    _assertMatchesSource (f, aSVRL);
 
     if (false)
       LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
@@ -93,6 +106,7 @@ public final class EndUserStatisticsReportValidatorTest
     final SchematronOutputType aSVRL = EndUserStatisticsReportValidator.getSchematronEUSR_11 ()
                                                                        .applySchematronValidationToSVRL (f);
     assertNotNull (aSVRL);
+    _assertMatchesSource (f, aSVRL);
 
     if (false)
       LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
