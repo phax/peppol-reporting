@@ -25,8 +25,7 @@ import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
 
 /**
- * Single Peppol EUSR Key for "Document Type ID, Process ID and End User
- * Country".
+ * Single Peppol EUSR Key for "Document Type ID, Process ID and End User Country".
  *
  * @author Philip Helger
  * @since 1.2.0

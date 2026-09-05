@@ -33,9 +33,9 @@ public final class TransactionStatisticsReportValidator
 {
   public static final String SCH_TSR_105_PATH = "external/schematron/peppol-transaction-statistics-reporting-1.0.5.sch";
 
-  private static final ISchematronResource SCH_TSR_105 = SchematronResourceXSLT
-    .builderFromClassPath (SCH_TSR_105_PATH.replace (".sch", ".xslt"))
-    .build ();
+  private static final ISchematronResource SCH_TSR_105 = SchematronResourceXSLT.builderFromClassPath (SCH_TSR_105_PATH.replace (".sch",
+                                                                                                                                ".xslt"))
+                                                                               .build ();
 
   static
   {

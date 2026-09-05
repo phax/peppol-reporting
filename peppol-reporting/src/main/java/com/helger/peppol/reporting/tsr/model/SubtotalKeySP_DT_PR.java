@@ -25,8 +25,7 @@ import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
 
 /**
- * Single Peppol TSR Key for "Service Provider, Document Type ID and Process
- * ID".
+ * Single Peppol TSR Key for "Service Provider, Document Type ID and Process ID".
  *
  * @author Philip Helger
  * @since 1.2.0

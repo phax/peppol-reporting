@@ -157,9 +157,10 @@ public final class EndUserStatisticsReport
     @NonNull
     public Builder11 monthOf (@Nullable final LocalDate a)
     {
-      return startDate (a == null ? null : a.withDayOfMonth (1)).endDate (a == null ? null : a.plusMonths (1)
-                                                                                              .withDayOfMonth (1)
-                                                                                              .minusDays (1));
+      return startDate (a == null ? null : a.withDayOfMonth (1)).endDate (a == null ? null
+                                                                                    : a.plusMonths (1)
+                                                                                       .withDayOfMonth (1)
+                                                                                       .minusDays (1));
     }
 
     /**
@@ -223,9 +224,8 @@ public final class EndUserStatisticsReport
     @NonNull
     public Builder11 monthOf (@Nullable final YearMonth a)
     {
-      return startDate (a == null ? null : a.atDay (1)).endDate (a == null ? null : a.plusMonths (1)
-                                                                                     .atDay (1)
-                                                                                     .minusDays (1));
+      return startDate (a == null ? null : a.atDay (1)).endDate (a == null ? null
+                                                                           : a.plusMonths (1).atDay (1).minusDays (1));
     }
 
     /**
@@ -330,7 +330,7 @@ public final class EndUserStatisticsReport
         return false;
       }
 
-      aCondLogger.trace ( () -> "Builder fields are complete");
+      aCondLogger.trace (() -> "Builder fields are complete");
       return true;
     }
 

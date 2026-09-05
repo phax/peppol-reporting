@@ -157,9 +157,10 @@ public final class TransactionStatisticsReport
     @NonNull
     public Builder10 monthOf (@Nullable final LocalDate a)
     {
-      return startDate (a == null ? null : a.withDayOfMonth (1)).endDate (a == null ? null : a.plusMonths (1)
-                                                                                              .withDayOfMonth (1)
-                                                                                              .minusDays (1));
+      return startDate (a == null ? null : a.withDayOfMonth (1)).endDate (a == null ? null
+                                                                                    : a.plusMonths (1)
+                                                                                       .withDayOfMonth (1)
+                                                                                       .minusDays (1));
     }
 
     /**
@@ -223,9 +224,8 @@ public final class TransactionStatisticsReport
     @NonNull
     public Builder10 monthOf (@Nullable final YearMonth a)
     {
-      return startDate (a == null ? null : a.atDay (1)).endDate (a == null ? null : a.plusMonths (1)
-                                                                                     .atDay (1)
-                                                                                     .minusDays (1));
+      return startDate (a == null ? null : a.atDay (1)).endDate (a == null ? null
+                                                                           : a.plusMonths (1).atDay (1).minusDays (1));
     }
 
     /**
@@ -331,7 +331,7 @@ public final class TransactionStatisticsReport
         return false;
       }
 
-      aCondLogger.trace ( () -> "Builder fields are complete");
+      aCondLogger.trace (() -> "Builder fields are complete");
       return true;
     }
 

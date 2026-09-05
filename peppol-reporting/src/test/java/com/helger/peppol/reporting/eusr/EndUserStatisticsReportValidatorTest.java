@@ -48,13 +48,12 @@ public final class EndUserStatisticsReportValidatorTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (EndUserStatisticsReportValidatorTest.class);
 
-  private static void _assertMatchesSource (final ClassPathResource aFile,
-                                           final SchematronOutputType aActual) throws Exception
+  private static void _assertMatchesSource (final ClassPathResource aFile, final SchematronOutputType aActual)
+                                                                                                               throws Exception
   {
-    final SchematronOutputType aExpected = SchematronResourceSCH
-      .builderFromClassPath (EndUserStatisticsReportValidator.SCH_EUSR_115_PATH)
-      .build ()
-      .applySchematronValidationToSVRL (aFile);
+    final SchematronOutputType aExpected = SchematronResourceSCH.builderFromClassPath (EndUserStatisticsReportValidator.SCH_EUSR_115_PATH)
+                                                                .build ()
+                                                                .applySchematronValidationToSVRL (aFile);
     assertEquals (aFile.getPath (), aExpected, aActual);
   }
 

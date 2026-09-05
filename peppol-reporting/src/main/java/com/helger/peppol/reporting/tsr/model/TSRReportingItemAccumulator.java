@@ -40,8 +40,8 @@ import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType
  * batches), then call {@link #fillReport(TransactionStatisticsReportType)} to populate the report.
  * </p>
  * <p>
- * <strong>Thread-safety:</strong> This class is <em>not</em> thread-safe. Callers must not share
- * an instance across threads without external synchronisation.
+ * <strong>Thread-safety:</strong> This class is <em>not</em> thread-safe. Callers must not share an
+ * instance across threads without external synchronisation.
  * </p>
  *
  * @author Philip Helger
@@ -132,8 +132,8 @@ public class TSRReportingItemAccumulator
   }
 
   /**
-   * Write the accumulated data as Total and Subtotals into the given report.
-   * Call this after all {@link #accept} calls have been made.
+   * Write the accumulated data as Total and Subtotals into the given report. Call this after all
+   * {@link #accept} calls have been made.
    *
    * @param aReport
    *        The report to populate; must not be {@code null}.
@@ -156,7 +156,9 @@ public class TSRReportingItemAccumulator
 
       final SubtotalType aSubtotal = new SubtotalType ();
       aSubtotal.setType (SubtotalKeyTP.TYPE);
-      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_TP, CTSR.TSR_SCHEME_TP_PEPPOL, aKey.getTransportProtocol ()));
+      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_TP,
+                                            CTSR.TSR_SCHEME_TP_PEPPOL,
+                                            aKey.getTransportProtocol ()));
       aSubtotal.setIncoming (BigHelper.toBigInteger (aVal.m_nIncoming));
       aSubtotal.setOutgoing (BigHelper.toBigInteger (aVal.m_nOutgoing));
       aReport.addSubtotal (aSubtotal);
@@ -173,8 +175,12 @@ public class TSRReportingItemAccumulator
       aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_SP,
                                             CPeppolReporting.SERVICE_PROVIDER_ID_SCHEME,
                                             aKey.getServiceProviderID ()));
-      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_DT, aKey.getDocTypeIDScheme (), aKey.getDocTypeIDValue ()));
-      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_PR, aKey.getProcessIDScheme (), aKey.getProcessIDValue ()));
+      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_DT,
+                                            aKey.getDocTypeIDScheme (),
+                                            aKey.getDocTypeIDValue ()));
+      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_PR,
+                                            aKey.getProcessIDScheme (),
+                                            aKey.getProcessIDValue ()));
       aSubtotal.setIncoming (BigHelper.toBigInteger (aVal.m_nIncoming));
       aSubtotal.setOutgoing (BigHelper.toBigInteger (aVal.m_nOutgoing));
       aReport.addSubtotal (aSubtotal);
@@ -191,10 +197,18 @@ public class TSRReportingItemAccumulator
       aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_SP,
                                             CPeppolReporting.SERVICE_PROVIDER_ID_SCHEME,
                                             aKey.getServiceProviderID ()));
-      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_DT, aKey.getDocTypeIDScheme (), aKey.getDocTypeIDValue ()));
-      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_PR, aKey.getProcessIDScheme (), aKey.getProcessIDValue ()));
-      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_CC, CTSR.TSR_SCHEME_CC_SENDER_COUNTRY, aKey.getC1CountryCode ()));
-      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_CC, CTSR.TSR_SCHEME_CC_RECEIVER_COUNTRY, aKey.getC4CountryCode ()));
+      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_DT,
+                                            aKey.getDocTypeIDScheme (),
+                                            aKey.getDocTypeIDValue ()));
+      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_PR,
+                                            aKey.getProcessIDScheme (),
+                                            aKey.getProcessIDValue ()));
+      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_CC,
+                                            CTSR.TSR_SCHEME_CC_SENDER_COUNTRY,
+                                            aKey.getC1CountryCode ()));
+      aSubtotal.addKey (_createSubtotalKey (CTSR.TSR_METASCHEME_CC,
+                                            CTSR.TSR_SCHEME_CC_RECEIVER_COUNTRY,
+                                            aKey.getC4CountryCode ()));
       aSubtotal.setIncoming (BigHelper.toBigInteger (aVal.m_nIncoming));
       // Must always be zero
       aSubtotal.setOutgoing (BigHelper.toBigInteger (aVal.m_nOutgoing));
@@ -202,4 +216,3 @@ public class TSRReportingItemAccumulator
     }
   }
 }
-

@@ -48,13 +48,12 @@ public final class TransactionStatisticsReportValidatorTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (TransactionStatisticsReportValidatorTest.class);
 
-  private static void _assertMatchesSource (final ClassPathResource aFile,
-                                           final SchematronOutputType aActual) throws Exception
+  private static void _assertMatchesSource (final ClassPathResource aFile, final SchematronOutputType aActual)
+                                                                                                               throws Exception
   {
-    final SchematronOutputType aExpected = SchematronResourceSCH
-      .builderFromClassPath (TransactionStatisticsReportValidator.SCH_TSR_105_PATH)
-      .build ()
-      .applySchematronValidationToSVRL (aFile);
+    final SchematronOutputType aExpected = SchematronResourceSCH.builderFromClassPath (TransactionStatisticsReportValidator.SCH_TSR_105_PATH)
+                                                                .build ()
+                                                                .applySchematronValidationToSVRL (aFile);
     assertEquals (aFile.getPath (), aExpected, aActual);
   }
 
