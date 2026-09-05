@@ -62,7 +62,7 @@
     </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-isosch</artifactId>
+      <artifactId>ph-schematron-xslt</artifactId>
     </dependency>
     <dependency>
       <groupId>com.helger.peppol</groupId>
@@ -98,5 +98,31 @@
       <artifactId>ph-unittest-support-ext</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-isosch</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.helger.maven</groupId>
+        <artifactId>ph-schematron-maven-plugin</artifactId>
+        <version>${ph-schematron.version}</version>
+        <executions>
+          <execution>
+            <id>compile-reporting-schematron</id>
+            <goals>
+              <goal>convert</goal>
+            </goals>
+            <configuration>
+              <schematronDirectory>src/main/resources/external/schematron</schematronDirectory>
+              <xsltDirectory>${project.build.outputDirectory}/external/schematron</xsltDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

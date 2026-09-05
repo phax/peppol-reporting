@@ -33,6 +33,7 @@ import com.helger.io.resource.ClassPathResource;
 import com.helger.peppol.reporting.jaxb.tsr.TransactionStatisticsReport101Marshaller;
 import com.helger.peppol.reporting.testfiles.CReportingTestFiles;
 import com.helger.peppol.reporting.testfiles.TSRTestHelper;
+import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
@@ -47,6 +48,16 @@ public final class TransactionStatisticsReportValidatorTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (TransactionStatisticsReportValidatorTest.class);
 
+  private static void _assertMatchesSource (final ClassPathResource aFile,
+                                           final SchematronOutputType aActual) throws Exception
+  {
+    final SchematronOutputType aExpected = SchematronResourceSCH
+      .builderFromClassPath (TransactionStatisticsReportValidator.SCH_TSR_105_PATH)
+      .build ()
+      .applySchematronValidationToSVRL (aFile);
+    assertEquals (aFile.getPath (), aExpected, aActual);
+  }
+
   @Test
   public void testTSRGoodCases () throws Exception
   {
@@ -55,6 +66,7 @@ public final class TransactionStatisticsReportValidatorTest
       final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_10 ()
                                                                              .applySchematronValidationToSVRL (f);
       assertNotNull (aSVRL);
+      _assertMatchesSource (f, aSVRL);
 
       if (false)
         LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
@@ -74,6 +86,7 @@ public final class TransactionStatisticsReportValidatorTest
     final SchematronOutputType aSVRL = TransactionStatisticsReportValidator.getSchematronTSR_10 ()
                                                                            .applySchematronValidationToSVRL (f);
     assertNotNull (aSVRL);
+    _assertMatchesSource (f, aSVRL);
 
     if (false)
       LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));

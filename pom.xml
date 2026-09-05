@@ -57,6 +57,7 @@
   </developers>
 
   <properties>
+    <ph-schematron.version>10.0.1</ph-schematron.version>
     <jaxb-plugin.group>org.jvnet.jaxb</jaxb-plugin.group>
     <jaxb-plugin.artifact>jaxb-maven-plugin</jaxb-plugin.artifact>
     <jaxb-plugin.version>4.0.16</jaxb-plugin.version>
@@ -75,7 +76,7 @@
       <dependency>
         <groupId>com.helger.schematron</groupId>
         <artifactId>ph-schematron-parent-pom</artifactId>
-        <version>10.0.1</version>
+        <version>${ph-schematron.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
