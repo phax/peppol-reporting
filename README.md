@@ -377,7 +377,7 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-v4.3.0 - work in progress
+v4.3.0 - 2026-09-06
 * Added new enum `EPeppolReportType` to the `peppol-reporting-api` submodule
 * Extended `PeppolReportingHelper.isDocumentTypeEligableForReporting` with new overloads that take the `EPeppolReportType` to check the eligibility for
 * The existing `PeppolReportingHelper.isDocumentTypeEligableForReporting` overloads without a report type now check the eligibility for at least one of the report types - that is the check to be used when storing reporting items
@@ -385,9 +385,13 @@ v4.3.0 - work in progress
 * `TSRReportingItemAccumulator` now also ignores document types that are not eligible for TSR (backwards incompatible change)
 * Added class `PeppolReportingJsonHelper` to convert `PeppolReportingItem` objects from and to a default JSON representation, containing a `version` field for extensibility
 * The submodule `peppol-reporting-api` now depends on `ph-json`
-* EUSR and TSR Schematron validation now uses precompiled XSLTs instead of compiling the Schematron at runtime, heavily improving the initialization time. The submodule `peppol-reporting` therefore depends on `ph-schematron-xslt` instead of `ph-schematron-isosch`. See [#22](https://github.com/phax/peppol-reporting/pull/22) - thx @gregjotau
+* EUSR and TSR Schematron validation now uses precompiled XSLTs instead of compiling the Schematron at runtime, heavily improving the initialization time.
+  The submodule `peppol-reporting` therefore depends on `ph-schematron-xslt` instead of `ph-schematron-isosch`.
+  See [#22](https://github.com/phax/peppol-reporting/pull/22) - thx @gregjotau
 * Removed the outdated EUSR 1.1.4 Schematron file from the resources
-* (SQL) Reporting items are now created while iterating the open `ResultSet`, so no intermediate row objects are kept in memory. A failed query now throws a `PeppolReportingBackendException` instead of silently returning an empty list. See [#23](https://github.com/phax/peppol-reporting/pull/23) - thx @gregjotau
+* (SQL) Reporting items are now created while iterating the open `ResultSet`, so no intermediate row objects are kept in memory.
+  A failed query now throws a `PeppolReportingBackendException` instead of silently returning an empty list.
+  See [#23](https://github.com/phax/peppol-reporting/pull/23) - thx @gregjotau
 
 v4.2.0 - 2026-07-17
 * Updated to ph-schematron v10.x
