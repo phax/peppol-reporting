@@ -133,7 +133,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   @NonNull
   public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
-    m_aRWLock.writeLocked ( () -> {
+    m_aRWLock.writeLocked (() -> {
       if (m_aClientWrapper != null)
         throw new IllegalStateException ("The Peppol Reporting MongoDB backend was already initialized");
 
@@ -177,19 +177,19 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   @Nullable
   public final MongoClientWrapper getClientWrapper ()
   {
-    return m_aRWLock.readLockedGet ( () -> m_aClientWrapper);
+    return m_aRWLock.readLockedGet (() -> m_aClientWrapper);
   }
 
   public boolean isInitialized ()
   {
-    return m_aRWLock.readLockedBoolean ( () -> m_aClientWrapper != null);
+    return m_aRWLock.readLockedBoolean (() -> m_aClientWrapper != null);
   }
 
   public void shutdownBackend ()
   {
     if (isInitialized ())
     {
-      m_aRWLock.writeLocked ( () -> {
+      m_aRWLock.writeLocked (() -> {
         LOGGER.info ("Shutting down Peppol Reporting MongoDB client");
         m_aClientWrapper.close ();
         m_aClientWrapper = null;
@@ -203,12 +203,12 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   @NonNull
   private MongoCollection <Document> _getCollection ()
   {
-    return m_aRWLock.readLockedGet ( () -> m_aClientWrapper.getCollection (m_sCollection));
+    return m_aRWLock.readLockedGet (() -> m_aClientWrapper.getCollection (m_sCollection));
   }
 
   private boolean _isDBWritable ()
   {
-    return m_aRWLock.readLockedBoolean ( () -> m_aClientWrapper.isDBWritable ());
+    return m_aRWLock.readLockedBoolean (() -> m_aClientWrapper.isDBWritable ());
   }
 
   public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
@@ -249,7 +249,7 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
-    ValueEnforcer.isTrue ( () -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
+    ValueEnforcer.isTrue (() -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Querying Peppol Reporting Items from MongoDB between " + aStartDateIncl + " and " + aEndDateIncl);

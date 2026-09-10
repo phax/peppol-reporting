@@ -25,8 +25,7 @@ import com.helger.base.lang.EnumHelper;
 
 /**
  * Contains the list of possible Peppol Reporting report types.<br>
- * Each ID must not be longer than 12 characters, due to database column length
- * constraint.
+ * Each ID must not be longer than 12 characters, due to database column length constraint.
  *
  * @author Philip Helger
  * @since 4.3.0

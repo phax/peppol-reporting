@@ -67,18 +67,18 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
   @NonNull
   public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
-    m_aRWLock.writeLocked ( () -> m_bInitialized = true);
+    m_aRWLock.writeLocked (() -> m_bInitialized = true);
     return ESuccess.SUCCESS;
   }
 
   public boolean isInitialized ()
   {
-    return m_aRWLock.readLockedBoolean ( () -> m_bInitialized);
+    return m_aRWLock.readLockedBoolean (() -> m_bInitialized);
   }
 
   public void shutdownBackend ()
   {
-    m_aRWLock.writeLocked ( () -> {
+    m_aRWLock.writeLocked (() -> {
       m_aMap.clear ();
       m_bInitialized = false;
     });
@@ -97,8 +97,8 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
       if (!isInitialized ())
         throw new IllegalStateException ("The Peppol Reporting InMemory backend is not initialized");
 
-      m_aRWLock.writeLocked ( () -> m_aMap.computeIfAbsent (aReportingItem.getExchangeDTUTC ().toLocalDate (),
-                                                            k -> new CommonsArrayList <> ()).add (aReportingItem));
+      m_aRWLock.writeLocked (() -> m_aMap.computeIfAbsent (aReportingItem.getExchangeDTUTC ().toLocalDate (),
+                                                           k -> new CommonsArrayList <> ()).add (aReportingItem));
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Successfully stored Peppol Reporting Item in memory");
@@ -118,7 +118,7 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
-    ValueEnforcer.isTrue ( () -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
+    ValueEnforcer.isTrue (() -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Querying Peppol Reporting Items from in memory between " +
@@ -142,7 +142,7 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
         // Find between date, but order by exchange date and time
         while (m_aCurDate.compareTo (aEndDateIncl) <= 0)
         {
-          m_aAllItemsOfDate = m_aRWLock.readLockedGet ( () -> m_aMap.get (m_aCurDate));
+          m_aAllItemsOfDate = m_aRWLock.readLockedGet (() -> m_aMap.get (m_aCurDate));
           if (m_aAllItemsOfDate != null && m_aAllItemsOfDate.isNotEmpty ())
             break;
 

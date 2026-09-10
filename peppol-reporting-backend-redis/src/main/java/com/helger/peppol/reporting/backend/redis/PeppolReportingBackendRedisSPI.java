@@ -120,14 +120,14 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
   @NonNull
   public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
-    m_aRWLock.writeLocked ( () -> {
+    m_aRWLock.writeLocked (() -> {
       if (m_aRedisClient != null)
         throw new IllegalStateException ("The Peppol Reporting Redis backend was already initialized");
 
       m_aRedisClient = createJedisPool (aConfig);
     });
 
-    final RedisClient aRedisClient = m_aRWLock.readLockedGet ( () -> m_aRedisClient);
+    final RedisClient aRedisClient = m_aRWLock.readLockedGet (() -> m_aRedisClient);
     if (aRedisClient == null)
       return ESuccess.FAILURE;
 
@@ -155,7 +155,7 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
 
   public boolean isInitialized ()
   {
-    return m_aRWLock.readLockedBoolean ( () -> m_aRedisClient != null);
+    return m_aRWLock.readLockedBoolean (() -> m_aRedisClient != null);
   }
 
   @MustBeLocked (ELockType.WRITE)
@@ -169,7 +169,7 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
   {
     if (isInitialized ())
     {
-      m_aRWLock.writeLocked ( () -> {
+      m_aRWLock.writeLocked (() -> {
         LOGGER.info ("Shutting down Peppol Reporting Redis client");
         _shutdown ();
       });
@@ -242,7 +242,7 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
-    ValueEnforcer.isTrue ( () -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
+    ValueEnforcer.isTrue (() -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
     ValueEnforcer.notNull (aConsumer, "Consumer");
 
     if (LOGGER.isDebugEnabled ())

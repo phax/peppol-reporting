@@ -86,7 +86,7 @@ public class PeppolReportingBackend
   @Nullable
   public static IPeppolReportingBackendSPI getBackendService ()
   {
-    return RW_LOCK.readLockedGet ( () -> s_aBackendService);
+    return RW_LOCK.readLockedGet (() -> s_aBackendService);
   }
 
   /**
@@ -100,7 +100,7 @@ public class PeppolReportingBackend
   {
     ValueEnforcer.notNull (aBackendService, "BackendService");
 
-    RW_LOCK.writeLocked ( () -> s_aBackendService = aBackendService);
+    RW_LOCK.writeLocked (() -> s_aBackendService = aBackendService);
   }
 
   /**

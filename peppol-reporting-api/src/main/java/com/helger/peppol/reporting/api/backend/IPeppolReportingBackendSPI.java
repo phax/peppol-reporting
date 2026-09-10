@@ -40,8 +40,7 @@ import com.helger.peppol.reporting.api.PeppolReportingItem;
 public interface IPeppolReportingBackendSPI extends IHasDisplayName
 {
   /**
-   * @return The display name name of the backend that is used. That is mainly
-   *         for logging purposes.
+   * @return The display name name of the backend that is used. That is mainly for logging purposes.
    */
   @NonNull
   @Nonempty
@@ -51,25 +50,23 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
    * Initialize the backend using the provided configuration data.
    *
    * @param aConfig
-   *        The configuration value provider to be used. Never
-   *        <code>null</code>.
+   *        The configuration value provider to be used. Never <code>null</code>.
    * @return {@link ESuccess}
    */
   @NonNull
   ESuccess initBackend (@NonNull IConfig aConfig);
 
   /**
-   * This method indicates if {@link #initBackend(IConfig)} was called and
-   * delivered success and {@link #shutdownBackend()} was not yet called.
+   * This method indicates if {@link #initBackend(IConfig)} was called and delivered success and
+   * {@link #shutdownBackend()} was not yet called.
    *
-   * @return <code>true</code> if this backend is already successfully
-   *         initialized, <code>false</code> if not.
+   * @return <code>true</code> if this backend is already successfully initialized,
+   *         <code>false</code> if not.
    */
   boolean isInitialized ();
 
   /**
-   * Shutdown the backend. This may only be called if backend initialization was
-   * successful.
+   * Shutdown the backend. This may only be called if backend initialization was successful.
    */
   void shutdownBackend ();
 
@@ -84,22 +81,20 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
   void storeReportingItem (@NonNull PeppolReportingItem aReportingItem) throws PeppolReportingBackendException;
 
   /**
-   * Iterate all {@link PeppolReportingItem} objects in the provided date range.
-   * Both the start and the end date are <b>inclusive</b>. If the iteration is
-   * lazy or eager depends on the backing implementation.
+   * Iterate all {@link PeppolReportingItem} objects in the provided date range. Both the start and
+   * the end date are <b>inclusive</b>. If the iteration is lazy or eager depends on the backing
+   * implementation.
    * <p>
-   * <b>Ordering is unspecified.</b> Different backends return matching items in
-   * different orders (e.g. insertion order, storage order, or sorted by
-   * exchange timestamp). Callers that require a specific order must sort the
-   * result themselves. The only guarantee is that all items whose exchange
-   * date (in UTC) falls within the inclusive range are returned exactly once.
+   * <b>Ordering is unspecified.</b> Different backends return matching items in different orders
+   * (e.g. insertion order, storage order, or sorted by exchange timestamp). Callers that require a
+   * specific order must sort the result themselves. The only guarantee is that all items whose
+   * exchange date (in UTC) falls within the inclusive range are returned exactly once.
    *
    * @param aStartDateIncl
-   *        The date to start iterating, including this date. May not be
-   *        <code>null</code>.
+   *        The date to start iterating, including this date. May not be <code>null</code>.
    * @param aEndDateIncl
-   *        The date to stop iterating, including this date. May not be
-   *        <code>null</code>. Must not be before the start date.
+   *        The date to stop iterating, including this date. May not be <code>null</code>. Must not
+   *        be before the start date.
    * @return An {@link Iterable} over all matching reporting items.
    * @throws PeppolReportingBackendException
    *         In case of an unrecoverable error
@@ -110,10 +105,10 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
                                                         @NonNull LocalDate aEndDateIncl) throws PeppolReportingBackendException;
 
   /**
-   * Iterate all {@link PeppolReportingItem} objects in the provided month. If
-   * the iteration is lazy or eager depends on the backing implementation. As
-   * with {@link #iterateReportingItems(LocalDate, LocalDate)} the ordering of
-   * the returned items is <b>unspecified</b>.
+   * Iterate all {@link PeppolReportingItem} objects in the provided month. If the iteration is lazy
+   * or eager depends on the backing implementation. As with
+   * {@link #iterateReportingItems(LocalDate, LocalDate)} the ordering of the returned items is
+   * <b>unspecified</b>.
    *
    * @param aYearMonth
    *        The year and month to iterate. May not be <code>null</code>.
@@ -130,18 +125,16 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
   }
 
   /**
-   * Iterate all {@link PeppolReportingItem} objects in the provided date range,
-   * in the correct order.
+   * Iterate all {@link PeppolReportingItem} objects in the provided date range, in the correct
+   * order.
    *
    * @param aStartDateIncl
-   *        The date to start iterating, including this date. May not be
-   *        <code>null</code>.
+   *        The date to start iterating, including this date. May not be <code>null</code>.
    * @param aEndDateIncl
-   *        The date to stop iterating, including this date. May not be
-   *        <code>null</code>. Must not be before the start date.
+   *        The date to stop iterating, including this date. May not be <code>null</code>. Must not
+   *        be before the start date.
    * @param aConsumer
-   *        The consumer to be invoked for each {@link PeppolReportingItem}
-   *        object found.
+   *        The consumer to be invoked for each {@link PeppolReportingItem} object found.
    * @throws PeppolReportingBackendException
    *         In case of an unrecoverable error
    * @see #iterateReportingItems(LocalDate, LocalDate)
@@ -159,14 +152,12 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
   }
 
   /**
-   * Iterate all {@link PeppolReportingItem} objects in the provided month, in
-   * the correct order.
+   * Iterate all {@link PeppolReportingItem} objects in the provided month, in the correct order.
    *
    * @param aYearMonth
    *        The year and month to iterate. May not be <code>null</code>.
    * @param aConsumer
-   *        The consumer to be invoked for each {@link PeppolReportingItem}
-   *        object found.
+   *        The consumer to be invoked for each {@link PeppolReportingItem} object found.
    * @throws PeppolReportingBackendException
    *         In case of an unrecoverable error
    * @see #forEachReportingItem(LocalDate, LocalDate, Consumer)

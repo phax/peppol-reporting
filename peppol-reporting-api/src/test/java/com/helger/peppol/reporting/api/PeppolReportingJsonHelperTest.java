@@ -85,8 +85,7 @@ public final class PeppolReportingJsonHelperTest
 
     assertEquals (PeppolReportingJsonHelper.JSON_VERSION_1,
                   aJson.getAsInt (PeppolReportingJsonHelper.JSON_VERSION, -1));
-    assertEquals (EReportingDirection.SENDING.getID (),
-                  aJson.getAsString (PeppolReportingJsonHelper.JSON_DIRECTION));
+    assertEquals (EReportingDirection.SENDING.getID (), aJson.getAsString (PeppolReportingJsonHelper.JSON_DIRECTION));
     assertEquals (MY_SPID, aJson.getAsString (PeppolReportingJsonHelper.JSON_C2ID));
     assertEquals ("FI", aJson.getAsString (PeppolReportingJsonHelper.JSON_C1CC));
     // Sending items never have a C4 country code
@@ -108,8 +107,7 @@ public final class PeppolReportingJsonHelperTest
     final IJsonObject aJson = PeppolReportingJsonHelper.toJson (aItem);
     assertNotNull (aJson);
 
-    assertEquals (EReportingDirection.RECEIVING.getID (),
-                  aJson.getAsString (PeppolReportingJsonHelper.JSON_DIRECTION));
+    assertEquals (EReportingDirection.RECEIVING.getID (), aJson.getAsString (PeppolReportingJsonHelper.JSON_DIRECTION));
     assertEquals ("DE", aJson.getAsString (PeppolReportingJsonHelper.JSON_C4CC));
 
     assertEquals (aItem, PeppolReportingJsonHelper.toDomain (aJson));

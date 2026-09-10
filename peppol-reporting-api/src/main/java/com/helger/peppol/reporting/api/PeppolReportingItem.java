@@ -569,7 +569,7 @@ public final class PeppolReportingItem
       }
       if (m_sC2ID.length () > MAX_LEN_C2_ID)
       {
-        aCondLogger.warn ( () -> "C2 ID exceeds the maximium length of " + MAX_LEN_C2_ID);
+        aCondLogger.warn (() -> "C2 ID exceeds the maximium length of " + MAX_LEN_C2_ID);
         return false;
       }
 
@@ -580,7 +580,7 @@ public final class PeppolReportingItem
       }
       if (m_sC3ID.length () > MAX_LEN_C3_ID)
       {
-        aCondLogger.warn ( () -> "C3 ID exceeds the maximium length of " + MAX_LEN_C3_ID);
+        aCondLogger.warn (() -> "C3 ID exceeds the maximium length of " + MAX_LEN_C3_ID);
         return false;
       }
 
@@ -591,7 +591,7 @@ public final class PeppolReportingItem
       }
       if (m_sDocTypeIDScheme.length () > MAX_LEN_DOCTYPE_SCHEME)
       {
-        aCondLogger.warn ( () -> "Document Type ID Scheme exceeds the maximium length of " + MAX_LEN_DOCTYPE_SCHEME);
+        aCondLogger.warn (() -> "Document Type ID Scheme exceeds the maximium length of " + MAX_LEN_DOCTYPE_SCHEME);
         return false;
       }
 
@@ -602,7 +602,7 @@ public final class PeppolReportingItem
       }
       if (m_sDocTypeIDValue.length () > MAX_LEN_DOCTYPE_VALUE)
       {
-        aCondLogger.warn ( () -> "Document Type ID Value exceeds the maximium length of " + MAX_LEN_DOCTYPE_VALUE);
+        aCondLogger.warn (() -> "Document Type ID Value exceeds the maximium length of " + MAX_LEN_DOCTYPE_VALUE);
         return false;
       }
 
@@ -613,7 +613,7 @@ public final class PeppolReportingItem
       }
       if (m_sProcessIDScheme.length () > MAX_LEN_PROCESS_SCHEME)
       {
-        aCondLogger.warn ( () -> "Process ID Scheme exceeds the maximium length of " + MAX_LEN_PROCESS_SCHEME);
+        aCondLogger.warn (() -> "Process ID Scheme exceeds the maximium length of " + MAX_LEN_PROCESS_SCHEME);
         return false;
       }
 
@@ -624,7 +624,7 @@ public final class PeppolReportingItem
       }
       if (m_sProcessIDValue.length () > MAX_LEN_PROCESS_VALUE)
       {
-        aCondLogger.warn ( () -> "Process ID Value exceeds the maximium length of " + MAX_LEN_PROCESS_VALUE);
+        aCondLogger.warn (() -> "Process ID Value exceeds the maximium length of " + MAX_LEN_PROCESS_VALUE);
         return false;
       }
 
@@ -635,7 +635,7 @@ public final class PeppolReportingItem
       }
       if (m_sTransportProtocol.length () > MAX_LEN_TRANSPORT_PROTOCOL)
       {
-        aCondLogger.warn ( () -> "Transport Protocol exceeds the maximium length of " + MAX_LEN_TRANSPORT_PROTOCOL);
+        aCondLogger.warn (() -> "Transport Protocol exceeds the maximium length of " + MAX_LEN_TRANSPORT_PROTOCOL);
         return false;
       }
 
@@ -681,7 +681,7 @@ public final class PeppolReportingItem
       }
       if (m_sEndUserID.length () > MAX_LEN_END_USER_ID)
       {
-        aCondLogger.warn ( () -> "End User ID exceeds the maximium length of " + MAX_LEN_END_USER_ID);
+        aCondLogger.warn (() -> "End User ID exceeds the maximium length of " + MAX_LEN_END_USER_ID);
         return false;
       }
 

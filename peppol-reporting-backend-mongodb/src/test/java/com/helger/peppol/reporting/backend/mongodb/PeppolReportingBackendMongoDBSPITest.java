@@ -22,9 +22,8 @@ import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.testbackend.AbstractPeppolReportingBackendSPITest;
 
 /**
- * SPI contract test for {@link PeppolReportingBackendMongoDBSPI}. The whole
- * suite is skipped (via {@link org.junit.Assume}) when no MongoDB instance is
- * reachable on the configured host.
+ * SPI contract test for {@link PeppolReportingBackendMongoDBSPI}. The whole suite is skipped (via
+ * {@link org.junit.Assume}) when no MongoDB instance is reachable on the configured host.
  *
  * @author Philip Helger
  */

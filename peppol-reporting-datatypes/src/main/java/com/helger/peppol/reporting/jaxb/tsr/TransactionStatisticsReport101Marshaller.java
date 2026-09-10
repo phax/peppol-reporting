@@ -24,8 +24,7 @@ import com.helger.peppol.reporting.jaxb.tsr.v101.ObjectFactory;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
 
 /**
- * XML marshaller for Peppol Transaction Statistics Reports, version 1.0.1 final
- * draft.
+ * XML marshaller for Peppol Transaction Statistics Reports, version 1.0.1 final draft.
  *
  * @author Philip Helger
  */

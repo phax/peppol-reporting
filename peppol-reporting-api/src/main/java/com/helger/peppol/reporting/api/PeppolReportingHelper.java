@@ -39,13 +39,12 @@ public final class PeppolReportingHelper
   {}
 
   /**
-   * Check if the provided country code is valid according to the Peppol rules.
-   * It must be 2 characters long and follow a provided RegEx.
+   * Check if the provided country code is valid according to the Peppol rules. It must be 2
+   * characters long and follow a provided RegEx.
    *
    * @param s
    *        The country code to check. May be <code>null</code>.
-   * @return <code>true</code> if it is a valid country code, <code>false</code>
-   *         if not.
+   * @return <code>true</code> if it is a valid country code, <code>false</code> if not.
    * @since 2.2.2
    */
   public static boolean isValidCountryCode (@Nullable final String s)
@@ -54,28 +53,25 @@ public final class PeppolReportingHelper
   }
 
   /**
-   * Check if a document type is eligible for the provided report type or not.
-   * Based on the TSR specification 1.0 chapter 2.2.1 and EUSR specification 1.1
-   * chapter 2.2.1:
+   * Check if a document type is eligible for the provided report type or not. Based on the TSR
+   * specification 1.0 chapter 2.2.1 and EUSR specification 1.1 chapter 2.2.1:
    * <ul>
-   * <li>End User Statistics Reports MUST NOT be counted for (a Transaction
-   * Statistics Report|an End User Statistics Report)</li>
-   * <li>Transaction Statistics Reports MUST NOT be counted for (a Transaction
-   * Statistics Report|an End User Statistics Report)</li>
+   * <li>End User Statistics Reports MUST NOT be counted for (a Transaction Statistics Report|an End
+   * User Statistics Report)</li>
+   * <li>Transaction Statistics Reports MUST NOT be counted for (a Transaction Statistics Report|an
+   * End User Statistics Report)</li>
    * </ul>
-   * Additionally Message Level Status (MLS) messages are only counted for a
-   * Transaction Statistics Report but not for an End User Statistics Report, as
-   * they are not related to an end user.
+   * Additionally Message Level Status (MLS) messages are only counted for a Transaction Statistics
+   * Report but not for an End User Statistics Report, as they are not related to an end user.
    *
    * @param eReportType
-   *        The report type to check the eligibility for. May not be
-   *        <code>null</code>.
+   *        The report type to check the eligibility for. May not be <code>null</code>.
    * @param sDocTypeIDScheme
    *        The document type ID scheme to be checked. May be <code>null</code>.
    * @param sDocTypeIDValue
    *        The document type ID value to be checked. May be <code>null</code>.
-   * @return <code>false</code> if the document type is not suitable for the
-   *         provided report type, <code>true</code> otherwise.
+   * @return <code>false</code> if the document type is not suitable for the provided report type,
+   *         <code>true</code> otherwise.
    * @since 4.3.0
    */
   public static boolean isDocumentTypeEligableForReporting (@NonNull final EPeppolReportType eReportType,
@@ -103,18 +99,15 @@ public final class PeppolReportingHelper
   }
 
   /**
-   * Check if a document type is eligible for the provided report type or not.
-   * See
-   * {@link #isDocumentTypeEligableForReporting(EPeppolReportType, String, String)}
-   * for the details.
+   * Check if a document type is eligible for the provided report type or not. See
+   * {@link #isDocumentTypeEligableForReporting(EPeppolReportType, String, String)} for the details.
    *
    * @param eReportType
-   *        The report type to check the eligibility for. May not be
-   *        <code>null</code>.
+   *        The report type to check the eligibility for. May not be <code>null</code>.
    * @param aDocTypeID
    *        The document type ID to be checked. May not be <code>null</code>.
-   * @return <code>false</code> if the document type is not suitable for the
-   *         provided report type, <code>true</code> otherwise.
+   * @return <code>false</code> if the document type is not suitable for the provided report type,
+   *         <code>true</code> otherwise.
    * @since 4.3.0
    */
   public static boolean isDocumentTypeEligableForReporting (@NonNull final EPeppolReportType eReportType,
@@ -126,18 +119,18 @@ public final class PeppolReportingHelper
   }
 
   /**
-   * Check if a document type is eligible for at least one of the existing
-   * report types or not. This is the check to be used when storing reporting
-   * items, as the stored items are the source for all report types. Use
-   * {@link #isDocumentTypeEligableForReporting(EPeppolReportType, String, String)}
-   * to check the eligibility for a specific report type.
+   * Check if a document type is eligible for at least one of the existing report types or not. This
+   * is the check to be used when storing reporting items, as the stored items are the source for
+   * all report types. Use
+   * {@link #isDocumentTypeEligableForReporting(EPeppolReportType, String, String)} to check the
+   * eligibility for a specific report type.
    *
    * @param sDocTypeIDScheme
    *        The document type ID scheme to be checked. May be <code>null</code>.
    * @param sDocTypeIDValue
    *        The document type ID value to be checked. May be <code>null</code>.
-   * @return <code>false</code> if the document type is not suitable for any
-   *         reporting, <code>true</code> otherwise.
+   * @return <code>false</code> if the document type is not suitable for any reporting,
+   *         <code>true</code> otherwise.
    * @since 3.0.3
    */
   public static boolean isDocumentTypeEligableForReporting (@Nullable final String sDocTypeIDScheme,
@@ -150,15 +143,13 @@ public final class PeppolReportingHelper
   }
 
   /**
-   * Check if a document type is eligible for at least one of the existing
-   * report types or not. See
-   * {@link #isDocumentTypeEligableForReporting(String, String)} for the
-   * details.
+   * Check if a document type is eligible for at least one of the existing report types or not. See
+   * {@link #isDocumentTypeEligableForReporting(String, String)} for the details.
    *
    * @param aDocTypeID
    *        The document type ID to be checked. May not be <code>null</code>.
-   * @return <code>false</code> if the document type is not suitable for any
-   *         reporting, <code>true</code> otherwise.
+   * @return <code>false</code> if the document type is not suitable for any reporting,
+   *         <code>true</code> otherwise.
    */
   public static boolean isDocumentTypeEligableForReporting (@NonNull final IDocumentTypeIdentifier aDocTypeID)
   {

@@ -30,11 +30,11 @@ import com.helger.json.JsonObject;
 import com.helger.json.serialize.JsonReader;
 
 /**
- * The default JSON serialization of a {@link PeppolReportingItem}, to be used
- * to transfer Peppol Reporting raw data over the wire.<br>
- * Each created JSON object contains the field {@value #JSON_VERSION} with the
- * value {@link #JSON_VERSION_1}, so that the layout can be extended in a
- * backwards compatible way later on.
+ * The default JSON serialization of a {@link PeppolReportingItem}, to be used to transfer Peppol
+ * Reporting raw data over the wire.<br>
+ * Each created JSON object contains the field {@value #JSON_VERSION} with the value
+ * {@link #JSON_VERSION_1}, so that the layout can be extended in a backwards compatible way later
+ * on.
  *
  * @author Philip Helger
  * @since 4.3.0
@@ -100,8 +100,7 @@ public final class PeppolReportingJsonHelper
   }
 
   /**
-   * Convert a {@link PeppolReportingItem} to a JSON string, ready to be
-   * transferred over the wire.
+   * Convert a {@link PeppolReportingItem} to a JSON string, ready to be transferred over the wire.
    *
    * @param aValue
    *        The Reporting item to be converted. May not be <code>null</code>.

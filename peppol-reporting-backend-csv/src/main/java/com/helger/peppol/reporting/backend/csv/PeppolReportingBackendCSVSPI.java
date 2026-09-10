@@ -120,7 +120,7 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
     m_cQuoteChar = _asChar (aConfig, CONFIG_PEPPOL_REPORTING_CSV_QUOTE_CHAR, CCSV.DEFAULT_QUOTE_CHARACTER);
     m_cEscapeChar = _asChar (aConfig, CONFIG_PEPPOL_REPORTING_CSV_ESCAPE_CHAR, CCSV.DEFAULT_ESCAPE_CHARACTER);
 
-    m_aRWLock.writeLocked ( () -> {
+    m_aRWLock.writeLocked (() -> {
       m_aCSVFile = aFile;
       try
       {
@@ -144,7 +144,7 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
 
   public boolean isInitialized ()
   {
-    return m_aRWLock.readLockedBoolean ( () -> m_aCSVWriter != null);
+    return m_aRWLock.readLockedBoolean (() -> m_aCSVWriter != null);
   }
 
   @MustBeLocked (ELockType.WRITE)
@@ -166,7 +166,7 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
   {
     if (isInitialized ())
     {
-      m_aRWLock.writeLocked ( () -> {
+      m_aRWLock.writeLocked (() -> {
         LOGGER.info ("Shutting down Peppol Reporting CSV client");
         _shutdown ();
       });
@@ -204,7 +204,7 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
   @NonNull
   private String _getCSVFilename ()
   {
-    return m_aRWLock.readLockedGet ( () -> m_aCSVFile == null ? "" : m_aCSVFile.getAbsolutePath ());
+    return m_aRWLock.readLockedGet (() -> m_aCSVFile == null ? "" : m_aCSVFile.getAbsolutePath ());
   }
 
   public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
@@ -222,7 +222,7 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
       if (!isInitialized ())
         throw new IllegalStateException ("The Peppol Reporting CSV backend '" + sCSVFilename + "' is not initialized");
 
-      m_aRWLock.writeLockedThrowing ( () -> {
+      m_aRWLock.writeLockedThrowing (() -> {
         m_aCSVWriter.writeNext (asCSV (aReportingItem));
         try
         {
@@ -277,7 +277,7 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
-    ValueEnforcer.isTrue ( () -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
+    ValueEnforcer.isTrue (() -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
     ValueEnforcer.notNull (aConsumer, "Consumer");
 
     final String sCSVFilename = _getCSVFilename ();
