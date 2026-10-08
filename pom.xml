@@ -69,7 +69,7 @@
       <dependency>
         <groupId>com.helger.commons</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>12.5.0</version>
+        <version>12.5.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -83,14 +83,14 @@
       <dependency>
         <groupId>com.helger.web</groupId>
         <artifactId>ph-web-parent-pom</artifactId>
-        <version>11.4.6</version>
+        <version>11.4.7</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.peppol</groupId>
         <artifactId>peppol-commons-parent-pom</artifactId>
-        <version>13.1.1</version>
+        <version>13.2.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
