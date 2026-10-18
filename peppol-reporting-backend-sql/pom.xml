@@ -47,7 +47,7 @@
   
   <!-- Do not bloat global scope -->
   <properties>
-    <flyway.version>13.10.0</flyway.version>
+    <flyway.version>13.10.3</flyway.version>
     <ph-db.version>8.5.0</ph-db.version>
   </properties>
   
@@ -138,7 +138,7 @@
     <dependency>
       <groupId>com.microsoft.sqlserver</groupId>
       <artifactId>mssql-jdbc</artifactId>
-      <version>13.6.0.jre11</version>
+      <version>13.6.1.jre11</version>
       <scope>test</scope>
     </dependency>
     <dependency>
