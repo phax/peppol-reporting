@@ -34,7 +34,7 @@ import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.equals.EqualsHelper;
 import com.helger.base.hashcode.HashCodeGenerator;
-import com.helger.base.log.ConditionalLogger;
+import com.helger.base.log.ILogHandler;
 import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.edelivery.smp.ISMPTransportProfile;
@@ -403,6 +403,7 @@ public final class PeppolReportingItem
     private String m_sC1CountryCode;
     private String m_sC4CountryCode;
     private String m_sEndUserID;
+    private ILogHandler m_aLogHandler = ILogHandler.createForLogger (LOGGER);
 
     public Builder ()
     {}
@@ -540,113 +541,159 @@ public final class PeppolReportingItem
     }
 
     /**
+     * @return The log handler that receives the messages of the completeness check, when called via
+     *         {@link #isComplete(boolean)} with <code>true</code> or {@link #build()}. Never
+     *         <code>null</code>.
+     * @since 4.4.1
+     */
+    @NonNull
+    public ILogHandler logHandler ()
+    {
+      return m_aLogHandler;
+    }
+
+    /**
+     * Set the log handler that receives the messages of the completeness check, when called via
+     * {@link #isComplete(boolean)} with <code>true</code> or {@link #build()}. The default handler
+     * logs to the logger of this class, use
+     * {@link ILogHandler#createForConsumer(java.util.function.Consumer)} or
+     * {@link ILogHandler#createNoOp()} to redirect or discard the messages.
+     *
+     * @param aLogHandler
+     *        The log handler to use. May not be <code>null</code>.
+     * @return this for chaining
+     * @since 4.4.1
+     */
+    @NonNull
+    public Builder logHandler (@NonNull final ILogHandler aLogHandler)
+    {
+      ValueEnforcer.notNull (aLogHandler, "LogHandler");
+      m_aLogHandler = aLogHandler;
+      return this;
+    }
+
+    /**
      * Check if all mandatory fields are set or not.
      *
      * @param bLogFailures
-     *        <code>true</code> if missing fields should be logged, <code>false</code> if not.
+     *        <code>true</code> if missing fields should be reported to the log handler, <code>false</code> if not.
      * @return <code>true</code> if all mandatory fields are set, <code>false</code> if not.
      */
     public boolean isComplete (final boolean bLogFailures)
     {
-      final ConditionalLogger aCondLogger = new ConditionalLogger (LOGGER, bLogFailures);
+      return isComplete (bLogFailures ? m_aLogHandler : ILogHandler.createNoOp ());
+    }
+
+    /**
+     * Check if all mandatory fields are set or not.
+     *
+     * @param aLogHandler
+     *        The log handler that receives a message for the first missing or invalid field. May
+     *        not be <code>null</code>.
+     * @return <code>true</code> if all mandatory fields are set, <code>false</code> if not.
+     * @since 4.4.1
+     */
+    public boolean isComplete (@NonNull final ILogHandler aLogHandler)
+    {
+      ValueEnforcer.notNull (aLogHandler, "LogHandler");
 
       if (m_aExchangeDT == null)
       {
-        aCondLogger.warn ("ExchangeDateTime is missing");
+        aLogHandler.warn ("ExchangeDateTime is missing");
         return false;
       }
 
       if (m_eDirection == null)
       {
-        aCondLogger.warn ("Direction is missing");
+        aLogHandler.warn ("Direction is missing");
         return false;
       }
 
       if (StringHelper.isEmpty (m_sC2ID))
       {
-        aCondLogger.warn ("C2 ID is missing");
+        aLogHandler.warn ("C2 ID is missing");
         return false;
       }
       if (m_sC2ID.length () > MAX_LEN_C2_ID)
       {
-        aCondLogger.warn (() -> "C2 ID exceeds the maximium length of " + MAX_LEN_C2_ID);
+        aLogHandler.warn (() -> "C2 ID exceeds the maximium length of " + MAX_LEN_C2_ID);
         return false;
       }
 
       if (StringHelper.isEmpty (m_sC3ID))
       {
-        aCondLogger.warn ("C3 ID is missing");
+        aLogHandler.warn ("C3 ID is missing");
         return false;
       }
       if (m_sC3ID.length () > MAX_LEN_C3_ID)
       {
-        aCondLogger.warn (() -> "C3 ID exceeds the maximium length of " + MAX_LEN_C3_ID);
+        aLogHandler.warn (() -> "C3 ID exceeds the maximium length of " + MAX_LEN_C3_ID);
         return false;
       }
 
       if (StringHelper.isEmpty (m_sDocTypeIDScheme))
       {
-        aCondLogger.warn ("Document Type ID Scheme is missing");
+        aLogHandler.warn ("Document Type ID Scheme is missing");
         return false;
       }
       if (m_sDocTypeIDScheme.length () > MAX_LEN_DOCTYPE_SCHEME)
       {
-        aCondLogger.warn (() -> "Document Type ID Scheme exceeds the maximium length of " + MAX_LEN_DOCTYPE_SCHEME);
+        aLogHandler.warn (() -> "Document Type ID Scheme exceeds the maximium length of " + MAX_LEN_DOCTYPE_SCHEME);
         return false;
       }
 
       if (StringHelper.isEmpty (m_sDocTypeIDValue))
       {
-        aCondLogger.warn ("Document Type ID Value is missing");
+        aLogHandler.warn ("Document Type ID Value is missing");
         return false;
       }
       if (m_sDocTypeIDValue.length () > MAX_LEN_DOCTYPE_VALUE)
       {
-        aCondLogger.warn (() -> "Document Type ID Value exceeds the maximium length of " + MAX_LEN_DOCTYPE_VALUE);
+        aLogHandler.warn (() -> "Document Type ID Value exceeds the maximium length of " + MAX_LEN_DOCTYPE_VALUE);
         return false;
       }
 
       if (StringHelper.isEmpty (m_sProcessIDScheme))
       {
-        aCondLogger.warn ("Process ID Scheme is missing");
+        aLogHandler.warn ("Process ID Scheme is missing");
         return false;
       }
       if (m_sProcessIDScheme.length () > MAX_LEN_PROCESS_SCHEME)
       {
-        aCondLogger.warn (() -> "Process ID Scheme exceeds the maximium length of " + MAX_LEN_PROCESS_SCHEME);
+        aLogHandler.warn (() -> "Process ID Scheme exceeds the maximium length of " + MAX_LEN_PROCESS_SCHEME);
         return false;
       }
 
       if (StringHelper.isEmpty (m_sProcessIDValue))
       {
-        aCondLogger.warn ("Process ID Value is missing");
+        aLogHandler.warn ("Process ID Value is missing");
         return false;
       }
       if (m_sProcessIDValue.length () > MAX_LEN_PROCESS_VALUE)
       {
-        aCondLogger.warn (() -> "Process ID Value exceeds the maximium length of " + MAX_LEN_PROCESS_VALUE);
+        aLogHandler.warn (() -> "Process ID Value exceeds the maximium length of " + MAX_LEN_PROCESS_VALUE);
         return false;
       }
 
       if (StringHelper.isEmpty (m_sTransportProtocol))
       {
-        aCondLogger.warn ("Transport Protocol is missing");
+        aLogHandler.warn ("Transport Protocol is missing");
         return false;
       }
       if (m_sTransportProtocol.length () > MAX_LEN_TRANSPORT_PROTOCOL)
       {
-        aCondLogger.warn (() -> "Transport Protocol exceeds the maximium length of " + MAX_LEN_TRANSPORT_PROTOCOL);
+        aLogHandler.warn (() -> "Transport Protocol exceeds the maximium length of " + MAX_LEN_TRANSPORT_PROTOCOL);
         return false;
       }
 
       if (StringHelper.isEmpty (m_sC1CountryCode))
       {
-        aCondLogger.warn ("C1 Country Code is missing");
+        aLogHandler.warn ("C1 Country Code is missing");
         return false;
       }
       if (!PeppolReportingHelper.isValidCountryCode (m_sC1CountryCode))
       {
-        aCondLogger.error ("C1 Country Code has an invalid layout");
+        aLogHandler.error ("C1 Country Code has an invalid layout");
         return false;
       }
 
@@ -655,7 +702,7 @@ public final class PeppolReportingItem
       {
         if (m_eDirection.isReceiving ())
         {
-          aCondLogger.warn ("C4 Country Code is missing");
+          aLogHandler.warn ("C4 Country Code is missing");
           return false;
         }
       }
@@ -663,25 +710,25 @@ public final class PeppolReportingItem
       {
         if (m_eDirection.isSending ())
         {
-          aCondLogger.warn ("C4 Country Code cannot be provided for outgoing/sent messages");
+          aLogHandler.warn ("C4 Country Code cannot be provided for outgoing/sent messages");
           return false;
         }
 
         if (!PeppolReportingHelper.isValidCountryCode (m_sC4CountryCode))
         {
-          aCondLogger.error ("C4 Country Code has an invalid layout");
+          aLogHandler.error ("C4 Country Code has an invalid layout");
           return false;
         }
       }
 
       if (StringHelper.isEmpty (m_sEndUserID))
       {
-        aCondLogger.warn ("End User ID is missing");
+        aLogHandler.warn ("End User ID is missing");
         return false;
       }
       if (m_sEndUserID.length () > MAX_LEN_END_USER_ID)
       {
-        aCondLogger.warn (() -> "End User ID exceeds the maximium length of " + MAX_LEN_END_USER_ID);
+        aLogHandler.warn (() -> "End User ID exceeds the maximium length of " + MAX_LEN_END_USER_ID);
         return false;
       }
 

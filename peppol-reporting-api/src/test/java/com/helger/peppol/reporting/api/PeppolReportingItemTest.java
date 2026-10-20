@@ -21,13 +21,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 import org.junit.Test;
 
+import com.helger.base.log.ILogHandler;
 import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.datetime.helper.PDTFactory;
 import com.helger.peppol.reporting.api.PeppolReportingItem.Builder;
 import com.helger.peppolid.peppol.doctype.EPredefinedDocumentTypeIdentifier;
@@ -155,6 +159,34 @@ public final class PeppolReportingItemTest
     aBuilder.endUserID ("abc");
     assertTrue (aBuilder.isComplete (false));
     assertNotNull (aBuilder.build ());
+  }
+
+  @Test
+  public void testLogHandler ()
+  {
+    final ICommonsList <String> aMessages = new CommonsArrayList <> ();
+    final Builder aBuilder = PeppolReportingItem.builder ().logHandler (ILogHandler.createForConsumer (aMessages::add));
+
+    // Not reporting means no message
+    assertFalse (aBuilder.isComplete (false));
+    assertTrue (aMessages.isEmpty ());
+
+    // The member handler receives the messages
+    assertFalse (aBuilder.isComplete (true));
+    assertEquals (1, aMessages.size ());
+
+    // build() uses the member handler as well
+    aMessages.clear ();
+    try
+    {
+      aBuilder.build ();
+      fail ();
+    }
+    catch (final IllegalStateException ex)
+    {
+      // expected
+    }
+    assertFalse (aMessages.isEmpty ());
   }
 
   @Test

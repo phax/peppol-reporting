@@ -27,7 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.builder.IBuilder;
-import com.helger.base.log.ConditionalLogger;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.log.ILogHandler;
 import com.helger.base.string.StringHelper;
 import com.helger.datetime.rt.OffsetDate;
 import com.helger.datetime.xml.XMLOffsetDate;
@@ -76,6 +77,7 @@ public final class TransactionStatisticsReport
     private String m_sReportingServiceProviderIDScheme;
     private String m_sReportingServiceProviderID;
     private Iterable <? extends PeppolReportingItem> m_aReportingItems;
+    private ILogHandler m_aLogHandler = ILogHandler.createForLogger (LOGGER);
 
     /**
      * Constructor. Sets default values for: {@link #customizationID(String)},
@@ -273,65 +275,112 @@ public final class TransactionStatisticsReport
     }
 
     /**
+     * @return The log handler that receives the messages of the completeness check, when called via
+     *         {@link #isComplete(boolean)} with <code>true</code> or {@link #build()}. Never
+     *         <code>null</code>.
+     * @since 4.4.1
+     */
+    @NonNull
+    public ILogHandler logHandler ()
+    {
+      return m_aLogHandler;
+    }
+
+    /**
+     * Set the log handler that receives the messages of the completeness check, when called via
+     * {@link #isComplete(boolean)} with <code>true</code> or {@link #build()}. The default handler
+     * logs to the logger of this class, use
+     * {@link ILogHandler#createForConsumer(java.util.function.Consumer)} or
+     * {@link ILogHandler#createNoOp()} to redirect or discard the messages.
+     *
+     * @param aLogHandler
+     *        The log handler to use. May not be <code>null</code>.
+     * @return this for chaining
+     * @since 4.4.1
+     */
+    @NonNull
+    public Builder10 logHandler (@NonNull final ILogHandler aLogHandler)
+    {
+      ValueEnforcer.notNull (aLogHandler, "LogHandler");
+      m_aLogHandler = aLogHandler;
+      return this;
+    }
+
+    /**
      * Check if all mandatory fields are set or not.
      *
      * @param bLogFailures
-     *        <code>true</code> if missing fields should be logged, <code>false</code> if not.
+     *        <code>true</code> if missing fields should be reported to the log handler, <code>false</code> if not.
      * @return <code>true</code> if all mandatory fields are set, <code>false</code> if not.
      */
     public boolean isComplete (final boolean bLogFailures)
     {
-      final ConditionalLogger aCondLogger = new ConditionalLogger (LOGGER, bLogFailures);
+      return isComplete (bLogFailures ? m_aLogHandler : ILogHandler.createNoOp ());
+    }
+
+    /**
+     * Check if all mandatory fields are set or not.
+     *
+     * @param aLogHandler
+     *        The log handler that receives a message for the first missing or invalid field. May not
+     *        be <code>null</code>.
+     * @return <code>true</code> if all mandatory fields are set, <code>false</code> if not.
+     * @since 4.4.1
+     */
+    public boolean isComplete (@NonNull final ILogHandler aLogHandler)
+    {
+      ValueEnforcer.notNull (aLogHandler, "LogHandler");
+
 
       if (StringHelper.isEmpty (m_sCustomizationID))
       {
-        aCondLogger.warn ("CustomizationID is missing");
+        aLogHandler.warn ("CustomizationID is missing");
         return false;
       }
 
       if (StringHelper.isEmpty (m_sProfileID))
       {
-        aCondLogger.warn ("ProfileID is missing");
+        aLogHandler.warn ("ProfileID is missing");
         return false;
       }
 
       if (m_aStartDate == null)
       {
-        aCondLogger.warn ("StartDate is missing");
+        aLogHandler.warn ("StartDate is missing");
         return false;
       }
 
       if (m_aEndDate == null)
       {
-        aCondLogger.warn ("EndDate is missing");
+        aLogHandler.warn ("EndDate is missing");
         return false;
       }
 
       if (m_aEndDate.isBefore (m_aStartDate))
       {
-        aCondLogger.warn ("StartDate must be before or equal to the EndDate");
+        aLogHandler.warn ("StartDate must be before or equal to the EndDate");
         return false;
       }
 
       if (StringHelper.isEmpty (m_sReportingServiceProviderIDScheme))
       {
-        aCondLogger.warn ("Reporting Service Provider ID Scheme is missing");
+        aLogHandler.warn ("Reporting Service Provider ID Scheme is missing");
         return false;
       }
 
       if (StringHelper.isEmpty (m_sReportingServiceProviderID))
       {
-        aCondLogger.warn ("Reporting Service Provider ID is missing");
+        aLogHandler.warn ("Reporting Service Provider ID is missing");
         return false;
       }
 
       if (m_aReportingItems == null)
       {
-        aCondLogger.warn ("Reporting Item list is missing");
+        aLogHandler.warn ("Reporting Item list is missing");
         return false;
       }
 
-      aCondLogger.trace (() -> "Builder fields are complete");
+      aLogHandler.trace (() -> "Builder fields are complete");
       return true;
     }
 

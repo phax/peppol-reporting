@@ -377,6 +377,11 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+v4.4.1 - work in progress
+* Updated to ph-commons 12.5.2
+* Added `isComplete (ILogHandler)` to `PeppolReportingItem.Builder`, `EndUserStatisticsReport.Builder11` and `TransactionStatisticsReport.Builder10` to get the missing fields reported to a custom sink instead of the logger. `isComplete (boolean)` is kept
+* Added `logHandler (ILogHandler)` and `logHandler ()` to `PeppolReportingItem.Builder`, `EndUserStatisticsReport.Builder11` and `TransactionStatisticsReport.Builder10`. The handler is used by `isComplete (true)` and `build ()`; the default logs to the logger of the builder
+
 v4.4.0 - 2026-09-23
 * Updated to peppol-commons 13.0.0
 
