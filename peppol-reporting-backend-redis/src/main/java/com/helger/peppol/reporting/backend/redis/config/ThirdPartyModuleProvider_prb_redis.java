@@ -23,7 +23,6 @@ import com.helger.base.thirdparty.ELicense;
 import com.helger.base.thirdparty.IThirdPartyModule;
 import com.helger.base.thirdparty.IThirdPartyModuleProviderSPI;
 import com.helger.base.thirdparty.ThirdPartyModule;
-import com.helger.base.version.Version;
 
 /**
  * Implement this SPI interface if your JAR file contains external third party modules.
@@ -33,11 +32,13 @@ import com.helger.base.version.Version;
 @IsSPIImplementation
 public final class ThirdPartyModuleProvider_prb_redis implements IThirdPartyModuleProviderSPI
 {
-  private static final IThirdPartyModule JEDIS = new ThirdPartyModule ("Jedis",
-                                                                       "Redis",
-                                                                       ELicense.MIT,
-                                                                       new Version (7, 4, 0),
-                                                                       "https://github.com/redis/jedis");
+  private static final IThirdPartyModule JEDIS = ThirdPartyModule.builder ()
+                                                                 .displayName ("Jedis")
+                                                                 .copyrightOwner ("Redis")
+                                                                 .license (ELicense.MIT)
+                                                                 .version ("8.0.2")
+                                                                 .copyrightOwner ("https://github.com/redis/jedis")
+                                                                 .build ();
 
   @Nullable
   public IThirdPartyModule [] getAllThirdPartyModules ()

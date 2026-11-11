@@ -33,11 +33,13 @@ import com.helger.base.version.Version;
 @IsSPIImplementation
 public final class ThirdPartyModuleProvider_prb_mongodb implements IThirdPartyModuleProviderSPI
 {
-  private static final IThirdPartyModule MONGODB_JAVA_DRIVERS = new ThirdPartyModule ("MongoDB Java Drivers",
-                                                                                      "MongoDB, Inc.",
-                                                                                      ELicense.APACHE2,
-                                                                                      new Version (5, 6, 1),
-                                                                                      "https://www.mongodb.com/docs/drivers/java/sync/current/");
+  private static final IThirdPartyModule MONGODB_JAVA_DRIVERS = ThirdPartyModule.builder ()
+                                                                                .displayName ("MongoDB Java Drivers")
+                                                                                .copyrightOwner ("MongoDB, Inc.")
+                                                                                .license (ELicense.APACHE2)
+                                                                                .version (new Version (5, 6, 1))
+                                                                                .webSiteUrl ("https://www.mongodb.com/docs/drivers/java/sync/current/")
+                                                                                .build ();
 
   @Nullable
   public IThirdPartyModule [] getAllThirdPartyModules ()

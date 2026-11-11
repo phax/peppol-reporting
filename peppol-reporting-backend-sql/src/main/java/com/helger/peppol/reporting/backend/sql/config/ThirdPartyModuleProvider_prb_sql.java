@@ -33,11 +33,13 @@ import com.helger.base.version.Version;
 @IsSPIImplementation
 public final class ThirdPartyModuleProvider_prb_sql implements IThirdPartyModuleProviderSPI
 {
-  private static final IThirdPartyModule FLYWAY = new ThirdPartyModule ("Flyway",
-                                                                        "Red Gate Software Ltd",
-                                                                        ELicense.APACHE2,
-                                                                        new Version (11, 17, 0),
-                                                                        "https://github.com/flyway/flyway");
+  private static final IThirdPartyModule FLYWAY = ThirdPartyModule.builder ()
+                                                                  .displayName ("Flyway")
+                                                                  .copyrightOwner ("Red Gate Software Ltd")
+                                                                  .license (ELicense.APACHE2)
+                                                                  .version (new Version (13, 12, 1))
+                                                                  .webSiteUrl ("https://github.com/flyway/flyway")
+                                                                  .build ();
 
   @Nullable
   public IThirdPartyModule [] getAllThirdPartyModules ()

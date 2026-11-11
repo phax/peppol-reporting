@@ -377,6 +377,9 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
+v4.4.2 - work in progress
+* Requires at least ph-commons 12.6.0
+
 v4.4.1 - 2026-10-22
 * Updated to ph-commons 12.5.2
 * Added `isComplete (ILogHandler)` to `PeppolReportingItem.Builder`, `EndUserStatisticsReport.Builder11` and `TransactionStatisticsReport.Builder10` to get the missing fields reported to a custom sink instead of the logger.
