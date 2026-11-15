@@ -366,7 +366,7 @@ Usage as Maven BOM:
 ```xml
 <dependency>
   <groupId>com.helger.peppol</groupId>
-  <artifactId>peppol-reporting-parent-pom</artifactId>
+  <artifactId>peppol-reporting-bom</artifactId>
   <version>x.y.z</version>
   <type>pom</type>
   <scope>import</scope>
@@ -377,8 +377,9 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-v4.4.2 - work in progress
-* Requires at least ph-commons 12.6.0
+v4.4.2 - 2026-11-15
+* Requires at least ph-commons 12.7.1
+* Added new submodule `peppol-reporting-bom` as a dedicated Maven BOM for all peppol-reporting artifacts. Use it instead of `peppol-reporting-parent-pom` for importing
 
 v4.4.1 - 2026-10-22
 * Updated to ph-commons 12.5.2

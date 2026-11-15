@@ -57,7 +57,7 @@
   </developers>
 
   <properties>
-    <ph-schematron.version>10.3.1</ph-schematron.version>
+    <ph-schematron.version>10.3.2</ph-schematron.version>
     <jaxb-plugin.group>org.jvnet.jaxb</jaxb-plugin.group>
     <jaxb-plugin.artifact>jaxb-maven-plugin</jaxb-plugin.artifact>
     <jaxb-plugin.version>4.0.16</jaxb-plugin.version>
@@ -68,8 +68,8 @@
     <dependencies>
       <dependency>
         <groupId>com.helger.commons</groupId>
-        <artifactId>ph-commons-parent-pom</artifactId>
-        <version>12.6.0</version>
+        <artifactId>ph-commons-bom</artifactId>
+        <version>12.7.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -82,17 +82,31 @@
       </dependency>
       <dependency>
         <groupId>com.helger.web</groupId>
-        <artifactId>ph-web-parent-pom</artifactId>
-        <version>11.5.0</version>
+        <artifactId>ph-web-bom</artifactId>
+        <version>11.5.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.peppol</groupId>
-        <artifactId>peppol-commons-parent-pom</artifactId>
-        <version>13.2.2</version>
+        <artifactId>peppol-commons-bom</artifactId>
+        <version>13.2.3</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-bom</artifactId>
+        <version>4.0.9</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit4.version}</version>
       </dependency>
       
       <dependency>
@@ -149,6 +163,7 @@
   </dependencyManagement>
 
   <modules>
+    <module>peppol-reporting-bom</module>
     <module>peppol-reporting-testfiles</module>
     <module>peppol-reporting-datatypes</module>
     <module>peppol-reporting-api</module>
