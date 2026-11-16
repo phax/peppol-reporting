@@ -31,7 +31,7 @@
   <packaging>pom</packaging>
   <name>peppol-reporting-bom</name>
   <description>Bill of Materials for all peppol-reporting artifacts</description>
-  <url>https://github.com/phax/peppol-reporting</url>
+  <url>https://github.com/phax/peppol-reporting/peppol-reporting-bom</url>
   <inceptionYear>2022</inceptionYear>
   <licenses>
     <license>
@@ -40,12 +40,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  <scm>
-    <connection>scm:git:https://github.com/phax/peppol-reporting.git</connection>
-    <developerConnection>scm:git:https://github.com/phax/peppol-reporting.git</developerConnection>
-    <url>http://github.com/phax/peppol-reporting</url>
-    <tag>HEAD</tag>
-  </scm>
   <developers>
     <developer>
       <id>philip</id>
