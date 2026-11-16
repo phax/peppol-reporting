@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonempty;
+import com.helger.annotation.misc.ChangeNextMajorRelease;
 import com.helger.annotation.style.IsSPIInterface;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.name.IHasDisplayName;
@@ -100,6 +101,7 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
    *         In case of an unrecoverable error
    * @since 2.2.0
    */
+  @ChangeNextMajorRelease ("In v5 this method should become a default method and forEachReportingItem should be the mandatory implementation")
   @NonNull
   Iterable <PeppolReportingItem> iterateReportingItems (@NonNull LocalDate aStartDateIncl,
                                                         @NonNull LocalDate aEndDateIncl) throws PeppolReportingBackendException;
