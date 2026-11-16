@@ -384,16 +384,20 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-v4.5.0 - work in progress
+v4.5.0 - 2026-11-16
 * The SQL backend now overrides `forEachReportingItem` to pass each reporting item to the consumer while reading the result set, instead of collecting all items in a list first
 * The default implementation of `IPeppolReportingBackendSPI.forEachReportingItem (YearMonth, Consumer)` now delegates to `forEachReportingItem (LocalDate, LocalDate, Consumer)`, so that backend specific implementations are used
-* The InMemory backend now implements `forEachReportingItem` and `iterateReportingItems` collects via it. The consumer is invoked outside of the internal lock
-* The MongoDB backend now implements `forEachReportingItem` explicitly, reading via a MongoDB cursor that is closed in all cases. `iterateReportingItems` stays lazy
-* Added `reportingItemAccumulator (...)` to `EndUserStatisticsReport.Builder11` and `TransactionStatisticsReport.Builder10` to create reports from a filled `EUSRReportingItemAccumulator` or `TSRReportingItemAccumulator`. It is an alternative to `reportingItemList (...)` - the one called last is used
+* The InMemory backend now implements `forEachReportingItem` and `iterateReportingItems` collects via it.
+  The consumer is invoked outside of the internal lock
+* The MongoDB backend now implements `forEachReportingItem` explicitly, reading via a MongoDB cursor that is closed in all cases.
+  `iterateReportingItems` stays lazy
+* Added `reportingItemAccumulator (...)` to `EndUserStatisticsReport.Builder11` and `TransactionStatisticsReport.Builder10` to create reports from a filled `EUSRReportingItemAccumulator` or `TSRReportingItemAccumulator`.
+  It is an alternative to `reportingItemList (...)` - the one called last is used
 
 v4.4.2 - 2026-11-15
 * Requires at least ph-commons 12.7.1
-* Added new submodule `peppol-reporting-bom` as a dedicated Maven BOM for all peppol-reporting artifacts. Use it instead of `peppol-reporting-parent-pom` for importing
+* Added new submodule `peppol-reporting-bom` as a dedicated Maven BOM for all peppol-reporting artifacts.
+  Use it instead of `peppol-reporting-parent-pom` for importing
 
 v4.4.1 - 2026-10-22
 * Updated to ph-commons 12.5.2
@@ -425,7 +429,8 @@ v4.2.0 - 2026-07-17
 * Updated to ph-schematron v10.x
 
 v4.1.6 - 2026-07-16
-* (SQL) Added support for IBM DB2 as a database backend. See [#21](https://github.com/phax/peppol-reporting/pull/21) - thx @dmaus2018
+* (SQL) Added support for IBM DB2 as a database backend.
+  See [#21](https://github.com/phax/peppol-reporting/pull/21) - thx @dmaus2018
 * (SQL) Added support for Oracle as a database backend
 * (SQL) All database-specific Flyway modules are now `optional` dependencies, so consumers only pull in the one matching their database engine
 
@@ -434,7 +439,8 @@ v4.1.5 - 2026-07-05
 
 v4.1.4 - 2026-05-20
 * Removed OSGI bundling
-* Added `EUSRReportingItemAccumulator` and `TSRReportingItemAccumulator` to support batched/streaming aggregation, preventing OOM errors when processing large datasets. See [#18](https://github.com/phax/peppol-reporting/pull/18) - thx @jaskiratsingh1792
+* Added `EUSRReportingItemAccumulator` and `TSRReportingItemAccumulator` to support batched/streaming aggregation, preventing OOM errors when processing large datasets.
+  See [#18](https://github.com/phax/peppol-reporting/pull/18) - thx @jaskiratsingh1792
 
 v4.1.3 - 2026-04-12
 * Added new submodule `peppol-reporting-test` containing shared SPI contract tests (`AbstractPeppolReportingBackendSPITest`) that all backend implementations can extend to ensure consistent behaviour
@@ -498,7 +504,8 @@ v2.2.4 - 2024-03-21
 * Added new submodule `peppol-reporting-backend-csv` that uses a CSV file as the backend to store reporting items
 
 v2.2.3 - 2024-03-05
-* Added the possibility to provide username and password via configuration for the Redis backend. See [PR #13](https://github.com/phax/peppol-reporting/pull/13) - thx @TaKO8Ki
+* Added the possibility to provide username and password via configuration for the Redis backend.
+  See [PR #13](https://github.com/phax/peppol-reporting/pull/13) - thx @TaKO8Ki
 
 v2.2.2 - 2024-01-29
 * Moved the method `PeppolReportingItem.isValidCountryCode(String)` to class `PeppolReportingHelper`
@@ -510,8 +517,10 @@ v2.2.1 - 2023-12-31
 * Fixed an error in iterating in the "in-memory" backend when only entries from the last day of the period are present
 
 v2.2.0 - 2023-12-07
-* Modified classes `EUSRReportingItemList` and `TSRReportingItemList` so that the list is only iterated once and is based on `Iterable`. Backwards incompatible change.
-* Extended class `IPeppolReportingBackendSPI` with method `iterateReportingItems` to be able to lazily iterate over a data source. See [#2](https://github.com/phax/peppol-reporting/issues/2) - thx @iansmirlis
+* Modified classes `EUSRReportingItemList` and `TSRReportingItemList` so that the list is only iterated once and is based on `Iterable`.
+  Backwards incompatible change.
+* Extended class `IPeppolReportingBackendSPI` with method `iterateReportingItems` to be able to lazily iterate over a data source.
+  See [#2](https://github.com/phax/peppol-reporting/issues/2) - thx @iansmirlis
 
 v2.1.6 - 2023-11-10
 * Updated EUSR Schematron to v1.1.4
