@@ -126,7 +126,9 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
 
   /**
    * Iterate all {@link PeppolReportingItem} objects in the provided date range, in the correct
-   * order.
+   * order. Backends may override this method to pass each item to the consumer while reading it
+   * from the storage, without collecting all items in memory first. This is the preferred way to
+   * process large amounts of reporting items.
    *
    * @param aStartDateIncl
    *        The date to start iterating, including this date. May not be <code>null</code>.
@@ -166,6 +168,8 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
   default void forEachReportingItem (@NonNull final YearMonth aYearMonth,
                                      @NonNull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
   {
-    iterateReportingItems (aYearMonth).forEach (aConsumer);
+    // Delegate to the date range version, so that backend specific
+    // implementations of it are used
+    forEachReportingItem (aYearMonth.atDay (1), aYearMonth.atEndOfMonth (), aConsumer);
   }
 }
