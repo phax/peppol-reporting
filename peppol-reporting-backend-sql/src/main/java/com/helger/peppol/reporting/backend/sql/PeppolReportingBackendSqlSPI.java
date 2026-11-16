@@ -19,6 +19,7 @@ package com.helger.peppol.reporting.backend.sql;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.function.Consumer;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -34,6 +35,7 @@ import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.ESuccess;
 import com.helger.base.string.StringImplode;
+import com.helger.base.wrapper.Wrapper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.config.IConfig;
@@ -54,8 +56,11 @@ import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
 
 /**
- * SPI implementation of {@link IPeppolReportingBackendSPI} for SQL. This backend supports the lazy
- * gathering of report items through an Iterator.
+ * SPI implementation of {@link IPeppolReportingBackendSPI} for SQL. This backend supports the
+ * streaming of report items via
+ * {@link #forEachReportingItem(LocalDate, LocalDate, Consumer)}, where each item is passed to the
+ * consumer while the result set is read. {@link #iterateReportingItems(LocalDate, LocalDate)}
+ * collects all matching items in memory.
  *
  * @author Philip Helger
  */
@@ -243,13 +248,14 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
     }
   }
 
-  @NonNull
-  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
-                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  public void forEachReportingItem (@NonNull final LocalDate aStartDateIncl,
+                                    @NonNull final LocalDate aEndDateIncl,
+                                    @NonNull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
     ValueEnforcer.isTrue (() -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
+    ValueEnforcer.notNull (aConsumer, "Consumer");
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Querying Peppol Reporting Items from SQL DB between " + aStartDateIncl + " and " + aEndDateIncl);
@@ -257,24 +263,38 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
     if (!isInitialized ())
       throw new IllegalStateException ("The Peppol Reporting SQL DB backend is not initialized");
 
-    // Map each row while the ResultSet is open, avoiding a second list containing
-    // a cloned DBResultRow and its column wrappers for every reporting item.
-    final ICommonsList <PeppolReportingItem> ret = new CommonsArrayList <> ();
-    final IResultSetRowCallback aResultRowCallback = aRow -> ret.add (PeppolReportingItem.builder ()
-                                                                                         .exchangeDateTimeInUTC (aRow.getAsLocalDateTime (0))
-                                                                                         .direction (aRow.getAsBoolean (1) ? EReportingDirection.SENDING
-                                                                                                                           : EReportingDirection.RECEIVING)
-                                                                                         .c2ID (aRow.getAsString (2))
-                                                                                         .c3ID (aRow.getAsString (3))
-                                                                                         .docTypeIDScheme (aRow.getAsString (4))
-                                                                                         .docTypeIDValue (aRow.getAsString (5))
-                                                                                         .processIDScheme (aRow.getAsString (6))
-                                                                                         .processIDValue (aRow.getAsString (7))
-                                                                                         .transportProtocol (aRow.getAsString (8))
-                                                                                         .c1CountryCode (aRow.getAsString (9))
-                                                                                         .c4CountryCode (aRow.getAsString (10))
-                                                                                         .endUserID (aRow.getAsString (11))
-                                                                                         .build ());
+    // Map each row while the ResultSet is open and pass it to the consumer
+    // directly, so that no list of all reporting items is created. The
+    // DBExecutor turns all exceptions into a failure, so remember the one of
+    // the consumer to re-throw it afterwards.
+    final Wrapper <RuntimeException> aConsumerEx = new Wrapper <> ();
+    final IResultSetRowCallback aResultRowCallback = aRow -> {
+      final PeppolReportingItem aItem = PeppolReportingItem.builder ()
+                                                           .exchangeDateTimeInUTC (aRow.getAsLocalDateTime (0))
+                                                           .direction (aRow.getAsBoolean (1) ? EReportingDirection.SENDING
+                                                                                             : EReportingDirection.RECEIVING)
+                                                           .c2ID (aRow.getAsString (2))
+                                                           .c3ID (aRow.getAsString (3))
+                                                           .docTypeIDScheme (aRow.getAsString (4))
+                                                           .docTypeIDValue (aRow.getAsString (5))
+                                                           .processIDScheme (aRow.getAsString (6))
+                                                           .processIDValue (aRow.getAsString (7))
+                                                           .transportProtocol (aRow.getAsString (8))
+                                                           .c1CountryCode (aRow.getAsString (9))
+                                                           .c4CountryCode (aRow.getAsString (10))
+                                                           .endUserID (aRow.getAsString (11))
+                                                           .build ();
+      try
+      {
+        aConsumer.accept (aItem);
+      }
+      catch (final RuntimeException ex)
+      {
+        aConsumerEx.set (ex);
+        // Abort the iteration
+        throw ex;
+      }
+    };
     final ESuccess eSuccess = _newExecutor ().queryAll ("SELECT exchangedt, sending, c2id, c3id, dtscheme, dtvalue, procscheme, procvalue, tp, c1cc, c4cc, enduserid" +
                                                         " FROM " +
                                                         m_sTableNamePrefix +
@@ -284,9 +304,18 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
                                                                                                    DBValueHelper.toTimestamp (aEndDateIncl.plusDays (1)
                                                                                                                                           .atStartOfDay ())),
                                                         aResultRowCallback);
+    if (aConsumerEx.get () != null)
+      throw aConsumerEx.get ();
     if (eSuccess.isFailure ())
       throw new PeppolReportingBackendException ("Failed to query Peppol Reporting items from SQL DB");
+  }
 
+  @NonNull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
+                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  {
+    final ICommonsList <PeppolReportingItem> ret = new CommonsArrayList <> ();
+    forEachReportingItem (aStartDateIncl, aEndDateIncl, ret::add);
     return ret;
   }
 }

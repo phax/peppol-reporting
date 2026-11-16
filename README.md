@@ -304,6 +304,19 @@ do {
 accumulator.fillReport (aReport);
 ```
 
+**Example: streaming EUSR aggregation from a backend**
+
+If the items are stored via one of the backends of this project, `IPeppolReportingBackendSPI.forEachReportingItem` can feed the accumulator directly.
+The SQL backend (since v4.4.3) passes each item to the consumer while reading the database result set, without collecting all items in a list first.
+The MongoDB backend streams the items via a MongoDB cursor.
+Note that some JDBC drivers (e.g. for PostgreSQL and MySQL) still read the complete result set into memory by default.
+
+```java
+EUSRReportingItemAccumulator accumulator = new EUSRReportingItemAccumulator ();
+aBackend.forEachReportingItem (yearMonth, accumulator::accept);
+accumulator.fillReport (aReport);
+```
+
 **Example: paged TSR aggregation**
 
 ```java
@@ -376,6 +389,10 @@ Usage as Maven BOM:
 Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
+
+v4.4.3 - work in progress
+* The SQL backend now overrides `forEachReportingItem` to pass each reporting item to the consumer while reading the result set, instead of collecting all items in a list first
+* The default implementation of `IPeppolReportingBackendSPI.forEachReportingItem (YearMonth, Consumer)` now delegates to `forEachReportingItem (LocalDate, LocalDate, Consumer)`, so that backend specific implementations are used
 
 v4.4.2 - 2026-11-15
 * Requires at least ph-commons 12.7.1
