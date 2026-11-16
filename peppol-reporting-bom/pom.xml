@@ -27,7 +27,7 @@
   </parent>
   <groupId>com.helger.peppol</groupId>
   <artifactId>peppol-reporting-bom</artifactId>
-  <version>4.5.0</version>
+  <version>4.5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>peppol-reporting-bom</name>
   <description>Bill of Materials for all peppol-reporting artifacts</description>
@@ -102,8 +102,4 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <scm>
-    <tag>peppol-reporting-parent-pom-4.5.0</tag>
-  </scm>
 </project>
