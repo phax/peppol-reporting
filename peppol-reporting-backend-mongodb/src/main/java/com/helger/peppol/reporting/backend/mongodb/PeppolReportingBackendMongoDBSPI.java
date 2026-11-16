@@ -48,7 +48,10 @@ import com.mongodb.client.model.Sorts;
 
 /**
  * SPI implementation of {@link IPeppolReportingBackendSPI} for MongoDB. This backend supports the
- * lazy gathering of report items through an Iterator.
+ * lazy gathering of report items through an Iterator. Both iterating the result of
+ * {@link #iterateReportingItems(LocalDate, LocalDate)} and using
+ * {@link #forEachReportingItem(LocalDate, LocalDate, java.util.function.Consumer)} stream the items
+ * via a MongoDB cursor.
  *
  * @author Philip Helger
  */
