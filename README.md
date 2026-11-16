@@ -393,6 +393,8 @@ Note: all v1.x releases used the group ID `com.helger` only.
 v4.4.3 - work in progress
 * The SQL backend now overrides `forEachReportingItem` to pass each reporting item to the consumer while reading the result set, instead of collecting all items in a list first
 * The default implementation of `IPeppolReportingBackendSPI.forEachReportingItem (YearMonth, Consumer)` now delegates to `forEachReportingItem (LocalDate, LocalDate, Consumer)`, so that backend specific implementations are used
+* The InMemory backend now implements `forEachReportingItem` and `iterateReportingItems` collects via it. The consumer is invoked outside of the internal lock
+* The MongoDB backend now implements `forEachReportingItem` explicitly, reading via a MongoDB cursor that is closed in all cases. `iterateReportingItems` stays lazy
 
 v4.4.2 - 2026-11-15
 * Requires at least ph-commons 12.7.1

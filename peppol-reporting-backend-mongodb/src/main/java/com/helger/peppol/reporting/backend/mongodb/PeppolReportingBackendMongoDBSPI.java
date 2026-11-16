@@ -17,6 +17,7 @@
 package com.helger.peppol.reporting.backend.mongodb;
 
 import java.time.LocalDate;
+import java.util.function.Consumer;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -42,6 +43,8 @@ import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppolid.CIdentifier;
 import com.mongodb.MongoClientException;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Sorts;
@@ -50,8 +53,8 @@ import com.mongodb.client.model.Sorts;
  * SPI implementation of {@link IPeppolReportingBackendSPI} for MongoDB. This backend supports the
  * lazy gathering of report items through an Iterator. Both iterating the result of
  * {@link #iterateReportingItems(LocalDate, LocalDate)} and using
- * {@link #forEachReportingItem(LocalDate, LocalDate, java.util.function.Consumer)} stream the items
- * via a MongoDB cursor.
+ * {@link #forEachReportingItem(LocalDate, LocalDate, Consumer)} stream the items via a MongoDB
+ * cursor.
  *
  * @author Philip Helger
  */
@@ -247,8 +250,8 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
   }
 
   @NonNull
-  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
-                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  private MongoIterable <PeppolReportingItem> _findReportingItems (@NonNull final LocalDate aStartDateIncl,
+                                                                   @NonNull final LocalDate aEndDateIncl)
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
@@ -270,5 +273,26 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
     return _getCollection ().find (aFilter)
                             .sort (Sorts.ascending (PeppolReportingMongoDBHelper.BSON_EXCHANGEDT))
                             .map (PeppolReportingMongoDBHelper::toDomain);
+  }
+
+  public void forEachReportingItem (@NonNull final LocalDate aStartDateIncl,
+                                    @NonNull final LocalDate aEndDateIncl,
+                                    @NonNull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
+  {
+    ValueEnforcer.notNull (aConsumer, "Consumer");
+
+    // The cursor is closed, even if the consumer throws an exception
+    try (final MongoCursor <PeppolReportingItem> aCursor = _findReportingItems (aStartDateIncl, aEndDateIncl).iterator ())
+    {
+      while (aCursor.hasNext ())
+        aConsumer.accept (aCursor.next ());
+    }
+  }
+
+  @NonNull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
+                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  {
+    return _findReportingItems (aStartDateIncl, aEndDateIncl);
   }
 }

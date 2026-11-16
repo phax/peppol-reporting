@@ -17,7 +17,7 @@
 package com.helger.peppol.reporting.backend.inmemory;
 
 import java.time.LocalDate;
-import java.util.Iterator;
+import java.util.function.Consumer;
 
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
@@ -112,13 +112,14 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
     }
   }
 
-  @NonNull
-  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
-                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  public void forEachReportingItem (@NonNull final LocalDate aStartDateIncl,
+                                    @NonNull final LocalDate aEndDateIncl,
+                                    @NonNull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
   {
     ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
     ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
     ValueEnforcer.isTrue (() -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
+    ValueEnforcer.notNull (aConsumer, "Consumer");
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Querying Peppol Reporting Items from in memory between " +
@@ -129,59 +130,29 @@ public class PeppolReportingBackendInMemorySPI implements IPeppolReportingBacken
     if (!isInitialized ())
       throw new IllegalStateException ("The Peppol Reporting InMemory backend is not initialized");
 
-    final Iterator <PeppolReportingItem> it = new Iterator <> ()
+    LocalDate aCurDate = aStartDateIncl;
+    while (aCurDate.compareTo (aEndDateIncl) <= 0)
     {
-      private LocalDate m_aCurDate = aStartDateIncl;
-      private ICommonsList <PeppolReportingItem> m_aAllItemsOfDate;
-      private int m_nDateIndex = 0;
+      // Copy the items of one day while holding the lock, so that the consumer
+      // is invoked outside of the lock
+      final LocalDate aDate = aCurDate;
+      final ICommonsList <PeppolReportingItem> aAllItemsOfDate = m_aRWLock.readLockedGet ( () -> {
+        final ICommonsList <PeppolReportingItem> aList = m_aMap.get (aDate);
+        return aList == null ? null : aList.getClone ();
+      });
+      if (aAllItemsOfDate != null)
+        aAllItemsOfDate.forEach (aConsumer);
 
-      private void _findNextDayWithItems ()
-      {
-        m_nDateIndex = 0;
+      aCurDate = aCurDate.plusDays (1);
+    }
+  }
 
-        // Find between date, but order by exchange date and time
-        while (m_aCurDate.compareTo (aEndDateIncl) <= 0)
-        {
-          m_aAllItemsOfDate = m_aRWLock.readLockedGet (() -> m_aMap.get (m_aCurDate));
-          if (m_aAllItemsOfDate != null && m_aAllItemsOfDate.isNotEmpty ())
-            break;
-
-          m_aCurDate = m_aCurDate.plusDays (1);
-        }
-      }
-
-      public boolean hasNext ()
-      {
-        if (m_aAllItemsOfDate == null)
-        {
-          // Initial call
-          _findNextDayWithItems ();
-          if (m_aAllItemsOfDate == null)
-            return false;
-        }
-
-        if (m_nDateIndex >= m_aAllItemsOfDate.size ())
-        {
-          // Next day
-          m_aCurDate = m_aCurDate.plusDays (1);
-          m_aAllItemsOfDate = null;
-
-          _findNextDayWithItems ();
-          if (m_aAllItemsOfDate == null)
-            return false;
-        }
-
-        return true;
-      }
-
-      @NonNull
-      public PeppolReportingItem next ()
-      {
-        final PeppolReportingItem ret = m_aAllItemsOfDate.get (m_nDateIndex);
-        m_nDateIndex++;
-        return ret;
-      }
-    };
-    return () -> it;
+  @NonNull
+  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
+                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
+  {
+    final ICommonsList <PeppolReportingItem> ret = new CommonsArrayList <> ();
+    forEachReportingItem (aStartDateIncl, aEndDateIncl, ret::add);
+    return ret;
   }
 }

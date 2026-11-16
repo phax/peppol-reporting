@@ -19,6 +19,7 @@ package com.helger.peppol.reporting.testbackend;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -35,7 +36,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashSet;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsSet;
 import com.helger.config.ConfigFactory;
 import com.helger.config.IConfig;
@@ -462,6 +465,47 @@ public abstract class AbstractPeppolReportingBackendSPITest
     assertEquals ("forEachReportingItem must return the same multiset as iterateReportingItems",
                   aViaIterate,
                   aViaForEach);
+  }
+
+  @Test
+  public void testForEachYearMonthMatchesIterate () throws PeppolReportingBackendException
+  {
+    final YearMonth aYM = YearMonth.of (1900, 1);
+    m_aBackend.storeReportingItem (PeppolReportingTestItems.sendingItem (aYM.atDay (1), 510));
+    m_aBackend.storeReportingItem (PeppolReportingTestItems.receivingItem (aYM.atEndOfMonth (), 511));
+
+    final ICommonsSet <PeppolReportingItem> aViaIterate = _drainToSet (m_aBackend.iterateReportingItems (aYM));
+
+    final ICommonsSet <PeppolReportingItem> aViaForEach = new CommonsHashSet <> ();
+    m_aBackend.forEachReportingItem (aYM, aViaForEach::add);
+
+    assertEquals ("forEachReportingItem(YearMonth) must return the same multiset as iterateReportingItems(YearMonth)",
+                  aViaIterate,
+                  aViaForEach);
+  }
+
+  @Test
+  public void testForEachConsumerExceptionPropagated () throws PeppolReportingBackendException
+  {
+    final LocalDate aDate = testRunBaseDate ();
+    m_aBackend.storeReportingItem (PeppolReportingTestItems.sendingItem (aDate, 520));
+    m_aBackend.storeReportingItem (PeppolReportingTestItems.receivingItem (aDate, 521));
+
+    final IllegalStateException aConsumerEx = new IllegalStateException ("Consumer failure for testing");
+    final ICommonsList <PeppolReportingItem> aConsumed = new CommonsArrayList <> ();
+    try
+    {
+      m_aBackend.forEachReportingItem (aDate, aDate, x -> {
+        aConsumed.add (x);
+        throw aConsumerEx;
+      });
+      fail ("The exception of the consumer must be propagated");
+    }
+    catch (final IllegalStateException ex)
+    {
+      assertSame ("The original exception of the consumer must be propagated", aConsumerEx, ex);
+    }
+    assertEquals ("The iteration must stop after the consumer threw an exception", 1, aConsumed.size ());
   }
 
   @Test
