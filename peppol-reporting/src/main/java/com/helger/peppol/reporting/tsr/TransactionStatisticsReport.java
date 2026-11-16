@@ -37,6 +37,7 @@ import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.jaxb.tsr.v101.HeaderType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.ReportPeriodType;
 import com.helger.peppol.reporting.jaxb.tsr.v101.TransactionStatisticsReportType;
+import com.helger.peppol.reporting.tsr.model.TSRReportingItemAccumulator;
 import com.helger.peppol.reporting.tsr.model.TSRReportingItemList;
 
 /**
@@ -77,6 +78,7 @@ public final class TransactionStatisticsReport
     private String m_sReportingServiceProviderIDScheme;
     private String m_sReportingServiceProviderID;
     private Iterable <? extends PeppolReportingItem> m_aReportingItems;
+    private TSRReportingItemAccumulator m_aReportingItemAccumulator;
     private ILogHandler m_aLogHandler = ILogHandler.createForLogger (LOGGER);
 
     /**
@@ -261,6 +263,9 @@ public final class TransactionStatisticsReport
 
     /**
      * Set the TSR reporting items based on which the report is to be created.
+     * <p>
+     * The items are only iterated in {@link #build()}. This replaces a previously set
+     * {@link #reportingItemAccumulator(TSRReportingItemAccumulator)}.
      *
      * @param aItems
      *        The items of which a new {@link TSRReportingItemList} is created and used. May be
@@ -271,6 +276,27 @@ public final class TransactionStatisticsReport
     public Builder10 reportingItemList (@Nullable final Iterable <? extends PeppolReportingItem> aItems)
     {
       m_aReportingItems = aItems;
+      m_aReportingItemAccumulator = null;
+      return this;
+    }
+
+    /**
+     * Set an already filled TSR reporting item accumulator based on which the report is to be
+     * created. This allows to feed the reporting items one by one, e.g. via
+     * <code>IPeppolReportingBackendSPI.forEachReportingItem</code>, without keeping all of them in
+     * memory. The accumulator is only read in {@link #build()}. This replaces a previously set
+     * {@link #reportingItemList(Iterable)}.
+     *
+     * @param aAccumulator
+     *        The accumulator to use. May be <code>null</code>.
+     * @return this for chaining
+     * @since 4.5.0
+     */
+    @NonNull
+    public Builder10 reportingItemAccumulator (@Nullable final TSRReportingItemAccumulator aAccumulator)
+    {
+      m_aReportingItemAccumulator = aAccumulator;
+      m_aReportingItems = null;
       return this;
     }
 
@@ -309,28 +335,15 @@ public final class TransactionStatisticsReport
     /**
      * Check if all mandatory fields are set or not.
      *
-     * @param bLogFailures
-     *        <code>true</code> if missing fields should be reported to the log handler, <code>false</code> if not.
-     * @return <code>true</code> if all mandatory fields are set, <code>false</code> if not.
-     */
-    public boolean isComplete (final boolean bLogFailures)
-    {
-      return isComplete (bLogFailures ? m_aLogHandler : ILogHandler.createNoOp ());
-    }
-
-    /**
-     * Check if all mandatory fields are set or not.
-     *
      * @param aLogHandler
-     *        The log handler that receives a message for the first missing or invalid field. May not
-     *        be <code>null</code>.
+     *        The log handler that receives a message for the first missing or invalid field. May
+     *        not be <code>null</code>.
      * @return <code>true</code> if all mandatory fields are set, <code>false</code> if not.
      * @since 4.4.1
      */
     public boolean isComplete (@NonNull final ILogHandler aLogHandler)
     {
       ValueEnforcer.notNull (aLogHandler, "LogHandler");
-
 
       if (StringHelper.isEmpty (m_sCustomizationID))
       {
@@ -374,14 +387,27 @@ public final class TransactionStatisticsReport
         return false;
       }
 
-      if (m_aReportingItems == null)
+      if (m_aReportingItems == null && m_aReportingItemAccumulator == null)
       {
-        aLogHandler.warn ("Reporting Item list is missing");
+        aLogHandler.warn ("Reporting Item list or Reporting Item accumulator is missing");
         return false;
       }
 
       aLogHandler.trace (() -> "Builder fields are complete");
       return true;
+    }
+
+    /**
+     * Check if all mandatory fields are set or not.
+     *
+     * @param bLogFailures
+     *        <code>true</code> if missing fields should be reported to the log handler,
+     *        <code>false</code> if not.
+     * @return <code>true</code> if all mandatory fields are set, <code>false</code> if not.
+     */
+    public boolean isComplete (final boolean bLogFailures)
+    {
+      return isComplete (bLogFailures ? m_aLogHandler : ILogHandler.createNoOp ());
     }
 
     /**
@@ -411,7 +437,10 @@ public final class TransactionStatisticsReport
       }
 
       // Add Full Set and all Subsets
-      TSRReportingItemList.fillReportSubsets (m_aReportingItems, aReport);
+      if (m_aReportingItemAccumulator != null)
+        m_aReportingItemAccumulator.fillReport (aReport);
+      else
+        TSRReportingItemList.fillReportSubsets (m_aReportingItems, aReport);
       return aReport;
     }
   }

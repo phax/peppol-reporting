@@ -34,6 +34,7 @@ import com.helger.datetime.rt.OffsetDate;
 import com.helger.datetime.xml.XMLOffsetDate;
 import com.helger.peppol.reporting.api.CPeppolReporting;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
+import com.helger.peppol.reporting.eusr.model.EUSRReportingItemAccumulator;
 import com.helger.peppol.reporting.eusr.model.EUSRReportingItemList;
 import com.helger.peppol.reporting.jaxb.eusr.v110.EndUserStatisticsReportType;
 import com.helger.peppol.reporting.jaxb.eusr.v110.HeaderType;
@@ -77,6 +78,7 @@ public final class EndUserStatisticsReport
     private String m_sReportingServiceProviderIDScheme;
     private String m_sReportingServiceProviderID;
     private Iterable <? extends PeppolReportingItem> m_aReportingItems;
+    private EUSRReportingItemAccumulator m_aReportingItemAccumulator;
     private ILogHandler m_aLogHandler = ILogHandler.createForLogger (LOGGER);
 
     /**
@@ -261,6 +263,9 @@ public final class EndUserStatisticsReport
 
     /**
      * Set the EUSR reporting items based on which the report is to be created.
+     * <p>
+     * The items are only iterated in {@link #build()}. This replaces a previously set
+     * {@link #reportingItemAccumulator(EUSRReportingItemAccumulator)}.
      *
      * @param aItems
      *        The items of which a new {@link EUSRReportingItemList} is created and used. May be
@@ -271,6 +276,27 @@ public final class EndUserStatisticsReport
     public Builder11 reportingItemList (@Nullable final Iterable <? extends PeppolReportingItem> aItems)
     {
       m_aReportingItems = aItems;
+      m_aReportingItemAccumulator = null;
+      return this;
+    }
+
+    /**
+     * Set an already filled EUSR reporting item accumulator based on which the report is to be
+     * created. This allows to feed the reporting items one by one, e.g. via
+     * <code>IPeppolReportingBackendSPI.forEachReportingItem</code>, without keeping all of them in
+     * memory. The accumulator is only read in {@link #build()}. This replaces a previously set
+     * {@link #reportingItemList(Iterable)}.
+     *
+     * @param aAccumulator
+     *        The accumulator to use. May be <code>null</code>.
+     * @return this for chaining
+     * @since 4.5.0
+     */
+    @NonNull
+    public Builder11 reportingItemAccumulator (@Nullable final EUSRReportingItemAccumulator aAccumulator)
+    {
+      m_aReportingItemAccumulator = aAccumulator;
+      m_aReportingItems = null;
       return this;
     }
 
@@ -373,9 +399,9 @@ public final class EndUserStatisticsReport
         return false;
       }
 
-      if (m_aReportingItems == null)
+      if (m_aReportingItems == null && m_aReportingItemAccumulator == null)
       {
-        aLogHandler.warn ("Reporting Item list is missing");
+        aLogHandler.warn ("Reporting Item list or Reporting Item accumulator is missing");
         return false;
       }
 
@@ -410,7 +436,10 @@ public final class EndUserStatisticsReport
       }
 
       // Add the Full set and all Subsets
-      EUSRReportingItemList.fillReportSubsets (m_aReportingItems, aReport);
+      if (m_aReportingItemAccumulator != null)
+        m_aReportingItemAccumulator.fillReport (aReport);
+      else
+        EUSRReportingItemList.fillReportSubsets (m_aReportingItems, aReport);
       return aReport;
     }
   }

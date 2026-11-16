@@ -277,67 +277,61 @@ To handle this, the library provides **accumulator classes** that let you feed i
 
 Both classes are **not thread-safe**; do not share an instance across threads without external synchronisation.
 
-**Example: paged EUSR aggregation (e.g., from MongoDB)**
+Since v4.5.0 a filled accumulator can be passed to the report builders via `reportingItemAccumulator (...)`.
+The pattern is always the same:
+1. Create an empty accumulator
+2. Feed all reporting items of the reporting period into it, one by one
+3. Pass the filled accumulator to the builder and build the report
 
-```java
-// 1. Build the report header
-EndUserStatisticsReportType aReport = EndUserStatisticsReport.builder ()
-    .monthOf (aNow)
-    .reportingServiceProviderID (MY_SPID)
-    .build ();  // note: reportingItemList() is NOT called - we fill the report ourselves
-
-// 2. Create the accumulator and feed pages of items
-EUSRReportingItemAccumulator accumulator = new EUSRReportingItemAccumulator ();
-
-int pageSize = 1000;
-int pageIndex = 0;
-List<PeppolReportingItem> page;
-do {
-  // your query
-  page = myRepository.findByMonth (yearMonth, pageIndex, pageSize);
-  for (PeppolReportingItem item : page)
-    accumulator.accept (item);
-  pageIndex++;
-} while (!page.isEmpty ());
-
-// 3. Write the aggregated data into the report
-accumulator.fillReport (aReport);
-```
+`reportingItemList (...)` and `reportingItemAccumulator (...)` are alternatives - the one called last is used.
+See `ReportingItemAccumulatorBuilderExampleTest` in the `peppol-reporting` submodule for a complete example.
 
 **Example: streaming EUSR aggregation from a backend**
 
 If the items are stored via one of the backends of this project, `IPeppolReportingBackendSPI.forEachReportingItem` can feed the accumulator directly.
-The SQL backend (since v4.4.3) passes each item to the consumer while reading the database result set, without collecting all items in a list first.
+The SQL backend (since v4.5.0) passes each item to the consumer while reading the database result set, without collecting all items in a list first.
 The MongoDB backend streams the items via a MongoDB cursor.
 Note that some JDBC drivers (e.g. for PostgreSQL and MySQL) still read the complete result set into memory by default.
 
 ```java
-EUSRReportingItemAccumulator accumulator = new EUSRReportingItemAccumulator ();
-aBackend.forEachReportingItem (yearMonth, accumulator::accept);
-accumulator.fillReport (aReport);
+// 1. Create the accumulator
+EUSRReportingItemAccumulator aAccumulator = new EUSRReportingItemAccumulator ();
+
+// 2. Feed all items of the reporting period
+aBackend.forEachReportingItem (aYearMonth, aAccumulator::accept);
+
+// 3. Build the report
+EndUserStatisticsReportType aReport = EndUserStatisticsReport.builder ()
+    .monthOf (aYearMonth)
+    .reportingServiceProviderID (MY_SPID)
+    .reportingItemAccumulator (aAccumulator)
+    .build ();
 ```
 
-**Example: paged TSR aggregation**
+**Example: paged TSR aggregation from your own storage**
 
 ```java
-TransactionStatisticsReportType aReport = TransactionStatisticsReport.builder ()
-    .monthOf (aNow)
-    .reportingServiceProviderID (MY_SPID)
-    .build ();
+// 1. Create the accumulator
+TSRReportingItemAccumulator aAccumulator = new TSRReportingItemAccumulator ();
 
-TSRReportingItemAccumulator accumulator = new TSRReportingItemAccumulator ();
-
-int pageSize = 1000;
-int pageIndex = 0;
-List<PeppolReportingItem> page;
+// 2. Feed pages of items
+int nPageSize = 1000;
+int nPageIndex = 0;
+List <PeppolReportingItem> aPage;
 do {
-  page = myRepository.findByMonth (yearMonth, pageIndex, pageSize);
-  for (PeppolReportingItem item : page)
-    accumulator.accept (item);
-  pageIndex++;
-} while (!page.isEmpty ());
+  // your query
+  aPage = myRepository.findByMonth (aYearMonth, nPageIndex, nPageSize);
+  for (PeppolReportingItem aItem : aPage)
+    aAccumulator.accept (aItem);
+  nPageIndex++;
+} while (!aPage.isEmpty ());
 
-accumulator.fillReport (aReport);
+// 3. Build the report
+TransactionStatisticsReportType aReport = TransactionStatisticsReport.builder ()
+    .monthOf (aYearMonth)
+    .reportingServiceProviderID (MY_SPID)
+    .reportingItemAccumulator (aAccumulator)
+    .build ();
 ```
 
 The output produced by the accumulator-based approach is **functionally identical** to using
@@ -390,11 +384,12 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-v4.4.3 - work in progress
+v4.5.0 - work in progress
 * The SQL backend now overrides `forEachReportingItem` to pass each reporting item to the consumer while reading the result set, instead of collecting all items in a list first
 * The default implementation of `IPeppolReportingBackendSPI.forEachReportingItem (YearMonth, Consumer)` now delegates to `forEachReportingItem (LocalDate, LocalDate, Consumer)`, so that backend specific implementations are used
 * The InMemory backend now implements `forEachReportingItem` and `iterateReportingItems` collects via it. The consumer is invoked outside of the internal lock
 * The MongoDB backend now implements `forEachReportingItem` explicitly, reading via a MongoDB cursor that is closed in all cases. `iterateReportingItems` stays lazy
+* Added `reportingItemAccumulator (...)` to `EndUserStatisticsReport.Builder11` and `TransactionStatisticsReport.Builder10` to create reports from a filled `EUSRReportingItemAccumulator` or `TSRReportingItemAccumulator`. It is an alternative to `reportingItemList (...)` - the one called last is used
 
 v4.4.2 - 2026-11-15
 * Requires at least ph-commons 12.7.1
