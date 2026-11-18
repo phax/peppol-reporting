@@ -474,7 +474,7 @@ v4.0.0 - 2025-08-27
 
 v3.1.0 - 2025-04-11
 * (SQL) Requires ph-db 7.1.0
-* [MongoDB] Extended `PeppolReportingBackendMongoDBSPI` API
+* (MongoDB) Extended `PeppolReportingBackendMongoDBSPI` API
 * (SQL) Renamed class `EDatabaseType` to `EReportingDatabaseType` (internal backwards incompatible change)
 * (SQL) Renamed class `FlywayMigrator` to `ReportingFlywayMigrator` (internal backwards incompatible change)
 * (SQL) Removed class `ReportingFlywayConfiguration` in favour of `ReportingFlywayConfigurationBuilder`
