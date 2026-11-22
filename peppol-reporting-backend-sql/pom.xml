@@ -47,7 +47,7 @@
   
   <!-- Do not bloat global scope -->
   <properties>
-    <flyway.version>13.12.2</flyway.version>
+    <flyway.version>13.13.0</flyway.version>
     <ph-db.version>8.5.3</ph-db.version>
   </properties>
   
