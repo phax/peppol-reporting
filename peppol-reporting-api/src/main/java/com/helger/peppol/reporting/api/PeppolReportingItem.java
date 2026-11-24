@@ -209,6 +209,22 @@ public final class PeppolReportingItem
   }
 
   /**
+   * @return The ID of the service provider that reports this item. So if this item is for a sent
+   *         message, this is the C2 ID otherwise it is the C3 ID. This is the value to be used as
+   *         the reporting service provider ID in TSR and EUSR. Neither <code>null</code> nor empty.
+   * @see #isSending()
+   * @see #isReceiving()
+   * @see #getOtherServiceProviderID()
+   * @since 4.6.0
+   */
+  @NonNull
+  @Nonempty
+  public String getReportingServiceProviderID ()
+  {
+    return m_eDirection.isSending () ? m_sC2ID : m_sC3ID;
+  }
+
+  /**
    * @return The document type identifier scheme used. Neither <code>null</code> nor empty.
    * @see #getDocTypeIDValue()
    */

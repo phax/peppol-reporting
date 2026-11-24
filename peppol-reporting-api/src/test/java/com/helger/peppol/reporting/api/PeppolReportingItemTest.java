@@ -71,6 +71,7 @@ public final class PeppolReportingItemTest
     assertEquals (sMySPID, aItem.getC2ID ());
     assertEquals (sOtherSPID, aItem.getC3ID ());
     assertEquals (sOtherSPID, aItem.getOtherServiceProviderID ());
+    assertEquals (sMySPID, aItem.getReportingServiceProviderID ());
     assertEquals (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getScheme (),
                   aItem.getDocTypeIDScheme ());
     assertEquals (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getValue (), aItem.getDocTypeIDValue ());
@@ -113,6 +114,7 @@ public final class PeppolReportingItemTest
     assertEquals (sOtherSPID, aItem.getC2ID ());
     assertEquals (sMySPID, aItem.getC3ID ());
     assertEquals (sOtherSPID, aItem.getOtherServiceProviderID ());
+    assertEquals (sMySPID, aItem.getReportingServiceProviderID ());
     assertEquals (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getScheme (),
                   aItem.getDocTypeIDScheme ());
     assertEquals (EPredefinedDocumentTypeIdentifier.INVOICE_EN16931_PEPPOL_V30.getValue (), aItem.getDocTypeIDValue ());

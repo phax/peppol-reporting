@@ -18,6 +18,7 @@ package com.helger.peppol.reporting.api.backend;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.NonNull;
@@ -30,6 +31,7 @@ import com.helger.base.name.IHasDisplayName;
 import com.helger.base.state.ESuccess;
 import com.helger.config.IConfig;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
+import com.helger.peppol.reporting.api.PeppolReportingItemWithID;
 
 /**
  * A generic interface for writing and reading reporting items.
@@ -80,6 +82,49 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
    *         In case of an unrecoverable error
    */
   void storeReportingItem (@NonNull PeppolReportingItem aReportingItem) throws PeppolReportingBackendException;
+
+  /**
+   * Write a new {@link PeppolReportingItem} together with its unique item ID to the data storage.
+   * The item ID is assigned by the caller (e.g. the transaction ID) and must stay the same if the
+   * same item is stored again, so that backends that support it can detect duplicates. The default
+   * implementation ignores the item ID and calls {@link #storeReportingItem(PeppolReportingItem)}.
+   *
+   * @param sItemID
+   *        The unique ID of the reporting item. May neither be <code>null</code> nor empty and must
+   *        not be longer than {@link PeppolReportingItemWithID#MAX_LEN_ITEM_ID} characters.
+   * @param aReportingItem
+   *        The reporting item to write. Must not be <code>null</code>.
+   * @throws PeppolReportingBackendException
+   *         In case of an unrecoverable error
+   * @since 4.6.0
+   */
+  default void storeReportingItem (@NonNull @Nonempty final String sItemID,
+                                   @NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
+  {
+    ValueEnforcer.notEmpty (sItemID, "ItemID");
+    storeReportingItem (aReportingItem);
+  }
+
+  /**
+   * Write multiple {@link PeppolReportingItem} objects together with their unique item IDs to the
+   * data storage. Backends may override this method to store all items in a single operation. The
+   * default implementation calls {@link #storeReportingItem(String, PeppolReportingItem)} for
+   * each item. If an exception is thrown, it is unspecified which of the items were stored, so callers
+   * must be prepared to store the same items again.
+   *
+   * @param aReportingItems
+   *        The reporting items with their IDs to write. Must not be <code>null</code> and must not
+   *        contain <code>null</code> elements.
+   * @throws PeppolReportingBackendException
+   *         In case of an unrecoverable error
+   * @since 4.6.0
+   */
+  default void storeReportingItems (@NonNull final List <PeppolReportingItemWithID> aReportingItems) throws PeppolReportingBackendException
+  {
+    ValueEnforcer.notNullNoNullValue (aReportingItems, "ReportingItems");
+    for (final PeppolReportingItemWithID aReportingItem : aReportingItems)
+      storeReportingItem (aReportingItem.getItemID (), aReportingItem.getReportingItem ());
+  }
 
   /**
    * Iterate all {@link PeppolReportingItem} objects in the provided date range. Both the start and
