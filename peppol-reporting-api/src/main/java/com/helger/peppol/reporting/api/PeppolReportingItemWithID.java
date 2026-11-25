@@ -38,7 +38,7 @@ import com.helger.base.tostring.ToStringGenerator;
 public final class PeppolReportingItemWithID
 {
   /** The maximum length of an item ID */
-  public static final int MAX_LEN_ITEM_ID = 64;
+  public static final int MAX_LEN_ITEM_ID = 128;
 
   private final String m_sItemID;
   private final PeppolReportingItem m_aReportingItem;
@@ -56,8 +56,8 @@ public final class PeppolReportingItemWithID
                                     @NonNull final PeppolReportingItem aReportingItem)
   {
     ValueEnforcer.notEmpty (sItemID, "ItemID");
-    ValueEnforcer.isTrue ( () -> sItemID.length () <= MAX_LEN_ITEM_ID,
-                           () -> "ItemID exceeds the maximum length of " + MAX_LEN_ITEM_ID);
+    ValueEnforcer.isTrue (() -> sItemID.length () <= MAX_LEN_ITEM_ID,
+                          () -> "ItemID exceeds the maximum length of " + MAX_LEN_ITEM_ID);
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
     m_sItemID = sItemID;
     m_aReportingItem = aReportingItem;
