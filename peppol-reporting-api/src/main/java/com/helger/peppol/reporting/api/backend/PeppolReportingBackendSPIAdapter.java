@@ -55,7 +55,7 @@ final class PeppolReportingBackendSPIAdapter implements IPeppolReportingBackendS
   @Nullable
   private IPeppolReportingBackend _getBackendOrNull ()
   {
-    return m_aRWLock.readLockedGet ( () -> m_aBackend);
+    return m_aRWLock.readLockedGet (() -> m_aBackend);
   }
 
   @NonNull
@@ -78,6 +78,7 @@ final class PeppolReportingBackendSPIAdapter implements IPeppolReportingBackendS
                                                " backend does not support reading reporting items");
   }
 
+  @Deprecated (forRemoval = true, since = "5.0.0")
   @NonNull
   @Nonempty
   public String getDisplayName ()
@@ -86,6 +87,7 @@ final class PeppolReportingBackendSPIAdapter implements IPeppolReportingBackendS
     return aBackend != null ? aBackend.getDisplayName () : "uninitialized";
   }
 
+  @Deprecated (forRemoval = true, since = "5.0.0")
   @NonNull
   public ESuccess initBackend (@NonNull final IConfig aConfig)
   {
@@ -100,7 +102,7 @@ final class PeppolReportingBackendSPIAdapter implements IPeppolReportingBackendS
       return ESuccess.FAILURE;
     }
 
-    final IPeppolReportingBackend aOldBackend = m_aRWLock.writeLockedGet ( () -> {
+    final IPeppolReportingBackend aOldBackend = m_aRWLock.writeLockedGet (() -> {
       final IPeppolReportingBackend ret = m_aBackend;
       m_aBackend = aNewBackend;
       return ret;
@@ -113,14 +115,16 @@ final class PeppolReportingBackendSPIAdapter implements IPeppolReportingBackendS
     return ESuccess.SUCCESS;
   }
 
+  @Deprecated (forRemoval = true, since = "5.0.0")
   public boolean isInitialized ()
   {
     return _getBackendOrNull () != null;
   }
 
+  @Deprecated (forRemoval = true, since = "5.0.0")
   public void shutdownBackend ()
   {
-    final IPeppolReportingBackend aOldBackend = m_aRWLock.writeLockedGet ( () -> {
+    final IPeppolReportingBackend aOldBackend = m_aRWLock.writeLockedGet (() -> {
       final IPeppolReportingBackend ret = m_aBackend;
       m_aBackend = null;
       return ret;
@@ -129,11 +133,13 @@ final class PeppolReportingBackendSPIAdapter implements IPeppolReportingBackendS
       aOldBackend.close ();
   }
 
+  @Deprecated (forRemoval = true, since = "5.0.0")
   public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
     _getBackend ().storeReportingItem (aReportingItem);
   }
 
+  @Deprecated (forRemoval = true, since = "5.0.0")
   @NonNull
   public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
                                                                @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
@@ -141,6 +147,7 @@ final class PeppolReportingBackendSPIAdapter implements IPeppolReportingBackendS
     return _getReader ().iterateReportingItems (aStartDateIncl, aEndDateIncl);
   }
 
+  @Deprecated (forRemoval = true, since = "5.0.0")
   @Override
   public void forEachReportingItem (@NonNull final LocalDate aStartDateIncl,
                                     @NonNull final LocalDate aEndDateIncl,

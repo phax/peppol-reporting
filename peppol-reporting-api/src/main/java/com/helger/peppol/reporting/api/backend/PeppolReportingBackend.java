@@ -190,7 +190,7 @@ public final class PeppolReportingBackend
   @Nullable
   public static IPeppolReportingBackendSPI getBackendService ()
   {
-    final IPeppolReportingBackendSPI ret = RW_LOCK.readLockedGet ( () -> s_aBackendService);
+    final IPeppolReportingBackendSPI ret = RW_LOCK.readLockedGet (() -> s_aBackendService);
     if (ret != null)
       return ret;
 
@@ -200,7 +200,7 @@ public final class PeppolReportingBackend
       return null;
     }
 
-    return RW_LOCK.writeLockedGet ( () -> {
+    return RW_LOCK.writeLockedGet (() -> {
       if (s_aBackendService == null)
         s_aBackendService = new PeppolReportingBackendSPIAdapter ();
       return s_aBackendService;
@@ -222,7 +222,7 @@ public final class PeppolReportingBackend
   {
     ValueEnforcer.notNull (aBackendService, "BackendService");
 
-    RW_LOCK.writeLocked ( () -> s_aBackendService = aBackendService);
+    RW_LOCK.writeLocked (() -> s_aBackendService = aBackendService);
   }
 
   /**
@@ -231,7 +231,6 @@ public final class PeppolReportingBackend
    * @deprecated Use {@link #getAllBackendProviders()} instead
    */
   @Deprecated (forRemoval = true, since = "5.0.0")
-  @SuppressWarnings ("removal")
   public static boolean isBackendServiceConfigured ()
   {
     return getBackendService () != null;
