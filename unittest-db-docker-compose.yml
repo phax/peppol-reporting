@@ -27,6 +27,9 @@ services:
       MONGO_INITDB_DATABASE: peppol-reporting-test
     ports:
       - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+
 
   redis:
     image: redis:6-alpine
@@ -49,12 +52,6 @@ services:
       POSTGRES_PASSWORD: peppol
     volumes:
       - pg18data:/var/lib/postgresql
- 
-#  pg-adminer:
-#    image: adminer
-#    restart: always
-#    ports:
-#      - 8080:8080
 
   mysql:
     image: mysql:8.4
@@ -68,6 +65,14 @@ services:
       MYSQL_PASSWORD: peppol
     ports:
       - "3306:3306"
+    healthcheck:
+      # Docker Compose unescapes first $
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - mysqldata:/var/lib/mysql
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -82,7 +87,9 @@ services:
       timeout: 3s
       retries: 10
       start_period: 10s
-
+    volumes:
+      - mssqldata:/var/opt/mssql
+      
   sqlserver-init:
     image: mcr.microsoft.com/mssql/server:2022-latest
     depends_on:
@@ -91,6 +98,9 @@ services:
     entrypoint: /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P "Peppol_Strong!Pass1" -C -Q "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'peppol-reporting') CREATE DATABASE [peppol-reporting];"
 
 volumes:
+  mongodata:
+  mssqldata:
+  mysqldata:
   redis:
     driver: local
   pg18data:
