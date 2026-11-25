@@ -217,8 +217,10 @@ public class PeppolReportingBackendMongoDBSPI implements IPeppolReportingBackend
     return m_aRWLock.readLockedBoolean (() -> m_aClientWrapper.isDBWritable ());
   }
 
-  public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
+  public void storeReportingItem (@NonNull @Nonempty final String sItemID,
+                                  @NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
+    ValueEnforcer.notEmpty (sItemID, "ItemID");
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
     if (PeppolReportingHelper.isDocumentTypeEligableForReporting (aReportingItem.getDocTypeIDScheme (),

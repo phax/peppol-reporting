@@ -187,8 +187,10 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
     return new ReportingDBExecutor (m_aDSP, m_aJdbcConfig);
   }
 
-  public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
+  public void storeReportingItem (@NonNull @Nonempty final String sItemID,
+                                  @NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
+    ValueEnforcer.notEmpty (sItemID, "ItemID");
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
     if (PeppolReportingHelper.isDocumentTypeEligableForReporting (aReportingItem.getDocTypeIDScheme (),

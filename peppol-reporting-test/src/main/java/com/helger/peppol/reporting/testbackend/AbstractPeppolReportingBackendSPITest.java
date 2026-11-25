@@ -43,6 +43,7 @@ import com.helger.collection.commons.ICommonsSet;
 import com.helger.config.ConfigFactory;
 import com.helger.config.IConfig;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
+import com.helger.peppol.reporting.api.PeppolReportingItemWithID;
 import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 
@@ -280,6 +281,26 @@ public abstract class AbstractPeppolReportingBackendSPITest
 
     try
     {
+      m_aBackend.storeReportingItem (null, PeppolReportingTestItems.sendingItem (aDate, 0));
+      fail ("storeReportingItem(null, item) must throw");
+    }
+    catch (final NullPointerException ex)
+    {
+      // expected (ValueEnforcer.notEmpty throws NullPointerException)
+    }
+
+    try
+    {
+      m_aBackend.storeReportingItem ("", PeppolReportingTestItems.sendingItem (aDate, 0));
+      fail ("storeReportingItem(\"\", item) must throw");
+    }
+    catch (final IllegalArgumentException ex)
+    {
+      // expected (ValueEnforcer.notEmpty throws IllegalArgumentException)
+    }
+
+    try
+    {
       m_aBackend.iterateReportingItems (null, aDate);
       fail ("iterateReportingItems(null, end) must throw");
     }
@@ -377,6 +398,26 @@ public abstract class AbstractPeppolReportingBackendSPITest
     assertFalse (aDay12.contains (aDay0b));
     assertTrue (aDay12.contains (aDay1));
     assertTrue (aDay12.contains (aDay2));
+  }
+
+  @Test
+  public void testStoreWithItemIDs () throws PeppolReportingBackendException
+  {
+    final LocalDate aDate = testRunBaseDate ();
+    final PeppolReportingItem aSingle = PeppolReportingTestItems.sendingItem (aDate, 200);
+    final PeppolReportingItem aBatch1 = PeppolReportingTestItems.sendingItem (aDate, 201);
+    final PeppolReportingItem aBatch2 = PeppolReportingTestItems.receivingItem (aDate, 202);
+
+    m_aBackend.storeReportingItem ("single", aSingle);
+    m_aBackend.storeReportingItems (new CommonsArrayList <> (new PeppolReportingItemWithID ("batch1", aBatch1),
+                                                             new PeppolReportingItemWithID ("batch2", aBatch2)));
+    // An empty batch is fine
+    m_aBackend.storeReportingItems (new CommonsArrayList <> ());
+
+    final ICommonsSet <PeppolReportingItem> aFound = _drainToSet (m_aBackend.iterateReportingItems (aDate, aDate));
+    assertTrue (aFound.contains (aSingle));
+    assertTrue (aFound.contains (aBatch1));
+    assertTrue (aFound.contains (aBatch2));
   }
 
   @Test

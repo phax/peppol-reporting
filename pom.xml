@@ -26,7 +26,7 @@
   </parent>
   <groupId>com.helger.peppol</groupId>
   <artifactId>peppol-reporting-parent-pom</artifactId>
-  <version>4.5.1-SNAPSHOT</version>
+  <version>4.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>peppol-reporting-parent-pom</name>
   <inceptionYear>2022</inceptionYear>
@@ -156,6 +156,11 @@
       </dependency>
       <dependency>
         <groupId>com.helger.peppol</groupId>
+        <artifactId>peppol-reporting-backend-httpclient</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.peppol</groupId>
         <artifactId>peppol-reporting-backend-sql</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -173,6 +178,7 @@
     <module>peppol-reporting-backend-inmemory</module>
     <module>peppol-reporting-backend-mongodb</module>
     <module>peppol-reporting-backend-redis</module>
+    <module>peppol-reporting-backend-httpclient</module>
     <module>peppol-reporting-backend-sql</module>
   </modules>
 </project>
