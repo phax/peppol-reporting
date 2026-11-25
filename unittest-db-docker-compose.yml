@@ -17,8 +17,9 @@
 
 # This Docker compose file starts up local database instances for SMP building
 # Run like this:
-# docker compose -f unittest-db-docker-compose.yml up
+# docker compose -f unittest-db-docker-compose.yml up -d
 # docker compose -f unittest-db-docker-compose.yml down
+
 services:
   mongodb:
     image: mongo:6
@@ -47,7 +48,7 @@ services:
       POSTGRES_USER: peppol
       POSTGRES_PASSWORD: peppol
     volumes:
-      - pg18data:/var/lib/postgresql 
+      - pg18data:/var/lib/postgresql
  
 #  pg-adminer:
 #    image: adminer
@@ -67,7 +68,7 @@ services:
       MYSQL_PASSWORD: peppol
     ports:
       - "3306:3306"
- 
+
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
