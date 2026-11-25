@@ -31,7 +31,7 @@ import com.helger.base.tostring.ToStringGenerator;
  * the same when the same item is submitted again, so that a receiver can detect duplicates.
  *
  * @author Philip Helger
- * @since 4.6.0
+ * @since 5.0.0
  */
 @Immutable
 @MustImplementEqualsAndHashcode

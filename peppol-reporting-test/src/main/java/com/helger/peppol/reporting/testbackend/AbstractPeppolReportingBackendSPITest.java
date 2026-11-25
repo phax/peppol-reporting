@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger
+ * Copyright (C) 2023-2026 Philip Helger
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,9 @@ import static org.junit.Assert.fail;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.NonNull;
@@ -40,26 +43,31 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashSet;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsSet;
+import com.helger.config.Config;
 import com.helger.config.ConfigFactory;
 import com.helger.config.IConfig;
+import com.helger.config.source.appl.ConfigurationSourceFunction;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.PeppolReportingItemWithID;
-import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackend;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendProviderSPI;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingItemReader;
+import com.helger.peppol.reporting.api.backend.PeppolReportingBackend;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 
 /**
- * Abstract JUnit 4 base class containing the SPI contract tests every
- * {@link IPeppolReportingBackendSPI} implementation must satisfy. Concrete subclasses provide the
- * backend instance via {@link #createBackend()} and optionally override {@link #getConfig()} to
- * supply a backend-specific configuration.
+ * Abstract JUnit 4 base class containing the contract tests every Peppol Reporting backend that
+ * stores and reads reporting items must satisfy. Concrete subclasses provide the backend provider
+ * via {@link #createProvider()} and optionally override {@link #getConfig()} to supply a
+ * backend-specific configuration.
  * <p>
  * The base class manages the backend lifecycle: a fresh backend is created before each test and
- * shut down afterwards. A cheap connectivity probe is issued in {@link #setUp()} so that DB-backed
+ * closed afterwards. A cheap connectivity probe is issued in {@link #setUp()} so that DB-backed
  * tests skip cleanly (via {@link Assume}) when the underlying server is not reachable, instead of
  * failing the build.
  * <p>
  * The contract tests deliberately do <b>not</b> assert any ordering of items returned by
- * <code>iterateReportingItems</code> / <code>forEachReportingItem</code>: per the SPI Javadoc the
+ * <code>iterateReportingItems</code> / <code>forEachReportingItem</code>: per the Javadoc the
  * ordering is unspecified, so assertions use multiset (set + count) equality.
  *
  * @author Philip Helger
@@ -68,7 +76,9 @@ public abstract class AbstractPeppolReportingBackendSPITest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractPeppolReportingBackendSPITest.class);
 
-  protected IPeppolReportingBackendSPI m_aBackend;
+  protected IPeppolReportingBackendProviderSPI m_aProvider;
+  protected IPeppolReportingBackend m_aBackend;
+  protected IPeppolReportingItemReader m_aReader;
 
   /**
    * Stable per-test "base date" used by all queries within a single test method. Computed once in
@@ -78,13 +88,13 @@ public abstract class AbstractPeppolReportingBackendSPITest
   private LocalDate m_aTestRunBaseDate;
 
   /**
-   * @return A fresh, not-yet-initialized backend instance to test. Called once per test method.
+   * @return A new backend provider to test. Called once per test method.
    */
   @NonNull
-  protected abstract IPeppolReportingBackendSPI createBackend ();
+  protected abstract IPeppolReportingBackendProviderSPI createProvider ();
 
   /**
-   * @return The configuration to pass to <code>initBackend</code>. Default is
+   * @return The configuration to create the backend with. Default is
    *         {@link ConfigFactory#getDefaultConfig()} which loads
    *         <code>application.properties</code> from the classpath.
    */
@@ -103,41 +113,37 @@ public abstract class AbstractPeppolReportingBackendSPITest
     final long nOffset = (System.nanoTime () & 0x7fffffffL) % 1000L;
     m_aTestRunBaseDate = LocalDate.of (1900, 1, 1).plusDays (nOffset);
 
-    m_aBackend = createBackend ();
-    assertNotNull ("createBackend() returned null", m_aBackend);
-    assertFalse ("Fresh backend must report isInitialized() == false before initBackend() is called",
-                 m_aBackend.isInitialized ());
+    m_aProvider = createProvider ();
+    assertNotNull ("createProvider() returned null", m_aProvider);
 
-    // Init may either return ESuccess.FAILURE (e.g. CSV with bad config) or
-    // throw an exception from inside the backend's wiring (e.g. SQL/Flyway
-    // when the database server is not reachable). Both cases should skip the
-    // suite cleanly via Assume so the build doesn't fail when an optional
-    // dependency isn't running.
-    boolean bInitOk;
+    // Creating the backend fails e.g. for SQL/Flyway when the database server
+    // is not reachable. Skip the suite cleanly via Assume so the build doesn't
+    // fail when an optional dependency isn't running.
     try
     {
-      bInitOk = m_aBackend.initBackend (getConfig ()).isSuccess ();
+      m_aBackend = m_aProvider.createBackend (getConfig ());
     }
-    catch (final RuntimeException ex)
+    catch (final PeppolReportingBackendException | RuntimeException ex)
     {
       LOGGER.info ("Backend " +
-                   m_aBackend.getDisplayName () +
-                   " could not be initialized, skipping: " +
+                   m_aProvider.getDisplayName () +
+                   " could not be created, skipping: " +
                    ex.getMessage ());
-      Assume.assumeNoException ("Backend init threw, treating as not available", ex);
+      Assume.assumeNoException ("Backend creation failed, treating as not available", ex);
       return; // unreachable, Assume aborts
     }
-    Assume.assumeTrue ("Backend " + m_aBackend.getDisplayName () + " could not be initialized — skipping tests",
-                       bInitOk);
+    assertNotNull ("createBackend() returned null", m_aBackend);
+    assertTrue ("The backend must be able to read reporting items", m_aBackend instanceof IPeppolReportingItemReader);
+    m_aReader = (IPeppolReportingItemReader) m_aBackend;
 
     // Cheap connectivity probe: issue a single-day query for today. For
-    // DB-backed backends whose initBackend() does not eagerly connect (Mongo,
+    // DB-backed backends whose creation does not eagerly connect (Mongo,
     // Redis), this surfaces "DB not running" so the suite is skipped cleanly
     // via Assume rather than reported as a failure.
     try
     {
       final LocalDate aToday = LocalDate.now ();
-      m_aBackend.iterateReportingItems (aToday, aToday).forEach (x -> {});
+      m_aReader.iterateReportingItems (aToday, aToday).forEach (x -> {});
     }
     catch (final RuntimeException | PeppolReportingBackendException ex)
     {
@@ -152,14 +158,11 @@ public abstract class AbstractPeppolReportingBackendSPITest
   @After
   public void tearDown ()
   {
-    if (m_aBackend != null && m_aBackend.isInitialized ())
-      m_aBackend.shutdownBackend ();
+    if (m_aBackend != null)
+      m_aBackend.close ();
     m_aBackend = null;
+    m_aReader = null;
   }
-
-  // ---------------------------------------------------------------------
-  // Helpers
-  // ---------------------------------------------------------------------
 
   /**
    * @return The stable base date for the current test method. Always returns the same value within
@@ -169,6 +172,14 @@ public abstract class AbstractPeppolReportingBackendSPITest
   protected final LocalDate testRunBaseDate ()
   {
     return m_aTestRunBaseDate;
+  }
+
+  /**
+   * Store a reporting item with a new random item ID.
+   */
+  private void _store (@NonNull final PeppolReportingItem aItem) throws PeppolReportingBackendException
+  {
+    m_aBackend.storeReportingItem (UUID.randomUUID ().toString (), aItem);
   }
 
   /**
@@ -186,48 +197,39 @@ public abstract class AbstractPeppolReportingBackendSPITest
     return ret;
   }
 
-  // ---------------------------------------------------------------------
-  // Lifecycle / state machine
-  // ---------------------------------------------------------------------
-
   @Test
-  public void testIsInitializedTrueAfterInit ()
+  public void testProviderIsRegistered () throws PeppolReportingBackendException
   {
-    assertTrue ("After @Before setUp the backend must report isInitialized() == true", m_aBackend.isInitialized ());
+    final String sBackendID = m_aProvider.getBackendID ();
+    assertTrue (sBackendID.length () > 0);
+    assertEquals (m_aProvider.getDisplayName (), m_aBackend.getDisplayName ());
+
+    // The provider must be found via SPI
+    assertTrue ("The provider is not registered via SPI",
+                PeppolReportingBackend.getAllBackendProviders ()
+                                      .containsAny (x -> x.getClass ().equals (m_aProvider.getClass ())));
+
+    // And it must be selectable by its ID, ignoring the case
+    final IConfig aSelectConfig = new Config (new ConfigurationSourceFunction (Map.of (PeppolReportingBackend.CONFIG_PEPPOL_REPORTING_BACKEND,
+                                                                                       sBackendID.toUpperCase (Locale.ROOT))::get));
+    assertSame (m_aProvider.getClass (), PeppolReportingBackend.getBackendProvider (aSelectConfig).getClass ());
   }
 
   @Test
-  public void testShutdownReturnsToUninitialized ()
+  public void testCloseIsIdempotent ()
   {
-    m_aBackend.shutdownBackend ();
-    assertFalse ("After shutdownBackend() the backend must report isInitialized() == false",
-                 m_aBackend.isInitialized ());
+    m_aBackend.close ();
+    m_aBackend.close ();
   }
 
   @Test
-  public void testReinitAfterShutdown () throws PeppolReportingBackendException
+  public void testStoreAfterCloseRejected ()
   {
-    m_aBackend.shutdownBackend ();
-    assertFalse (m_aBackend.isInitialized ());
-
-    assertTrue ("Re-initialization after shutdown must succeed", m_aBackend.initBackend (getConfig ()).isSuccess ());
-    assertTrue (m_aBackend.isInitialized ());
-
-    // And basic ops still work
-    final LocalDate aDate = testRunBaseDate ();
-    m_aBackend.storeReportingItem (PeppolReportingTestItems.sendingItem (aDate, 0));
-  }
-
-  @Test
-  public void testStoreBeforeInitRejected ()
-  {
-    // Use a brand-new backend instance that has never been initialized.
-    final IPeppolReportingBackendSPI aFresh = createBackend ();
-    assertFalse (aFresh.isInitialized ());
+    m_aBackend.close ();
     try
     {
-      aFresh.storeReportingItem (PeppolReportingTestItems.sendingItem (testRunBaseDate (), 0));
-      fail ("storeReportingItem on an uninitialized backend must throw IllegalStateException");
+      _store (PeppolReportingTestItems.sendingItem (testRunBaseDate (), 0));
+      fail ("storeReportingItem on a closed backend must throw IllegalStateException");
     }
     catch (final IllegalStateException ex)
     {
@@ -240,15 +242,14 @@ public abstract class AbstractPeppolReportingBackendSPITest
   }
 
   @Test
-  public void testQueryBeforeInitRejected ()
+  public void testQueryAfterCloseRejected ()
   {
-    final IPeppolReportingBackendSPI aFresh = createBackend ();
-    assertFalse (aFresh.isInitialized ());
+    m_aBackend.close ();
     final LocalDate aDate = testRunBaseDate ();
     try
     {
-      aFresh.iterateReportingItems (aDate, aDate).forEach (x -> {});
-      fail ("iterateReportingItems on an uninitialized backend must throw IllegalStateException");
+      m_aReader.iterateReportingItems (aDate, aDate).forEach (x -> {});
+      fail ("iterateReportingItems on a closed backend must throw IllegalStateException");
     }
     catch (final IllegalStateException ex)
     {
@@ -258,6 +259,18 @@ public abstract class AbstractPeppolReportingBackendSPITest
     {
       fail ("Expected IllegalStateException but got PeppolReportingBackendException: " + ex.getMessage ());
     }
+  }
+
+  @Test
+  @SuppressWarnings ("removal")
+  public void testDeprecatedStoreWithoutItemID () throws PeppolReportingBackendException
+  {
+    final LocalDate aDate = testRunBaseDate ();
+    final PeppolReportingItem aItem = PeppolReportingTestItems.sendingItem (aDate, 2);
+
+    m_aBackend.storeReportingItem (aItem);
+
+    assertTrue (_drainToSet (m_aReader.iterateReportingItems (aDate, aDate)).contains (aItem));
   }
 
   // ---------------------------------------------------------------------
@@ -271,8 +284,8 @@ public abstract class AbstractPeppolReportingBackendSPITest
 
     try
     {
-      m_aBackend.storeReportingItem (null);
-      fail ("storeReportingItem(null) must throw");
+      m_aBackend.storeReportingItem ("id", null);
+      fail ("storeReportingItem(id, null) must throw");
     }
     catch (final NullPointerException ex)
     {
@@ -301,7 +314,7 @@ public abstract class AbstractPeppolReportingBackendSPITest
 
     try
     {
-      m_aBackend.iterateReportingItems (null, aDate);
+      m_aReader.iterateReportingItems (null, aDate);
       fail ("iterateReportingItems(null, end) must throw");
     }
     catch (final NullPointerException ex)
@@ -311,7 +324,7 @@ public abstract class AbstractPeppolReportingBackendSPITest
 
     try
     {
-      m_aBackend.iterateReportingItems (aDate, null);
+      m_aReader.iterateReportingItems (aDate, null);
       fail ("iterateReportingItems(start, null) must throw");
     }
     catch (final NullPointerException ex)
@@ -321,7 +334,7 @@ public abstract class AbstractPeppolReportingBackendSPITest
 
     try
     {
-      m_aBackend.forEachReportingItem (aDate, aDate, (Consumer <? super PeppolReportingItem>) null);
+      m_aReader.forEachReportingItem (aDate, aDate, (Consumer <? super PeppolReportingItem>) null);
       fail ("forEachReportingItem(_, _, null) must throw");
     }
     catch (final NullPointerException ex)
@@ -337,7 +350,7 @@ public abstract class AbstractPeppolReportingBackendSPITest
     final LocalDate aEnd = aStart.minusDays (1);
     try
     {
-      m_aBackend.iterateReportingItems (aStart, aEnd);
+      m_aReader.iterateReportingItems (aStart, aEnd);
       fail ("iterateReportingItems with end < start must throw");
     }
     catch (final IllegalArgumentException ex)
@@ -356,9 +369,9 @@ public abstract class AbstractPeppolReportingBackendSPITest
     final LocalDate aDate = testRunBaseDate ();
     final PeppolReportingItem aItem = PeppolReportingTestItems.sendingItem (aDate, 1);
 
-    m_aBackend.storeReportingItem (aItem);
+    _store (aItem);
 
-    final ICommonsSet <PeppolReportingItem> aFound = _drainToSet (m_aBackend.iterateReportingItems (aDate, aDate));
+    final ICommonsSet <PeppolReportingItem> aFound = _drainToSet (m_aReader.iterateReportingItems (aDate, aDate));
     assertTrue ("Stored item must be returned by a single-day query: " + aFound, aFound.contains (aItem));
   }
 
@@ -371,13 +384,13 @@ public abstract class AbstractPeppolReportingBackendSPITest
     final PeppolReportingItem aDay1 = PeppolReportingTestItems.sendingItem (aBase.plusDays (1), 102);
     final PeppolReportingItem aDay2 = PeppolReportingTestItems.receivingItem (aBase.plusDays (2), 103);
 
-    m_aBackend.storeReportingItem (aDay0a);
-    m_aBackend.storeReportingItem (aDay0b);
-    m_aBackend.storeReportingItem (aDay1);
-    m_aBackend.storeReportingItem (aDay2);
+    _store (aDay0a);
+    _store (aDay0b);
+    _store (aDay1);
+    _store (aDay2);
 
     // Full range
-    final ICommonsSet <PeppolReportingItem> aAll = _drainToSet (m_aBackend.iterateReportingItems (aBase,
+    final ICommonsSet <PeppolReportingItem> aAll = _drainToSet (m_aReader.iterateReportingItems (aBase,
                                                                                                   aBase.plusDays (2)));
     assertTrue (aAll.contains (aDay0a));
     assertTrue (aAll.contains (aDay0b));
@@ -385,14 +398,14 @@ public abstract class AbstractPeppolReportingBackendSPITest
     assertTrue (aAll.contains (aDay2));
 
     // Day 0 only
-    final ICommonsSet <PeppolReportingItem> aDay0 = _drainToSet (m_aBackend.iterateReportingItems (aBase, aBase));
+    final ICommonsSet <PeppolReportingItem> aDay0 = _drainToSet (m_aReader.iterateReportingItems (aBase, aBase));
     assertTrue (aDay0.contains (aDay0a));
     assertTrue (aDay0.contains (aDay0b));
     assertFalse (aDay0.contains (aDay1));
     assertFalse (aDay0.contains (aDay2));
 
     // Days 1..2
-    final ICommonsSet <PeppolReportingItem> aDay12 = _drainToSet (m_aBackend.iterateReportingItems (aBase.plusDays (1),
+    final ICommonsSet <PeppolReportingItem> aDay12 = _drainToSet (m_aReader.iterateReportingItems (aBase.plusDays (1),
                                                                                                     aBase.plusDays (2)));
     assertFalse (aDay12.contains (aDay0a));
     assertFalse (aDay12.contains (aDay0b));
@@ -414,7 +427,7 @@ public abstract class AbstractPeppolReportingBackendSPITest
     // An empty batch is fine
     m_aBackend.storeReportingItems (new CommonsArrayList <> ());
 
-    final ICommonsSet <PeppolReportingItem> aFound = _drainToSet (m_aBackend.iterateReportingItems (aDate, aDate));
+    final ICommonsSet <PeppolReportingItem> aFound = _drainToSet (m_aReader.iterateReportingItems (aDate, aDate));
     assertTrue (aFound.contains (aSingle));
     assertTrue (aFound.contains (aBatch1));
     assertTrue (aFound.contains (aBatch2));
@@ -427,10 +440,10 @@ public abstract class AbstractPeppolReportingBackendSPITest
     final PeppolReportingItem aOnStart = PeppolReportingTestItems.sendingItem (aBase, 200);
     final PeppolReportingItem aOnEnd = PeppolReportingTestItems.receivingItem (aBase.plusDays (3), 201);
 
-    m_aBackend.storeReportingItem (aOnStart);
-    m_aBackend.storeReportingItem (aOnEnd);
+    _store (aOnStart);
+    _store (aOnEnd);
 
-    final ICommonsSet <PeppolReportingItem> aFound = _drainToSet (m_aBackend.iterateReportingItems (aBase,
+    final ICommonsSet <PeppolReportingItem> aFound = _drainToSet (m_aReader.iterateReportingItems (aBase,
                                                                                                     aBase.plusDays (3)));
     assertTrue ("Item exactly on start date must be inclusive: " + aFound, aFound.contains (aOnStart));
     assertTrue ("Item exactly on end date must be inclusive: " + aFound, aFound.contains (aOnEnd));
@@ -441,10 +454,10 @@ public abstract class AbstractPeppolReportingBackendSPITest
   {
     final LocalDate aDate = testRunBaseDate ();
     final PeppolReportingItem aItem = PeppolReportingTestItems.sendingItem (aDate, 300);
-    m_aBackend.storeReportingItem (aItem);
+    _store (aItem);
 
     // start == end is legal
-    final ICommonsSet <PeppolReportingItem> aFound = _drainToSet (m_aBackend.iterateReportingItems (aDate, aDate));
+    final ICommonsSet <PeppolReportingItem> aFound = _drainToSet (m_aReader.iterateReportingItems (aDate, aDate));
     assertTrue (aFound.contains (aItem));
   }
 
@@ -454,7 +467,7 @@ public abstract class AbstractPeppolReportingBackendSPITest
     // Pick a far-future date that we never store anything on. The iterable
     // must be non-null and produce no items.
     final LocalDate aFuture = LocalDate.of (2999, 1, 1);
-    final Iterable <PeppolReportingItem> aIt = m_aBackend.iterateReportingItems (aFuture, aFuture.plusDays (10));
+    final Iterable <PeppolReportingItem> aIt = m_aReader.iterateReportingItems (aFuture, aFuture.plusDays (10));
     assertNotNull ("iterateReportingItems must never return null", aIt);
     int nCount = 0;
     for (final PeppolReportingItem aItem : aIt)
@@ -478,11 +491,11 @@ public abstract class AbstractPeppolReportingBackendSPITest
     final PeppolReportingItem a1 = PeppolReportingTestItems.sendingItem (aYM.atDay (1), 400);
     final PeppolReportingItem a2 = PeppolReportingTestItems.receivingItem (aYM.atEndOfMonth (), 401);
 
-    m_aBackend.storeReportingItem (a1);
-    m_aBackend.storeReportingItem (a2);
+    _store (a1);
+    _store (a2);
 
-    final ICommonsSet <PeppolReportingItem> aViaYM = _drainToSet (m_aBackend.iterateReportingItems (aYM));
-    final ICommonsSet <PeppolReportingItem> aViaRange = _drainToSet (m_aBackend.iterateReportingItems (aYM.atDay (1),
+    final ICommonsSet <PeppolReportingItem> aViaYM = _drainToSet (m_aReader.iterateReportingItems (aYM));
+    final ICommonsSet <PeppolReportingItem> aViaRange = _drainToSet (m_aReader.iterateReportingItems (aYM.atDay (1),
                                                                                                        aYM.atEndOfMonth ()));
     assertEquals ("YearMonth overload must return the same items as the equivalent date range", aViaRange, aViaYM);
     assertTrue (aViaYM.contains (a1));
@@ -493,15 +506,15 @@ public abstract class AbstractPeppolReportingBackendSPITest
   public void testForEachMatchesIterate () throws PeppolReportingBackendException
   {
     final LocalDate aBase = testRunBaseDate ();
-    m_aBackend.storeReportingItem (PeppolReportingTestItems.sendingItem (aBase, 500));
-    m_aBackend.storeReportingItem (PeppolReportingTestItems.receivingItem (aBase, 501));
-    m_aBackend.storeReportingItem (PeppolReportingTestItems.sendingItem (aBase.plusDays (1), 502));
+    _store (PeppolReportingTestItems.sendingItem (aBase, 500));
+    _store (PeppolReportingTestItems.receivingItem (aBase, 501));
+    _store (PeppolReportingTestItems.sendingItem (aBase.plusDays (1), 502));
 
-    final ICommonsSet <PeppolReportingItem> aViaIterate = _drainToSet (m_aBackend.iterateReportingItems (aBase,
+    final ICommonsSet <PeppolReportingItem> aViaIterate = _drainToSet (m_aReader.iterateReportingItems (aBase,
                                                                                                          aBase.plusDays (1)));
 
     final ICommonsSet <PeppolReportingItem> aViaForEach = new CommonsHashSet <> ();
-    m_aBackend.forEachReportingItem (aBase, aBase.plusDays (1), aViaForEach::add);
+    m_aReader.forEachReportingItem (aBase, aBase.plusDays (1), aViaForEach::add);
 
     assertEquals ("forEachReportingItem must return the same multiset as iterateReportingItems",
                   aViaIterate,
@@ -512,13 +525,13 @@ public abstract class AbstractPeppolReportingBackendSPITest
   public void testForEachYearMonthMatchesIterate () throws PeppolReportingBackendException
   {
     final YearMonth aYM = YearMonth.of (1900, 1);
-    m_aBackend.storeReportingItem (PeppolReportingTestItems.sendingItem (aYM.atDay (1), 510));
-    m_aBackend.storeReportingItem (PeppolReportingTestItems.receivingItem (aYM.atEndOfMonth (), 511));
+    _store (PeppolReportingTestItems.sendingItem (aYM.atDay (1), 510));
+    _store (PeppolReportingTestItems.receivingItem (aYM.atEndOfMonth (), 511));
 
-    final ICommonsSet <PeppolReportingItem> aViaIterate = _drainToSet (m_aBackend.iterateReportingItems (aYM));
+    final ICommonsSet <PeppolReportingItem> aViaIterate = _drainToSet (m_aReader.iterateReportingItems (aYM));
 
     final ICommonsSet <PeppolReportingItem> aViaForEach = new CommonsHashSet <> ();
-    m_aBackend.forEachReportingItem (aYM, aViaForEach::add);
+    m_aReader.forEachReportingItem (aYM, aViaForEach::add);
 
     assertEquals ("forEachReportingItem(YearMonth) must return the same multiset as iterateReportingItems(YearMonth)",
                   aViaIterate,
@@ -529,14 +542,14 @@ public abstract class AbstractPeppolReportingBackendSPITest
   public void testForEachConsumerExceptionPropagated () throws PeppolReportingBackendException
   {
     final LocalDate aDate = testRunBaseDate ();
-    m_aBackend.storeReportingItem (PeppolReportingTestItems.sendingItem (aDate, 520));
-    m_aBackend.storeReportingItem (PeppolReportingTestItems.receivingItem (aDate, 521));
+    _store (PeppolReportingTestItems.sendingItem (aDate, 520));
+    _store (PeppolReportingTestItems.receivingItem (aDate, 521));
 
     final IllegalStateException aConsumerEx = new IllegalStateException ("Consumer failure for testing");
     final ICommonsList <PeppolReportingItem> aConsumed = new CommonsArrayList <> ();
     try
     {
-      m_aBackend.forEachReportingItem (aDate, aDate, x -> {
+      m_aReader.forEachReportingItem (aDate, aDate, x -> {
         aConsumed.add (x);
         throw aConsumerEx;
       });
@@ -556,9 +569,9 @@ public abstract class AbstractPeppolReportingBackendSPITest
     final PeppolReportingItem aDropped = PeppolReportingTestItems.nonEligibleItem (aDate);
 
     // Must not throw — non-eligible items are silently filtered out.
-    m_aBackend.storeReportingItem (aDropped);
+    _store (aDropped);
 
-    final ICommonsSet <PeppolReportingItem> aFound = _drainToSet (m_aBackend.iterateReportingItems (aDate, aDate));
+    final ICommonsSet <PeppolReportingItem> aFound = _drainToSet (m_aReader.iterateReportingItems (aDate, aDate));
     assertFalse ("Non-eligible doctype items must be silently filtered and not stored: " + aFound,
                  aFound.contains (aDropped));
   }
@@ -582,11 +595,11 @@ public abstract class AbstractPeppolReportingBackendSPITest
       final PeppolReportingItem aItem = (i % 2 == 0) ? PeppolReportingTestItems.sendingItem (aBase, 600 + i)
                                                      : PeppolReportingTestItems.receivingItem (aBase.plusDays (1),
                                                                                                600 + i);
-      m_aBackend.storeReportingItem (aItem);
+      _store (aItem);
       aStored.add (aItem);
     }
 
-    final ICommonsSet <PeppolReportingItem> aRetrieved = _drainToSet (m_aBackend.iterateReportingItems (aBase,
+    final ICommonsSet <PeppolReportingItem> aRetrieved = _drainToSet (m_aReader.iterateReportingItems (aBase,
                                                                                                         aBase.plusDays (1)));
     // Subset check (other test runs in a shared backend may have left noise).
     assertTrue ("All stored items must be retrievable, regardless of ordering. Missing: " +

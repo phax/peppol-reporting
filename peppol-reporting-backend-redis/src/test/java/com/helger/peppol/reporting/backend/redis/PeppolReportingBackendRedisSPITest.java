@@ -18,11 +18,11 @@ package com.helger.peppol.reporting.backend.redis;
 
 import org.jspecify.annotations.NonNull;
 
-import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendProviderSPI;
 import com.helger.peppol.reporting.testbackend.AbstractPeppolReportingBackendSPITest;
 
 /**
- * SPI contract test for {@link PeppolReportingBackendRedisSPI}. The whole suite is skipped (via
+ * Contract test for {@link PeppolReportingBackendRedisSPI}. The whole suite is skipped (via
  * {@link org.junit.Assume}) when no Redis instance is reachable on the configured host.
  *
  * @author Philip Helger
@@ -31,7 +31,7 @@ public final class PeppolReportingBackendRedisSPITest extends AbstractPeppolRepo
 {
   @Override
   @NonNull
-  protected IPeppolReportingBackendSPI createBackend ()
+  protected IPeppolReportingBackendProviderSPI createProvider ()
   {
     return new PeppolReportingBackendRedisSPI ();
   }

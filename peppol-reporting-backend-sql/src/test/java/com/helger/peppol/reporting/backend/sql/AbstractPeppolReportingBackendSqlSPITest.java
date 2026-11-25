@@ -22,11 +22,11 @@ import com.helger.config.Config;
 import com.helger.config.IConfig;
 import com.helger.config.source.resource.properties.ConfigurationSourceProperties;
 import com.helger.io.resource.ClassPathResource;
-import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendProviderSPI;
 import com.helger.peppol.reporting.testbackend.AbstractPeppolReportingBackendSPITest;
 
 /**
- * Base class for the SQL backend's SPI contract tests. Concrete subclasses pick the database
+ * Base class for the SQL backend's contract tests. Concrete subclasses pick the database
  * flavour by supplying the matching <code>application-*.properties</code> file. The whole suite is
  * skipped (via {@link org.junit.Assume}) when the underlying database server is not reachable.
  *
@@ -39,7 +39,7 @@ abstract class AbstractPeppolReportingBackendSqlSPITest extends AbstractPeppolRe
 
   @Override
   @NonNull
-  protected final IPeppolReportingBackendSPI createBackend ()
+  protected final IPeppolReportingBackendProviderSPI createProvider ()
   {
     return new PeppolReportingBackendSqlSPI ();
   }

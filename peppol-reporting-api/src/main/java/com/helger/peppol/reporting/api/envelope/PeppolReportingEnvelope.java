@@ -42,7 +42,7 @@ import com.helger.peppol.reporting.api.PeppolReportingItemWithID;
  * reporting item, so that a collector can ignore items that are submitted again.
  *
  * @author Philip Helger
- * @since 4.6.0
+ * @since 5.0.0
  */
 @Immutable
 @MustImplementEqualsAndHashcode

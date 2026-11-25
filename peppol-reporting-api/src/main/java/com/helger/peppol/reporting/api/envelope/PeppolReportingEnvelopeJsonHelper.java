@@ -42,7 +42,7 @@ import com.helger.peppol.reporting.api.PeppolReportingJsonHelper;
  * contained in each item (see {@link PeppolReportingJsonHelper}).
  *
  * @author Philip Helger
- * @since 4.6.0
+ * @since 5.0.0
  */
 @Immutable
 public final class PeppolReportingEnvelopeJsonHelper

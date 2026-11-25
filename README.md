@@ -97,7 +97,7 @@ The field `c4cc` is only present for received messages.
 
 To submit `PeppolReportingItem` objects to a remote reporting collector (e.g. in a setup with multiple Access Point
 deployments and one central collector that creates and sends the reports), the package
-`com.helger.peppol.reporting.api.envelope` (in the submodule `peppol-reporting-api`, since v4.6.0) contains:
+`com.helger.peppol.reporting.api.envelope` (in the submodule `peppol-reporting-api`, since v5.0.0) contains:
 * `PeppolReportingEnvelope` - the Seat ID of the reporting service provider, the stable ID of the sending Access Point
   deployment (source ID, max. 64 characters - a UUID is recommended) and between 1 and 100 reporting items.
   Each item is a `PeppolReportingItemWithID`, combining a `PeppolReportingItem` with a unique item ID of max. 64
@@ -140,18 +140,44 @@ The created reporting item must be stored somewhere, to be able to retrieve them
 This project comes with different backends for storing `PeppolReportingItem` objects, each in a separate submodule.
 Each submodule is described below.
 
-To choose a submodule, it needs to be added as a Maven dependency. The main logic is loaded via SPI.
-Please make sure to only use **one** submodule at a time - storing to multiple backends is currently not supported out of the box.
+To choose a submodule, it needs to be added as a Maven dependency. Each submodule registers an
+`IPeppolReportingBackendProviderSPI` via SPI. `PeppolReportingBackend.createBackend (IConfig)` selects the provider and
+creates the backend, which must be closed after usage:
 
-Alternatively you can implement your own Reporting backend implementation, by implementing the  SPI interface
-`com.helper.peppol.reporting.api.backend.IPeppolReportingBackendSPI` defined in the `peppol-reporting-api` submodule. 
+```java
+try (final IPeppolReportingBackend aBackend = PeppolReportingBackend.createBackend (aConfig))
+{
+  // Store an item, using e.g. the transaction ID as the item ID
+  aBackend.storeReportingItem (sTransactionID, aReportingItem);
 
-Since v4.6.0 every reporting item is stored together with a unique item ID. Implementations must implement
-`storeReportingItem (String, PeppolReportingItem)`. `storeReportingItem (PeppolReportingItem)` is a default method that
-uses a new random UUID as the item ID, and `storeReportingItems (List <PeppolReportingItemWithID>)` is a default method
-that stores the items one by one.
-Callers should pass a stable item ID (e.g. the transaction ID), because a random UUID differs on every call, so storing
-the same item again cannot be detected as a duplicate. The local backends currently accept the item ID but don't store it.
+  // Only backends that store the items themselves can read them
+  if (aBackend instanceof final IPeppolReportingItemReader aReader)
+    aReader.forEachReportingItem (aYearMonth, aAccumulator::accept);
+}
+```
+
+Long-running applications create the backend once at startup and close it at shutdown. The backend is thread-safe.
+
+The backend is selected with the configuration property **`peppol.reporting.backend`** (since v5.0.0), which contains
+the ID of the backend (compared case-insensitively): `csv`, `httpclient`, `inmemory`, `mongodb`, `redis` or `sql`.
+It is only required if more than one backend submodule is on the classpath. If it is set but no backend with that ID
+is found, or if it is not set and more than one backend is found, `createBackend` throws an exception.
+
+Every reporting item is stored together with a unique item ID (since v5.0.0). Callers should pass a stable item ID
+(e.g. the transaction ID), so that the same item stored again can be detected as a duplicate. The deprecated
+`storeReportingItem (PeppolReportingItem)` uses a new random UUID on every call. The local backends currently accept the
+item ID but don't store it.
+
+Alternatively you can implement your own Reporting backend, by implementing the SPI interface
+`com.helger.peppol.reporting.api.backend.IPeppolReportingBackendProviderSPI` defined in the `peppol-reporting-api`
+submodule. The abstract base classes `AbstractPeppolReportingBackend` and `AbstractPeppolReportingBackendWithReader`
+already validate the arguments, skip non-eligible document types and reject calls after closing.
+
+The API before v5.0.0 (`IPeppolReportingBackendSPI`, `PeppolReportingBackend.getBackendService ()`,
+`PeppolReportingBackend.withBackendDo (...)`) is still available but deprecated for removal. It works on top of the new
+API and also uses the configuration property `peppol.reporting.backend`. Custom implementations of
+`IPeppolReportingBackendSPI` are no longer loaded via SPI, but can still be set with
+`PeppolReportingBackend.setBackendService (...)`.
 
 ### Storage in MongoDB
 
@@ -308,15 +334,15 @@ This module is mainly meant for testing purposes.
 
 Submodule `peppol-reporting-backend-httpclient` does not store data locally, but submits it via HTTP POST to a remote
 reporting collector, which stores the items and creates and sends the reports.
-This submodule was introduced in version 4.6.0.
+This submodule was introduced in version 5.0.0.
 
 The items are sent as JSON envelopes (see above) with the content type `application/json`, in batches of at most the
 configured batch size. The request is authenticated with the HTTP header `X-Token`.
 
 Each reporting item is submitted with its item ID, so that the collector can ignore items it already stored. Callers
 should use `storeReportingItem (String, PeppolReportingItem)` or `storeReportingItems (List <PeppolReportingItemWithID>)`
-with stable item IDs, because `storeReportingItem (PeppolReportingItem)` uses a new random UUID on every call.
-Reading reporting items is not supported, because the reports are created by the collector.
+with stable item IDs.
+This backend does not implement `IPeppolReportingItemReader`, because the reports are created by the collector.
 Items with document types that are not eligible for reporting are skipped. All other items must belong to the
 configured Seat ID (the C2 ID for sent and the C3 ID for received messages, compared case-insensitively), otherwise an
 exception is thrown and nothing is submitted.
@@ -385,7 +411,7 @@ See `ReportingItemAccumulatorBuilderExampleTest` in the `peppol-reporting` submo
 
 **Example: streaming EUSR aggregation from a backend**
 
-If the items are stored via one of the backends of this project, `IPeppolReportingBackendSPI.forEachReportingItem` can feed the accumulator directly.
+If the items are stored via one of the backends of this project, `IPeppolReportingItemReader.forEachReportingItem` can feed the accumulator directly.
 The SQL backend (since v4.5.0) passes each item to the consumer while reading the database result set, without collecting all items in a list first.
 The MongoDB backend streams the items via a MongoDB cursor.
 Note that some JDBC drivers (e.g. for PostgreSQL and MySQL) still read the complete result set into memory by default.
@@ -481,12 +507,19 @@ Note: all v1.x releases used the group ID `com.helger` only.
 
 # News and Noteworthy
 
-v4.6.0 - work in progress
+v5.0.0 - work in progress
+* The backends are now created by a factory: the new SPI interface `IPeppolReportingBackendProviderSPI` creates `IPeppolReportingBackend` instances via `PeppolReportingBackend.createBackend (IConfig)`, which must be closed after usage. This is incompatible for custom backend implementations
+* Added the configuration property `peppol.reporting.backend` to select the backend, if more than one is on the classpath
+* Reading reporting items moved to the separate interface `IPeppolReportingItemReader`, with `forEachReportingItem` as the method to implement and `iterateReportingItems` as default method
+* Added the abstract base classes `AbstractPeppolReportingBackend` and `AbstractPeppolReportingBackendWithReader` for backend implementations
+* Each backend submodule now contains a provider class (the previous `...SPI` class, keeping the configuration constants) and a backend class (e.g. `PeppolReportingBackendSql`)
+* Configuration errors when creating a backend are now reported as `PeppolReportingBackendException` instead of being only logged
+* Deprecated `IPeppolReportingBackendSPI`, `PeppolReportingBackend.getBackendService ()`, `setBackendService (...)`, `isBackendServiceConfigured ()` and `withBackendDo (...)` for removal - they still work on top of the new API
+* Every reporting item is now stored together with a unique item ID via `IPeppolReportingBackend.storeReportingItem (String, PeppolReportingItem)`. The variant without item ID is deprecated for removal and uses a random UUID
+* Added the default method `IPeppolReportingBackend.storeReportingItems (List <PeppolReportingItemWithID>)`
+* (Redis) Renamed the method `createJedisPool` to `createRedisClient`
 * Added new submodule `peppol-reporting-backend-httpclient` that submits reporting items to a remote reporting collector via HTTP, with retries using exponential back-off and jitter
 * Added class `PeppolReportingItemWithID` to combine a `PeppolReportingItem` with a unique item ID
-* Added the method `storeReportingItem (String, PeppolReportingItem)` to `IPeppolReportingBackendSPI`, which every implementation must implement now. This is incompatible for custom backend implementations
-* `IPeppolReportingBackendSPI.storeReportingItem (PeppolReportingItem)` is now a default method that uses a random UUID as the item ID
-* Added the default method `storeReportingItems (List <PeppolReportingItemWithID>)` to `IPeppolReportingBackendSPI`
 * Added the envelope classes `PeppolReportingEnvelope`, `PeppolReportingSubmissionResponse` and `PeppolReportingRejectedItem` together with their JSON serializations `PeppolReportingEnvelopeJsonHelper` and `PeppolReportingSubmissionResponseJsonHelper` in the new package `com.helger.peppol.reporting.api.envelope`
 * Added `PeppolReportingItem.getReportingServiceProviderID ()`
 

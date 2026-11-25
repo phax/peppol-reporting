@@ -215,7 +215,7 @@ public final class PeppolReportingItem
    * @see #isSending()
    * @see #isReceiving()
    * @see #getOtherServiceProviderID()
-   * @since 4.6.0
+   * @since 5.0.0
    */
   @NonNull
   @Nonempty

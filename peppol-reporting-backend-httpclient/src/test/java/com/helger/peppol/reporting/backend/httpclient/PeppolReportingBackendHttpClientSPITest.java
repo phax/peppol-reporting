@@ -29,7 +29,6 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -51,6 +50,9 @@ import com.helger.config.fallback.ConfigWithFallback;
 import com.helger.config.source.appl.ConfigurationSourceFunction;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.PeppolReportingItemWithID;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackend;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingItemReader;
+import com.helger.peppol.reporting.api.backend.PeppolReportingBackend;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppol.reporting.api.envelope.PeppolReportingEnvelope;
 import com.helger.peppol.reporting.api.envelope.PeppolReportingEnvelopeJsonHelper;
@@ -115,13 +117,13 @@ public final class PeppolReportingBackendHttpClientSPITest
   @GuardedBy ("m_aLock")
   private final ICommonsList <MockRequest> m_aRequests = new CommonsArrayList <> ();
   private HttpServer m_aServer;
-  private final PeppolReportingBackendHttpClientSPI m_aBackend = new PeppolReportingBackendHttpClientSPI ();
+  private PeppolReportingBackendHttpClient m_aBackend;
 
   private void _handle (@NonNull final HttpExchange aExchange) throws IOException
   {
     final String sBody = new String (aExchange.getRequestBody ().readAllBytes (), StandardCharsets.UTF_8);
     final MockRequest aRequest = new MockRequest (aExchange.getRequestHeaders ()
-                                                           .getFirst (PeppolReportingBackendHttpClientSPI.HTTP_HEADER_TOKEN),
+                                                           .getFirst (PeppolReportingBackendHttpClient.HTTP_HEADER_TOKEN),
                                                   aExchange.getRequestHeaders ().getFirst ("Content-Type"),
                                                   PeppolReportingEnvelopeJsonHelper.toDomain (sBody));
     final MockResponse aResponse = m_aLock.lockedGet ( () -> {
@@ -161,8 +163,8 @@ public final class PeppolReportingBackendHttpClientSPITest
   @After
   public void after ()
   {
-    if (m_aBackend.isInitialized ())
-      m_aBackend.shutdownBackend ();
+    if (m_aBackend != null)
+      m_aBackend.close ();
     m_aServer.stop (0);
   }
 
@@ -200,8 +202,14 @@ public final class PeppolReportingBackendHttpClientSPITest
 
   private void _init (@NonNull final Map <String, String> aSettings)
   {
-    assertTrue (m_aBackend.initBackend (_createConfig (aSettings)).isSuccess ());
-    assertTrue (m_aBackend.isInitialized ());
+    try
+    {
+      m_aBackend = new PeppolReportingBackendHttpClientSPI ().createBackend (_createConfig (aSettings));
+    }
+    catch (final PeppolReportingBackendException ex)
+    {
+      throw new IllegalStateException ("Failed to create the backend", ex);
+    }
   }
 
   @NonNull
@@ -220,8 +228,14 @@ public final class PeppolReportingBackendHttpClientSPITest
       aSettings.remove (sKey);
     else
       aSettings.put (sKey, sValue);
-    assertTrue (sKey + "=" + sValue, m_aBackend.initBackend (_createConfig (aSettings)).isFailure ());
-    assertFalse (m_aBackend.isInitialized ());
+    try (final PeppolReportingBackendHttpClient aBackend = new PeppolReportingBackendHttpClientSPI ().createBackend (_createConfig (aSettings)))
+    {
+      fail (sKey + "=" + sValue + " must fail");
+    }
+    catch (final PeppolReportingBackendException ex)
+    {
+      // expected
+    }
   }
 
   @Test
@@ -242,8 +256,10 @@ public final class PeppolReportingBackendHttpClientSPITest
   }
 
   @Test
-  public void testNotInitialized () throws Exception
+  public void testClosed () throws Exception
   {
+    _init (_createSettings ());
+    m_aBackend.close ();
     try
     {
       m_aBackend.storeReportingItems (_createSendingItems (1));
@@ -300,6 +316,7 @@ public final class PeppolReportingBackendHttpClientSPITest
   }
 
   @Test
+  @SuppressWarnings ("removal")
   public void testSingleItemWithRandomItemID () throws Exception
   {
     _init (_createSettings ());
@@ -495,30 +512,25 @@ public final class PeppolReportingBackendHttpClientSPITest
   }
 
   @Test
-  public void testUnsupportedOperations ()
+  public void testNoReader ()
   {
     _init (_createSettings ());
+    assertFalse (((Object) m_aBackend) instanceof IPeppolReportingItemReader);
+  }
 
-    try
-    {
-      m_aBackend.iterateReportingItems (YearMonth.from (DATE));
-      fail ();
-    }
-    catch (final PeppolReportingBackendException ex)
-    {
-      // expected
-    }
+  @Test
+  public void testProvider () throws Exception
+  {
+    final PeppolReportingBackendHttpClientSPI aProvider = new PeppolReportingBackendHttpClientSPI ();
+    assertEquals (PeppolReportingBackendHttpClientSPI.BACKEND_ID, aProvider.getBackendID ());
 
-    try
+    // Selected via the configuration
+    final ICommonsMap <String, String> aSettings = _createSettings ();
+    aSettings.put (PeppolReportingBackend.CONFIG_PEPPOL_REPORTING_BACKEND, "HttpClient");
+    try (final IPeppolReportingBackend aBackend = PeppolReportingBackend.createBackend (_createConfig (aSettings)))
     {
-      m_aBackend.forEachReportingItem (YearMonth.from (DATE), x -> {});
-      fail ();
+      assertTrue (aBackend instanceof PeppolReportingBackendHttpClient);
     }
-    catch (final PeppolReportingBackendException ex)
-    {
-      // expected
-    }
-    assertTrue (_getRequests ().isEmpty ());
   }
 
   @Test
@@ -528,23 +540,23 @@ public final class PeppolReportingBackendHttpClientSPITest
     final Duration aMax = Duration.ofMillis (1000);
     for (int i = 0; i < 100; ++i)
     {
-      final long n0 = PeppolReportingBackendHttpClientSPI.getBackOffDelay (0, aInitial, aMax).toMillis ();
+      final long n0 = PeppolReportingBackendHttpClient.getBackOffDelay (0, aInitial, aMax).toMillis ();
       assertTrue (Long.toString (n0), n0 >= 50 && n0 <= 100);
 
-      final long n2 = PeppolReportingBackendHttpClientSPI.getBackOffDelay (2, aInitial, aMax).toMillis ();
+      final long n2 = PeppolReportingBackendHttpClient.getBackOffDelay (2, aInitial, aMax).toMillis ();
       assertTrue (Long.toString (n2), n2 >= 200 && n2 <= 400);
 
       // Capped at the maximum
-      final long n10 = PeppolReportingBackendHttpClientSPI.getBackOffDelay (10, aInitial, aMax).toMillis ();
+      final long n10 = PeppolReportingBackendHttpClient.getBackOffDelay (10, aInitial, aMax).toMillis ();
       assertTrue (Long.toString (n10), n10 >= 500 && n10 <= 1000);
 
       // No overflow for large indices
-      final long nLarge = PeppolReportingBackendHttpClientSPI.getBackOffDelay (Integer.MAX_VALUE, aInitial, aMax)
+      final long nLarge = PeppolReportingBackendHttpClient.getBackOffDelay (Integer.MAX_VALUE, aInitial, aMax)
                                                          .toMillis ();
       assertTrue (Long.toString (nLarge), nLarge >= 500 && nLarge <= 1000);
     }
-    assertEquals (0, PeppolReportingBackendHttpClientSPI.getBackOffDelay (3, Duration.ZERO, Duration.ZERO).toMillis ());
+    assertEquals (0, PeppolReportingBackendHttpClient.getBackOffDelay (3, Duration.ZERO, Duration.ZERO).toMillis ());
     assertEquals (0,
-                  PeppolReportingBackendHttpClientSPI.getBackOffDelay (Integer.MAX_VALUE, Duration.ZERO, aMax).toMillis ());
+                  PeppolReportingBackendHttpClient.getBackOffDelay (Integer.MAX_VALUE, Duration.ZERO, aMax).toMillis ());
   }
 }

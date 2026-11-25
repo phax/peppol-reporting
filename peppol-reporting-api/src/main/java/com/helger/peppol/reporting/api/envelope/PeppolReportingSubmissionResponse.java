@@ -41,7 +41,7 @@ import com.helger.collection.commons.ICommonsList;
  * </ul>
  *
  * @author Philip Helger
- * @since 4.6.0
+ * @since 5.0.0
  */
 @Immutable
 @MustImplementEqualsAndHashcode

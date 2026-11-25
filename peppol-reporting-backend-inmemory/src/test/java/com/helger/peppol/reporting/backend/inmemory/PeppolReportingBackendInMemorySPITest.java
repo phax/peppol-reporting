@@ -18,11 +18,11 @@ package com.helger.peppol.reporting.backend.inmemory;
 
 import org.jspecify.annotations.NonNull;
 
-import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendProviderSPI;
 import com.helger.peppol.reporting.testbackend.AbstractPeppolReportingBackendSPITest;
 
 /**
- * SPI contract test for {@link PeppolReportingBackendInMemorySPI}.
+ * Contract test for {@link PeppolReportingBackendInMemorySPI}.
  *
  * @author Philip Helger
  */
@@ -30,7 +30,7 @@ public final class PeppolReportingBackendInMemorySPITest extends AbstractPeppolR
 {
   @Override
   @NonNull
-  protected IPeppolReportingBackendSPI createBackend ()
+  protected IPeppolReportingBackendProviderSPI createProvider ()
   {
     return new PeppolReportingBackendInMemorySPI ();
   }

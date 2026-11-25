@@ -283,7 +283,7 @@ public final class EndUserStatisticsReport
     /**
      * Set an already filled EUSR reporting item accumulator based on which the report is to be
      * created. This allows to feed the reporting items one by one, e.g. via
-     * <code>IPeppolReportingBackendSPI.forEachReportingItem</code>, without keeping all of them in
+     * <code>IPeppolReportingItemReader.forEachReportingItem</code>, without keeping all of them in
      * memory. The accumulator is only read in {@link #build()}. This replaces a previously set
      * {@link #reportingItemList(Iterable)}.
      *

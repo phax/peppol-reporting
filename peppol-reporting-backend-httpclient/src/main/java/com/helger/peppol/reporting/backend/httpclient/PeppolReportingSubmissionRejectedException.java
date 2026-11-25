@@ -28,13 +28,13 @@ import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppol.reporting.api.envelope.PeppolReportingRejectedItem;
 
 /**
- * Exception thrown by {@link PeppolReportingBackendHttpClientSPI} if the remote collector rejected an
+ * Exception thrown by {@link PeppolReportingBackendHttpClient} if the remote collector rejected an
  * envelope because of invalid reporting items. None of the items of the rejected envelope were
  * stored by the collector. The caller should set the rejected items aside and store the remaining
  * items again.
  *
  * @author Philip Helger
- * @since 4.6.0
+ * @since 5.0.0
  */
 public class PeppolReportingSubmissionRejectedException extends PeppolReportingBackendException
 {
