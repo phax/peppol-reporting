@@ -17,51 +17,32 @@
 package com.helger.peppol.reporting.backend.csv;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.function.Consumer;
 
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.Nonempty;
-import com.helger.annotation.concurrent.ELockType;
-import com.helger.annotation.concurrent.GuardedBy;
-import com.helger.annotation.concurrent.MustBeLocked;
 import com.helger.annotation.style.IsSPIImplementation;
-import com.helger.annotation.style.VisibleForTesting;
-import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
-import com.helger.base.state.ESuccess;
 import com.helger.base.string.StringHelper;
-import com.helger.collection.commons.CommonsArrayList;
-import com.helger.collection.commons.ICommonsList;
 import com.helger.config.IConfig;
 import com.helger.csv.CCSV;
-import com.helger.csv.CSVReader;
-import com.helger.csv.CSVWriter;
-import com.helger.datetime.format.PDTFromString;
 import com.helger.io.file.FileHelper;
-import com.helger.peppol.reporting.api.EReportingDirection;
-import com.helger.peppol.reporting.api.PeppolReportingHelper;
-import com.helger.peppol.reporting.api.PeppolReportingItem;
-import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendProviderSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
-import com.helger.peppolid.CIdentifier;
 
 /**
- * SPI implementation of {@link IPeppolReportingBackendSPI} for CSV.
+ * SPI implementation of {@link IPeppolReportingBackendProviderSPI} that creates
+ * {@link PeppolReportingBackendCSV} instances.
  *
  * @author Philip Helger
  */
 @IsSPIImplementation
-public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
+public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendProviderSPI
 {
+  public static final String BACKEND_ID = "csv";
+
   public static final String CONFIG_PEPPOL_REPORTING_CSV_FILENAME = "peppol.reporting.csv.filename";
   public static final String CONFIG_PEPPOL_REPORTING_CSV_SEPARATOR_CHAR = "peppol.reporting.csv.separator-char";
   public static final String CONFIG_PEPPOL_REPORTING_CSV_QUOTE_CHAR = "peppol.reporting.csv.quote-char";
@@ -69,22 +50,21 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
 
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendCSVSPI.class);
 
-  private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
-  private File m_aCSVFile;
-  private char m_cSeparatorChar;
-  private char m_cQuoteChar;
-  private char m_cEscapeChar;
-  @GuardedBy ("m_aRWLock")
-  private CSVWriter m_aCSVWriter;
+  @NonNull
+  @Nonempty
+  public String getBackendID ()
+  {
+    return BACKEND_ID;
+  }
 
   @NonNull
   @Nonempty
   public String getDisplayName ()
   {
-    return "CSV";
+    return PeppolReportingBackendCSV.DISPLAY_NAME;
   }
 
-  private static char _asChar (@NonNull final IConfig aConfig, final String sProperty, final char cDefault)
+  private static char _asChar (@NonNull final IConfig aConfig, @NonNull final String sProperty, final char cDefault)
   {
     final String sValue = aConfig.getAsString (sProperty);
     if (StringHelper.isEmpty (sValue))
@@ -99,237 +79,24 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
   }
 
   @NonNull
-  public ESuccess initBackend (@NonNull final IConfig aConfig)
+  public PeppolReportingBackendCSV createBackend (@NonNull final IConfig aConfig) throws PeppolReportingBackendException
   {
+    ValueEnforcer.notNull (aConfig, "Config");
+
     final String sFilename = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_CSV_FILENAME);
     if (StringHelper.isEmpty (sFilename))
-    {
-      LOGGER.error ("The CSV filename is missing in the configuration. See property '" +
-                    CONFIG_PEPPOL_REPORTING_CSV_FILENAME +
-                    "'");
-      return ESuccess.FAILURE;
-    }
+      throw new PeppolReportingBackendException ("The CSV filename is missing in the configuration. See property '" +
+                                                 CONFIG_PEPPOL_REPORTING_CSV_FILENAME +
+                                                 "'");
     final File aFile = new File (sFilename);
     if (!FileHelper.canReadAndWriteFile (aFile))
-    {
-      LOGGER.error ("The CSV filename '" + sFilename + "' is missing the necessary access rights to read and write");
-      return ESuccess.FAILURE;
-    }
+      throw new PeppolReportingBackendException ("The CSV filename '" +
+                                                 sFilename +
+                                                 "' is missing the necessary access rights to read and write");
 
-    m_cSeparatorChar = _asChar (aConfig, CONFIG_PEPPOL_REPORTING_CSV_SEPARATOR_CHAR, CCSV.DEFAULT_SEPARATOR);
-    m_cQuoteChar = _asChar (aConfig, CONFIG_PEPPOL_REPORTING_CSV_QUOTE_CHAR, CCSV.DEFAULT_QUOTE_CHARACTER);
-    m_cEscapeChar = _asChar (aConfig, CONFIG_PEPPOL_REPORTING_CSV_ESCAPE_CHAR, CCSV.DEFAULT_ESCAPE_CHARACTER);
-
-    m_aRWLock.writeLocked (() -> {
-      m_aCSVFile = aFile;
-      try
-      {
-        m_aCSVWriter = new CSVWriter (new FileWriter (aFile, StandardCharsets.UTF_8, true));
-        m_aCSVWriter.setSeparatorChar (m_cSeparatorChar).setQuoteChar (m_cQuoteChar).setEscapeChar (m_cEscapeChar);
-      }
-      catch (final IOException ex)
-      {
-        throw new IllegalStateException ("Failed to create CSV Writer", ex);
-      }
-    });
-
-    if (!isInitialized ())
-    {
-      // Error was already logged
-      return ESuccess.FAILURE;
-    }
-
-    return ESuccess.SUCCESS;
-  }
-
-  public boolean isInitialized ()
-  {
-    return m_aRWLock.readLockedBoolean (() -> m_aCSVWriter != null);
-  }
-
-  @MustBeLocked (ELockType.WRITE)
-  private void _shutdown ()
-  {
-    m_aCSVFile = null;
-    try
-    {
-      m_aCSVWriter.close ();
-    }
-    catch (final IOException ex)
-    {
-      LOGGER.error ("Failed to close the CSV Writer", ex);
-    }
-    m_aCSVWriter = null;
-  }
-
-  public void shutdownBackend ()
-  {
-    if (isInitialized ())
-    {
-      m_aRWLock.writeLocked (() -> {
-        LOGGER.info ("Shutting down Peppol Reporting CSV client");
-        _shutdown ();
-      });
-    }
-    else
-      LOGGER.warn ("The Peppol Reporting CSV backend cannot be shutdown, because it was never properly initialized");
-  }
-
-  @NonNull
-  @VisibleForTesting
-  static ICommonsList <String> asCSV (@NonNull final PeppolReportingItem aValue)
-  {
-    ValueEnforcer.notNull (aValue, "Value");
-
-    final ICommonsList <String> ret = new CommonsArrayList <> ();
-    ret.add (DateTimeFormatter.ISO_DATE_TIME.format (aValue.getExchangeDTUTC ()));
-    ret.add (DateTimeFormatter.ISO_LOCAL_DATE.format (aValue.getExchangeDTUTC ().toLocalDate ()));
-    ret.add (aValue.getDirection ().getID ());
-    ret.add (aValue.getC2ID ());
-    ret.add (aValue.getC3ID ());
-    ret.add (aValue.getDocTypeIDScheme ());
-    ret.add (aValue.getDocTypeIDValue ());
-    ret.add (aValue.getProcessIDScheme ());
-    ret.add (aValue.getProcessIDValue ());
-    ret.add (aValue.getTransportProtocol ());
-    ret.add (aValue.getC1CountryCode ());
-    if (aValue.hasC4CountryCode ())
-      ret.add (aValue.getC4CountryCode ());
-    else
-      ret.add (null);
-    ret.add (aValue.getEndUserID ());
-    return ret;
-  }
-
-  @NonNull
-  private String _getCSVFilename ()
-  {
-    return m_aRWLock.readLockedGet (() -> m_aCSVFile == null ? "" : m_aCSVFile.getAbsolutePath ());
-  }
-
-  public void storeReportingItem (@NonNull @Nonempty final String sItemID,
-                                  @NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
-  {
-    ValueEnforcer.notEmpty (sItemID, "ItemID");
-    ValueEnforcer.notNull (aReportingItem, "ReportingItem");
-
-    final String sCSVFilename = _getCSVFilename ();
-
-    if (PeppolReportingHelper.isDocumentTypeEligableForReporting (aReportingItem.getDocTypeIDScheme (),
-                                                                  aReportingItem.getDocTypeIDValue ()))
-    {
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Trying to store Peppol Reporting Item in CSV '" + sCSVFilename + "'");
-
-      if (!isInitialized ())
-        throw new IllegalStateException ("The Peppol Reporting CSV backend '" + sCSVFilename + "' is not initialized");
-
-      m_aRWLock.writeLockedThrowing (() -> {
-        m_aCSVWriter.writeNext (asCSV (aReportingItem));
-        try
-        {
-          m_aCSVWriter.flush ();
-        }
-        catch (final IOException ex)
-        {
-          throw new PeppolReportingBackendException ("Failed to flush CSV file '" + sCSVFilename + "'", ex);
-        }
-      });
-
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Successfully stored Peppol Reporting Item in CSV '" + sCSVFilename + "'");
-    }
-    else
-    {
-      LOGGER.info ("Not storing Peppol Reporting Item in CSV '" +
-                   sCSVFilename +
-                   "', as the document type is not eligable for reporting (" +
-                   CIdentifier.getURIEncoded (aReportingItem.getDocTypeIDScheme (),
-                                              aReportingItem.getDocTypeIDValue ()) +
-                   ")");
-    }
-  }
-
-  @NonNull
-  @VisibleForTesting
-  static PeppolReportingItem asItem (@NonNull final ICommonsList <String> aValue)
-  {
-    ValueEnforcer.notNull (aValue, "Value");
-
-    return PeppolReportingItem.builder ()
-                              .exchangeDateTime (PDTFromString.getOffsetDateTimeFromString (aValue.get (0),
-                                                                                            DateTimeFormatter.ISO_DATE_TIME))
-                              .direction (EReportingDirection.getFromIDOrThrow (aValue.get (2)))
-                              .c2ID (aValue.get (3))
-                              .c3ID (aValue.get (4))
-                              .docTypeIDScheme (aValue.get (5))
-                              .docTypeIDValue (aValue.get (6))
-                              .processIDScheme (aValue.get (7))
-                              .processIDValue (aValue.get (8))
-                              .transportProtocol (aValue.get (9))
-                              .c1CountryCode (aValue.get (10))
-                              .c4CountryCode (StringHelper.getNotEmpty (aValue.get (11), (String) null))
-                              .endUserID (aValue.get (12))
-                              .build ();
-  }
-
-  public void forEachReportingItem (@NonNull final LocalDate aStartDateIncl,
-                                    @NonNull final LocalDate aEndDateIncl,
-                                    @NonNull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
-  {
-    ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
-    ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
-    ValueEnforcer.isTrue (() -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
-    ValueEnforcer.notNull (aConsumer, "Consumer");
-
-    final String sCSVFilename = _getCSVFilename ();
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Querying Peppol Reporting Items from CSV '" +
-                    sCSVFilename +
-                    "' between " +
-                    aStartDateIncl +
-                    " and " +
-                    aEndDateIncl);
-
-    if (!isInitialized ())
-      throw new IllegalStateException ("The Peppol Reporting CSV backend '" + sCSVFilename + "' is not initialized");
-
-    int nCounter = 0;
-    try (final CSVReader aReader = new CSVReader (new FileReader (m_aCSVFile, StandardCharsets.UTF_8)))
-    {
-      aReader.setSeparatorChar (m_cSeparatorChar).setQuoteChar (m_cQuoteChar).setEscapeChar (m_cEscapeChar);
-
-      ICommonsList <String> aLine;
-      while ((aLine = aReader.readNext ()) != null)
-      {
-        // First check the date
-        final LocalDate aExchangeDate = PDTFromString.getLocalDateFromString (aLine.get (1),
-                                                                              DateTimeFormatter.ISO_LOCAL_DATE);
-        if (aExchangeDate.compareTo (aStartDateIncl) >= 0 && aExchangeDate.compareTo (aEndDateIncl) <= 0)
-        {
-          // Build only on match
-          final PeppolReportingItem aReportingItem = asItem (aLine);
-          aConsumer.accept (aReportingItem);
-          ++nCounter;
-        }
-      }
-    }
-    catch (final IOException ex)
-    {
-      throw new PeppolReportingBackendException ("IO error in reading CSV '" + sCSVFilename + "'", ex);
-    }
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Found a total of " + nCounter + " matching documents in CSV '" + sCSVFilename + "'");
-  }
-
-  @NonNull
-  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
-                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
-  {
-    final ICommonsList <PeppolReportingItem> ret = new CommonsArrayList <> ();
-    forEachReportingItem (aStartDateIncl, aEndDateIncl, ret::add);
-    return ret;
+    return new PeppolReportingBackendCSV (aFile,
+                                          _asChar (aConfig, CONFIG_PEPPOL_REPORTING_CSV_SEPARATOR_CHAR, CCSV.DEFAULT_SEPARATOR),
+                                          _asChar (aConfig, CONFIG_PEPPOL_REPORTING_CSV_QUOTE_CHAR, CCSV.DEFAULT_QUOTE_CHARACTER),
+                                          _asChar (aConfig, CONFIG_PEPPOL_REPORTING_CSV_ESCAPE_CHAR, CCSV.DEFAULT_ESCAPE_CHARACTER));
   }
 }

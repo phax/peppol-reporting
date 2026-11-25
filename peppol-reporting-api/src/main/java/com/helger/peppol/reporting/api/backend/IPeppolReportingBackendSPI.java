@@ -18,29 +18,30 @@ package com.helger.peppol.reporting.api.backend;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonempty;
-import com.helger.annotation.misc.ChangeNextMajorRelease;
-import com.helger.annotation.style.IsSPIInterface;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.name.IHasDisplayName;
 import com.helger.base.state.ESuccess;
 import com.helger.config.IConfig;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
-import com.helger.peppol.reporting.api.PeppolReportingItemWithID;
 
 /**
- * A generic interface for writing and reading reporting items.
+ * A generic interface for writing and reading reporting items.<br>
+ * Since v5.0.0 this interface is no longer loaded via the SPI mechanism. Implementations of
+ * {@link IPeppolReportingBackendProviderSPI} are used instead, and
+ * {@link PeppolReportingBackend#getBackendService()} returns an adapter that implements this
+ * interface on top of them.
  *
  * @author Philip Helger
  * @since 2.1.0
+ * @deprecated Use {@link IPeppolReportingBackendProviderSPI}, {@link IPeppolReportingBackend} and
+ *             {@link IPeppolReportingItemReader} instead
  */
-@IsSPIInterface
+@Deprecated (forRemoval = true, since = "5.0.0")
 public interface IPeppolReportingBackendSPI extends IHasDisplayName
 {
   /**
@@ -75,59 +76,14 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
   void shutdownBackend ();
 
   /**
-   * Write a new {@link PeppolReportingItem} together with its unique item ID to the data storage.
-   * The item ID is assigned by the caller (e.g. the transaction ID) and must stay the same if the
-   * same item is stored again, so that backends that support it can detect duplicates.
-   *
-   * @param sItemID
-   *        The unique ID of the reporting item. May neither be <code>null</code> nor empty and must
-   *        not be longer than {@link PeppolReportingItemWithID#MAX_LEN_ITEM_ID} characters.
-   * @param aReportingItem
-   *        The reporting item to write. Must not be <code>null</code>.
-   * @throws PeppolReportingBackendException
-   *         In case of an unrecoverable error
-   * @since 4.6.0
-   */
-  void storeReportingItem (@NonNull @Nonempty String sItemID,
-                           @NonNull PeppolReportingItem aReportingItem) throws PeppolReportingBackendException;
-
-  /**
-   * Write a new {@link PeppolReportingItem} to the data storage, using a new random UUID as the
-   * item ID. Because a new item ID is created on every call, storing the same item again cannot be
-   * detected as a duplicate. Callers that may store the same item more than once should use
-   * {@link #storeReportingItem(String, PeppolReportingItem)} with a stable item ID instead.
+   * Write a new {@link PeppolReportingItem} to the data storage.
    *
    * @param aReportingItem
    *        The reporting item to write. Must not be <code>null</code>.
    * @throws PeppolReportingBackendException
    *         In case of an unrecoverable error
-   * @see #storeReportingItem(String, PeppolReportingItem)
    */
-  default void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
-  {
-    storeReportingItem (UUID.randomUUID ().toString (), aReportingItem);
-  }
-
-  /**
-   * Write multiple {@link PeppolReportingItem} objects together with their unique item IDs to the
-   * data storage. Backends may override this method to store all items in a single operation. The
-   * default implementation calls {@link #storeReportingItem(String, PeppolReportingItem)} for
-   * each item. If an exception is thrown, it is unspecified which of the items were stored, so callers
-   * must be prepared to store the same items again.
-   *
-   * @param aReportingItems
-   *        The reporting items with their IDs to write. Must not be <code>null</code> and must not
-   *        contain <code>null</code> elements.
-   * @throws PeppolReportingBackendException
-   *         In case of an unrecoverable error
-   * @since 4.6.0
-   */
-  default void storeReportingItems (@NonNull final List <PeppolReportingItemWithID> aReportingItems) throws PeppolReportingBackendException
-  {
-    ValueEnforcer.notNullNoNullValue (aReportingItems, "ReportingItems");
-    for (final PeppolReportingItemWithID aReportingItem : aReportingItems)
-      storeReportingItem (aReportingItem.getItemID (), aReportingItem.getReportingItem ());
-  }
+  void storeReportingItem (@NonNull PeppolReportingItem aReportingItem) throws PeppolReportingBackendException;
 
   /**
    * Iterate all {@link PeppolReportingItem} objects in the provided date range. Both the start and
@@ -149,7 +105,6 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
    *         In case of an unrecoverable error
    * @since 2.2.0
    */
-  @ChangeNextMajorRelease ("In v5 this method should become a default method and forEachReportingItem should be the mandatory implementation")
   @NonNull
   Iterable <PeppolReportingItem> iterateReportingItems (@NonNull LocalDate aStartDateIncl,
                                                         @NonNull LocalDate aEndDateIncl) throws PeppolReportingBackendException;

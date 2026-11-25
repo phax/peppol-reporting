@@ -25,19 +25,19 @@ import java.math.BigInteger;
 import java.time.OffsetDateTime;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
+import java.util.UUID;
 
 import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.helger.base.functional.IThrowingConsumer;
-import com.helger.base.state.ESuccess;
-import com.helger.base.wrapper.Wrapper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.config.ConfigFactory;
 import com.helger.peppol.reporting.api.PeppolReportingItem;
-import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackend;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingItemReader;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackend;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppol.reporting.eusr.EndUserStatisticsReport;
@@ -62,7 +62,7 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
  * <li>Create an empty accumulator ({@link EUSRReportingItemAccumulator} or
  * {@link TSRReportingItemAccumulator})</li>
  * <li>Feed all reporting items of the reporting period into it, one by one. Here this is done via
- * {@link IPeppolReportingBackendSPI#forEachReportingItem(YearMonth, java.util.function.Consumer)}
+ * {@link IPeppolReportingItemReader#forEachReportingItem(YearMonth, java.util.function.Consumer)}
  * of the in-memory backend, but any other source works the same way.</li>
  * <li>Pass the filled accumulator to the report builder via <code>reportingItemAccumulator</code>
  * and build the report as usual</li>
@@ -122,28 +122,30 @@ public final class ReportingItemAccumulatorBuilderExampleTest
   @Test
   public void testEUSRWithAccumulator () throws Exception
   {
-    final Wrapper <EndUserStatisticsReportType> aReportWrapper = new Wrapper <> ();
-    final ESuccess eSuccess = PeppolReportingBackend.withBackendDo (ConfigFactory.getDefaultConfig (), aBackend -> {
+    final EndUserStatisticsReportType aReport;
+    try (final IPeppolReportingBackend aBackend = PeppolReportingBackend.createBackend (ConfigFactory.getDefaultConfig ()))
+    {
+      // Only backends that store the items themselves can read them
+      final IPeppolReportingItemReader aReader = (IPeppolReportingItemReader) aBackend;
+
       // In a real application, each item is stored when a message is sent or
       // received
-      _forEachReportingItem (aBackend::storeReportingItem);
+      _forEachReportingItem (aItem -> aBackend.storeReportingItem (UUID.randomUUID ().toString (), aItem));
 
       // 1. Create an empty accumulator
       final EUSRReportingItemAccumulator aAccumulator = new EUSRReportingItemAccumulator ();
 
       // 2. Feed all items of the reporting period into it, one by one
-      aBackend.forEachReportingItem (REPORTING_PERIOD, aAccumulator::accept);
+      aReader.forEachReportingItem (REPORTING_PERIOD, aAccumulator::accept);
 
       // 3. Pass the filled accumulator to the builder
-      aReportWrapper.set (EndUserStatisticsReport.builder ()
-                                                 .monthOf (REPORTING_PERIOD)
-                                                 .reportingServiceProviderID (MY_SPID)
-                                                 .reportingItemAccumulator (aAccumulator)
-                                                 .build ());
-    });
-    assertTrue (eSuccess.isSuccess ());
+      aReport = EndUserStatisticsReport.builder ()
+                                       .monthOf (REPORTING_PERIOD)
+                                       .reportingServiceProviderID (MY_SPID)
+                                       .reportingItemAccumulator (aAccumulator)
+                                       .build ();
+    }
 
-    final EndUserStatisticsReportType aReport = aReportWrapper.get ();
     assertNotNull (aReport);
     assertEquals (BigInteger.valueOf (END_USER_IDS.length), aReport.getFullSet ().getSendingOrReceivingEndUsers ());
 
@@ -170,28 +172,30 @@ public final class ReportingItemAccumulatorBuilderExampleTest
   @Test
   public void testTSRWithAccumulator () throws Exception
   {
-    final Wrapper <TransactionStatisticsReportType> aReportWrapper = new Wrapper <> ();
-    final ESuccess eSuccess = PeppolReportingBackend.withBackendDo (ConfigFactory.getDefaultConfig (), aBackend -> {
+    final TransactionStatisticsReportType aReport;
+    try (final IPeppolReportingBackend aBackend = PeppolReportingBackend.createBackend (ConfigFactory.getDefaultConfig ()))
+    {
+      // Only backends that store the items themselves can read them
+      final IPeppolReportingItemReader aReader = (IPeppolReportingItemReader) aBackend;
+
       // In a real application, each item is stored when a message is sent or
       // received
-      _forEachReportingItem (aBackend::storeReportingItem);
+      _forEachReportingItem (aItem -> aBackend.storeReportingItem (UUID.randomUUID ().toString (), aItem));
 
       // 1. Create an empty accumulator
       final TSRReportingItemAccumulator aAccumulator = new TSRReportingItemAccumulator ();
 
       // 2. Feed all items of the reporting period into it, one by one
-      aBackend.forEachReportingItem (REPORTING_PERIOD, aAccumulator::accept);
+      aReader.forEachReportingItem (REPORTING_PERIOD, aAccumulator::accept);
 
       // 3. Pass the filled accumulator to the builder
-      aReportWrapper.set (TransactionStatisticsReport.builder ()
-                                                     .monthOf (REPORTING_PERIOD)
-                                                     .reportingServiceProviderID (MY_SPID)
-                                                     .reportingItemAccumulator (aAccumulator)
-                                                     .build ());
-    });
-    assertTrue (eSuccess.isSuccess ());
+      aReport = TransactionStatisticsReport.builder ()
+                                           .monthOf (REPORTING_PERIOD)
+                                           .reportingServiceProviderID (MY_SPID)
+                                           .reportingItemAccumulator (aAccumulator)
+                                           .build ();
+    }
 
-    final TransactionStatisticsReportType aReport = aReportWrapper.get ();
     assertNotNull (aReport);
     assertEquals (BigInteger.valueOf (ITEM_COUNT),
                   aReport.getTotal ().getIncoming ().add (aReport.getTotal ().getOutgoing ()));

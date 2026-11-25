@@ -30,7 +30,7 @@ import com.helger.base.tostring.ToStringGenerator;
  * together with the reason for the rejection.
  *
  * @author Philip Helger
- * @since 4.6.0
+ * @since 5.0.0
  */
 @Immutable
 @MustImplementEqualsAndHashcode

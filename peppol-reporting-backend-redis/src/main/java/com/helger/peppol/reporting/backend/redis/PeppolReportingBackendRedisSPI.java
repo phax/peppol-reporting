@@ -16,49 +16,34 @@
  */
 package com.helger.peppol.reporting.backend.redis;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.Nonempty;
-import com.helger.annotation.concurrent.ELockType;
-import com.helger.annotation.concurrent.GuardedBy;
-import com.helger.annotation.concurrent.MustBeLocked;
-import com.helger.annotation.misc.ChangeNextMajorRelease;
 import com.helger.annotation.style.IsSPIImplementation;
 import com.helger.annotation.style.OverrideOnDemand;
-import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
-import com.helger.base.state.ESuccess;
 import com.helger.base.string.StringHelper;
-import com.helger.collection.commons.CommonsArrayList;
-import com.helger.collection.commons.ICommonsList;
 import com.helger.config.IConfig;
-import com.helger.peppol.reporting.api.PeppolReportingHelper;
-import com.helger.peppol.reporting.api.PeppolReportingItem;
-import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendProviderSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
-import com.helger.peppolid.CIdentifier;
 
-import redis.clients.jedis.AbstractTransaction;
 import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.RedisClient;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
- * SPI implementation of {@link IPeppolReportingBackendSPI} for Redis.
+ * SPI implementation of {@link IPeppolReportingBackendProviderSPI} that creates
+ * {@link PeppolReportingBackendRedis} instances.
  *
  * @author Philip Helger
  */
 @IsSPIImplementation
-public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSPI
+public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendProviderSPI
 {
+  public static final String BACKEND_ID = "redis";
+
   public static final String CONFIG_PEPPOL_REPORTING_REDIS_HOST = "peppol.reporting.redis.host";
   public static final String CONFIG_PEPPOL_REPORTING_REDIS_PORT = "peppol.reporting.redis.port";
   public static final String CONFIG_PEPPOL_REPORTING_REDIS_USER = "peppol.reporting.redis.user";
@@ -67,39 +52,45 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
 
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendRedisSPI.class);
 
-  private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
-  @GuardedBy ("m_aRWLock")
-  private RedisClient m_aRedisClient;
+  @NonNull
+  @Nonempty
+  public String getBackendID ()
+  {
+    return BACKEND_ID;
+  }
 
   @NonNull
   @Nonempty
   public String getDisplayName ()
   {
-    return "Redis[Jedis]";
+    return PeppolReportingBackendRedis.DISPLAY_NAME;
   }
 
-  @Nullable
+  /**
+   * Create the Redis client based on the configuration.
+   *
+   * @param aConfig
+   *        The configuration to use. Never <code>null</code>.
+   * @return The Redis client and never <code>null</code>.
+   * @throws PeppolReportingBackendException
+   *         If the configuration is invalid
+   * @since 5.0.0 - before it was called <code>createJedisPool</code>
+   */
+  @NonNull
   @OverrideOnDemand
-  @ChangeNextMajorRelease ("Rename to 'createRedisClient'")
-  protected RedisClient createJedisPool (@NonNull final IConfig aConfig)
+  protected RedisClient createRedisClient (@NonNull final IConfig aConfig) throws PeppolReportingBackendException
   {
     final String sHost = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_REDIS_HOST);
     if (StringHelper.isEmpty (sHost))
-    {
-      LOGGER.error ("The Redis host name is missing in the configuration. See property '" +
-                    CONFIG_PEPPOL_REPORTING_REDIS_HOST +
-                    "'");
-      return null;
-    }
+      throw new PeppolReportingBackendException ("The Redis host name is missing in the configuration. See property '" +
+                                                 CONFIG_PEPPOL_REPORTING_REDIS_HOST +
+                                                 "'");
 
     final int nPort = aConfig.getAsInt (CONFIG_PEPPOL_REPORTING_REDIS_PORT, DEFAULT_REDIS_PORT);
     if (nPort < 0)
-    {
-      LOGGER.error ("The Redis port name is missing in the configuration. See property '" +
-                    CONFIG_PEPPOL_REPORTING_REDIS_PORT +
-                    "'");
-      return null;
-    }
+      throw new PeppolReportingBackendException ("The Redis port is invalid in the configuration. See property '" +
+                                                 CONFIG_PEPPOL_REPORTING_REDIS_PORT +
+                                                 "'");
 
     final String sUserName = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_REDIS_USER);
     final String sPassword = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_REDIS_PASSWORD);
@@ -118,18 +109,11 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
   }
 
   @NonNull
-  public ESuccess initBackend (@NonNull final IConfig aConfig)
+  public PeppolReportingBackendRedis createBackend (@NonNull final IConfig aConfig) throws PeppolReportingBackendException
   {
-    m_aRWLock.writeLocked (() -> {
-      if (m_aRedisClient != null)
-        throw new IllegalStateException ("The Peppol Reporting Redis backend was already initialized");
+    ValueEnforcer.notNull (aConfig, "Config");
 
-      m_aRedisClient = createJedisPool (aConfig);
-    });
-
-    final RedisClient aRedisClient = m_aRWLock.readLockedGet (() -> m_aRedisClient);
-    if (aRedisClient == null)
-      return ESuccess.FAILURE;
+    final RedisClient aRedisClient = createRedisClient (aConfig);
 
     // Check connectivity
     try
@@ -138,151 +122,10 @@ public class PeppolReportingBackendRedisSPI implements IPeppolReportingBackendSP
     }
     catch (final JedisException ex)
     {
-      LOGGER.error ("Failed to connect to the Peppol Reporting Redis backend", ex);
-      // Reset pool in case of error
-      m_aRWLock.writeLocked (this::_shutdown);
-      return ESuccess.FAILURE;
+      aRedisClient.close ();
+      throw new PeppolReportingBackendException ("Failed to connect to the Peppol Reporting Redis backend", ex);
     }
 
-    if (!isInitialized ())
-    {
-      // Error was already logged
-      return ESuccess.FAILURE;
-    }
-
-    return ESuccess.SUCCESS;
-  }
-
-  public boolean isInitialized ()
-  {
-    return m_aRWLock.readLockedBoolean (() -> m_aRedisClient != null);
-  }
-
-  @MustBeLocked (ELockType.WRITE)
-  private void _shutdown ()
-  {
-    m_aRedisClient.close ();
-    m_aRedisClient = null;
-  }
-
-  public void shutdownBackend ()
-  {
-    if (isInitialized ())
-    {
-      m_aRWLock.writeLocked (() -> {
-        LOGGER.info ("Shutting down Peppol Reporting Redis client");
-        _shutdown ();
-      });
-    }
-    else
-      LOGGER.warn ("The Peppol Reporting Redis backend cannot be shutdown, because it was never properly initialized");
-  }
-
-  @NonNull
-  @Nonempty
-  private static String _getDayKey (@NonNull final LocalDate aDate)
-  {
-    return StringHelper.getLeadingZero (aDate.getYear (), 4) +
-           StringHelper.getLeadingZero (aDate.getMonthValue (), 2) +
-           StringHelper.getLeadingZero (aDate.getDayOfMonth (), 2);
-  }
-
-  public void storeReportingItem (@NonNull @Nonempty final String sItemID,
-                                  @NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
-  {
-    ValueEnforcer.notEmpty (sItemID, "ItemID");
-    ValueEnforcer.notNull (aReportingItem, "ReportingItem");
-
-    if (PeppolReportingHelper.isDocumentTypeEligableForReporting (aReportingItem.getDocTypeIDScheme (),
-                                                                  aReportingItem.getDocTypeIDValue ()))
-    {
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Trying to store Peppol Reporting Item in Redis");
-
-      if (!isInitialized ())
-        throw new IllegalStateException ("The Peppol Reporting Redis backend is not initialized");
-
-      try
-      {
-        // Get new unique ID
-        final long nID = m_aRedisClient.incr ("peppol:reporting:itemidx");
-
-        try (final AbstractTransaction t = m_aRedisClient.multi ())
-        {
-          // Store main data
-          final String sMapKey = "peppol:reporting:item:" + nID;
-          t.hset (sMapKey, PeppolReportingRedisHelper.toMap (aReportingItem));
-
-          // Append reference to list of entries per day. RPUSH (not LPUSH) is
-          // used so that subsequent LRANGE 0 -1 reads return the items in
-          // insertion order, matching the behaviour of the other backends.
-          t.rpush ("peppol:reporting:" + _getDayKey (aReportingItem.getExchangeDTUTC ().toLocalDate ()), sMapKey);
-          t.exec ();
-        }
-      }
-      catch (final JedisException ex)
-      {
-        LOGGER.error ("Failed to store Peppol Reporting Item in Redis: " + ex.getMessage ());
-        throw new PeppolReportingBackendException ("Failed to store Peppol Reporting Item in Redis", ex);
-      }
-
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Successfully stored Peppol Reporting Item in Redis");
-    }
-    else
-    {
-      LOGGER.info ("Not storing Peppol Reporting Item in Redis, as the document type is not eligable for reporting (" +
-                   CIdentifier.getURIEncoded (aReportingItem.getDocTypeIDScheme (),
-                                              aReportingItem.getDocTypeIDValue ()) +
-                   ")");
-    }
-  }
-
-  public void forEachReportingItem (@NonNull final LocalDate aStartDateIncl,
-                                    @NonNull final LocalDate aEndDateIncl,
-                                    @NonNull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
-  {
-    ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
-    ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
-    ValueEnforcer.isTrue (() -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
-    ValueEnforcer.notNull (aConsumer, "Consumer");
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Querying Peppol Reporting Items from Redis between " + aStartDateIncl + " and " + aEndDateIncl);
-
-    if (!isInitialized ())
-      throw new IllegalStateException ("The Peppol Reporting Redis backend is not initialized");
-
-    int nCounter = 0;
-    // Find between date, but order by exchange date and time
-    LocalDate aCurDate = aStartDateIncl;
-    while (aCurDate.compareTo (aEndDateIncl) <= 0)
-    {
-      final String sListKey = "peppol:reporting:" + _getDayKey (aCurDate);
-      final List <String> aAllHashKeys = m_aRedisClient.lrange (sListKey, 0, -1);
-      for (final String sKey : aAllHashKeys)
-      {
-        final Map <String, String> aHashMap = m_aRedisClient.hgetAll (sKey);
-        final PeppolReportingItem aReportingItem = PeppolReportingRedisHelper.toDomain (aHashMap);
-        aConsumer.accept (aReportingItem);
-
-        nCounter++;
-      }
-
-      // Next day
-      aCurDate = aCurDate.plusDays (1);
-    }
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Found a total of " + nCounter + " matching documents in Redis");
-  }
-
-  @NonNull
-  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
-                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
-  {
-    final ICommonsList <PeppolReportingItem> ret = new CommonsArrayList <> ();
-    forEachReportingItem (aStartDateIncl, aEndDateIncl, ret::add);
-    return ret;
+    return new PeppolReportingBackendRedis (aRedisClient);
   }
 }

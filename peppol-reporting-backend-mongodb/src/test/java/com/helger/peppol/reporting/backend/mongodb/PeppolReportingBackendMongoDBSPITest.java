@@ -18,11 +18,11 @@ package com.helger.peppol.reporting.backend.mongodb;
 
 import org.jspecify.annotations.NonNull;
 
-import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendProviderSPI;
 import com.helger.peppol.reporting.testbackend.AbstractPeppolReportingBackendSPITest;
 
 /**
- * SPI contract test for {@link PeppolReportingBackendMongoDBSPI}. The whole suite is skipped (via
+ * Contract test for {@link PeppolReportingBackendMongoDBSPI}. The whole suite is skipped (via
  * {@link org.junit.Assume}) when no MongoDB instance is reachable on the configured host.
  *
  * @author Philip Helger
@@ -31,7 +31,7 @@ public final class PeppolReportingBackendMongoDBSPITest extends AbstractPeppolRe
 {
   @Override
   @NonNull
-  protected IPeppolReportingBackendSPI createBackend ()
+  protected IPeppolReportingBackendProviderSPI createProvider ()
   {
     return new PeppolReportingBackendMongoDBSPI ();
   }

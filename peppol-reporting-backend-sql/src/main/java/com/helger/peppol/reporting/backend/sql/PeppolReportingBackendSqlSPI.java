@@ -16,57 +16,39 @@
  */
 package com.helger.peppol.reporting.backend.sql;
 
-import java.io.IOException;
-import java.time.LocalDate;
 import java.util.EnumSet;
-import java.util.function.Consumer;
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.Nonempty;
-import com.helger.annotation.concurrent.GuardedBy;
 import com.helger.annotation.style.IsSPIImplementation;
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.annotation.style.UsedViaReflection;
-import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
-import com.helger.base.state.ESuccess;
 import com.helger.base.string.StringImplode;
-import com.helger.base.wrapper.Wrapper;
-import com.helger.collection.commons.CommonsArrayList;
-import com.helger.collection.commons.ICommonsList;
 import com.helger.config.IConfig;
 import com.helger.db.api.EDatabaseSystemType;
 import com.helger.db.api.config.IJdbcConfiguration;
 import com.helger.db.api.helper.DBSystemHelper;
-import com.helger.db.api.helper.DBValueHelper;
 import com.helger.db.flyway.FlywayConfiguration;
 import com.helger.db.jdbc.DataSourceProviderFromJdbcConfiguration;
-import com.helger.db.jdbc.callback.ConstantPreparedStatementDataProvider;
-import com.helger.db.jdbc.callback.IResultSetRowCallback;
-import com.helger.db.jdbc.executor.DBExecutor;
-import com.helger.peppol.reporting.api.EReportingDirection;
-import com.helger.peppol.reporting.api.PeppolReportingHelper;
-import com.helger.peppol.reporting.api.PeppolReportingItem;
-import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI;
+import com.helger.peppol.reporting.api.backend.IPeppolReportingBackendProviderSPI;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
-import com.helger.peppolid.CIdentifier;
 
 /**
- * SPI implementation of {@link IPeppolReportingBackendSPI} for SQL. This backend supports the
- * streaming of report items via
- * {@link #forEachReportingItem(LocalDate, LocalDate, Consumer)}, where each item is passed to the
- * consumer while the result set is read. {@link #iterateReportingItems(LocalDate, LocalDate)}
- * collects all matching items in memory.
+ * SPI implementation of {@link IPeppolReportingBackendProviderSPI} that creates
+ * {@link PeppolReportingBackendSql} instances. Creating a backend runs the Flyway database
+ * migration, unless it is disabled in the configuration.
  *
  * @author Philip Helger
  */
 @IsSPIImplementation
-public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
+public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendProviderSPI
 {
+  public static final String BACKEND_ID = "sql";
+
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendSqlSPI.class);
   private static final EnumSet <EDatabaseSystemType> ALLOWED_DB_TYPES = EnumSet.of (EDatabaseSystemType.MYSQL,
                                                                                     EDatabaseSystemType.POSTGRESQL,
@@ -74,26 +56,32 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
                                                                                     EDatabaseSystemType.DB2,
                                                                                     EDatabaseSystemType.ORACLE);
 
-  private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
-  @GuardedBy ("m_aRWLock")
-  private IConfig m_aConfig;
-  private ReportingJdbcConfiguration m_aJdbcConfig;
-  @GuardedBy ("m_aRWLock")
-  private DataSourceProviderFromJdbcConfiguration m_aDSP;
-  private String m_sTableNamePrefix;
-
   @UsedViaReflection
   public PeppolReportingBackendSqlSPI ()
   {}
 
   @NonNull
   @Nonempty
-  public String getDisplayName ()
+  public String getBackendID ()
   {
-    return "SQL";
+    return BACKEND_ID;
   }
 
-  @Nullable
+  @NonNull
+  @Nonempty
+  public String getDisplayName ()
+  {
+    return PeppolReportingBackendSql.DISPLAY_NAME;
+  }
+
+  /**
+   * Create the data source provider to use.
+   *
+   * @param aJdbcConfig
+   *        The JDBC configuration to use. Never <code>null</code>.
+   * @return The data source provider and never <code>null</code>.
+   */
+  @NonNull
   @OverrideOnDemand
   protected DataSourceProviderFromJdbcConfiguration createReportingDataSourceProvider (@NonNull final IJdbcConfiguration aJdbcConfig)
   {
@@ -101,223 +89,48 @@ public class PeppolReportingBackendSqlSPI implements IPeppolReportingBackendSPI
   }
 
   @NonNull
-  public ESuccess initBackend (@NonNull final IConfig aConfig)
+  public PeppolReportingBackendSql createBackend (@NonNull final IConfig aConfig) throws PeppolReportingBackendException
   {
-    m_aRWLock.writeLocked (() -> {
-      if (m_aDSP != null)
-        throw new IllegalStateException ("The Peppol Reporting SQL DB backend was already initialized");
+    ValueEnforcer.notNull (aConfig, "Config");
 
-      // Init JDBC configuration
-      final ReportingJdbcConfiguration aJdbcConfig = new ReportingJdbcConfiguration (aConfig);
+    // Init JDBC configuration
+    final ReportingJdbcConfiguration aJdbcConfig = new ReportingJdbcConfiguration (aConfig);
 
-      // Resolve database type
-      final EDatabaseSystemType eDBType = aJdbcConfig.getJdbcDatabaseSystemType ();
-      if (eDBType == null || !ALLOWED_DB_TYPES.contains (eDBType))
-        throw new IllegalStateException ("The database type MUST be provided and MUST be one of " +
-                                         StringImplode.imploder ()
-                                                      .source (ALLOWED_DB_TYPES, EDatabaseSystemType::getID)
-                                                      .separator (", ")
-                                                      .build () +
-                                         " - provided value is '" +
-                                         aJdbcConfig.getJdbcDatabaseType () +
-                                         "'");
+    // Resolve database type
+    final EDatabaseSystemType eDBType = aJdbcConfig.getJdbcDatabaseSystemType ();
+    if (eDBType == null || !ALLOWED_DB_TYPES.contains (eDBType))
+      throw new PeppolReportingBackendException ("The database type MUST be provided and MUST be one of " +
+                                                 StringImplode.imploder ()
+                                                              .source (ALLOWED_DB_TYPES, EDatabaseSystemType::getID)
+                                                              .separator (", ")
+                                                              .build () +
+                                                 " - provided value is '" +
+                                                 aJdbcConfig.getJdbcDatabaseType () +
+                                                 "'");
 
-      // Build Flyway configuration
-      final ReportingFlywayConfigurationBuilder aBuilder = new ReportingFlywayConfigurationBuilder (aConfig,
-                                                                                                    aJdbcConfig);
-      final FlywayConfiguration aFlywayConfig = aBuilder.build ();
+    // Build Flyway configuration
+    final ReportingFlywayConfigurationBuilder aBuilder = new ReportingFlywayConfigurationBuilder (aConfig, aJdbcConfig);
+    final FlywayConfiguration aFlywayConfig = aBuilder.build ();
 
-      // Run Flyway
-      if (aFlywayConfig.isFlywayEnabled ())
-        ReportingFlywayMigrator.Singleton.INSTANCE.runFlyway (eDBType, aJdbcConfig, aFlywayConfig);
-      else
-        LOGGER.warn ("Peppol Reporting Flyway Migration is disabled according to the configuration key '" +
-                     aBuilder.getConfigKeyEnabled () +
-                     "'");
-
-      // Remember stuff
-      m_aConfig = aConfig;
-      m_aJdbcConfig = aJdbcConfig;
-      m_aDSP = createReportingDataSourceProvider (aJdbcConfig);
-      if (m_aDSP == null)
-        throw new IllegalStateException ("Failed to create Peppol Reporting SQL DB DataSource provider");
-      m_sTableNamePrefix = DBSystemHelper.getTableNamePrefix (eDBType, aJdbcConfig.getJdbcSchema ());
-    });
-
-    if (!isInitialized ())
+    // Run Flyway
+    if (aFlywayConfig.isFlywayEnabled ())
     {
-      // Error was already logged
-      return ESuccess.FAILURE;
-    }
-
-    return ESuccess.SUCCESS;
-  }
-
-  public boolean isInitialized ()
-  {
-    return m_aRWLock.readLockedBoolean (() -> m_aConfig != null && m_aDSP != null && m_sTableNamePrefix != null);
-  }
-
-  public void shutdownBackend ()
-  {
-    if (isInitialized ())
-    {
-      m_aRWLock.writeLocked (() -> {
-        LOGGER.info ("Shutting down Peppol Reporting SQL DB client");
-        m_aConfig = null;
-        if (m_aDSP != null)
-          try
-          {
-            m_aDSP.close ();
-          }
-          catch (final IOException ex)
-          {
-            LOGGER.error ("Failed to close Peppol Reporting DataSource provider", ex);
-          }
-        m_aDSP = null;
-      });
-    }
-    else
-      LOGGER.warn ("The Peppol Reporting SQL DB backend cannot be shutdown, because it was never properly initialized");
-  }
-
-  @NonNull
-  private DBExecutor _newExecutor ()
-  {
-    return new ReportingDBExecutor (m_aDSP, m_aJdbcConfig);
-  }
-
-  public void storeReportingItem (@NonNull @Nonempty final String sItemID,
-                                  @NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
-  {
-    ValueEnforcer.notEmpty (sItemID, "ItemID");
-    ValueEnforcer.notNull (aReportingItem, "ReportingItem");
-
-    if (PeppolReportingHelper.isDocumentTypeEligableForReporting (aReportingItem.getDocTypeIDScheme (),
-                                                                  aReportingItem.getDocTypeIDValue ()))
-    {
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Trying to store Peppol Reporting Item in SQL DB");
-
-      if (!isInitialized ())
-        throw new IllegalStateException ("The Peppol Reporting SQL DB backend is not initialized");
-
-      final DBExecutor aExecutor = _newExecutor ();
-      final ESuccess eSuccess = aExecutor.performInTransaction (() -> {
-        // Create new
-        final long nCreated = aExecutor.insertOrUpdateOrDelete ("INSERT INTO " +
-                                                                m_sTableNamePrefix +
-                                                                "peppol_reporting_item (exchangedt, sending, c2id, c3id, dtscheme, dtvalue, procscheme, procvalue, tp, c1cc, c4cc, enduserid)" +
-                                                                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                                                                new ConstantPreparedStatementDataProvider (DBValueHelper.toTimestamp (aReportingItem.getExchangeDTUTC ()
-                                                                                                                                                    .toLocalDateTime ()),
-                                                                                                           Boolean.valueOf (aReportingItem.isSending ()),
-                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getC2ID (),
-                                                                                                                                             PeppolReportingItem.MAX_LEN_C2_ID),
-                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getC3ID (),
-                                                                                                                                             PeppolReportingItem.MAX_LEN_C3_ID),
-                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getDocTypeIDScheme (),
-                                                                                                                                             PeppolReportingItem.MAX_LEN_DOCTYPE_SCHEME),
-                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getDocTypeIDValue (),
-                                                                                                                                             PeppolReportingItem.MAX_LEN_DOCTYPE_VALUE),
-                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getProcessIDScheme (),
-                                                                                                                                             PeppolReportingItem.MAX_LEN_PROCESS_SCHEME),
-                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getProcessIDValue (),
-                                                                                                                                             PeppolReportingItem.MAX_LEN_PROCESS_VALUE),
-                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getTransportProtocol (),
-                                                                                                                                             PeppolReportingItem.MAX_LEN_TRANSPORT_PROTOCOL),
-                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getC1CountryCode (),
-                                                                                                                                             PeppolReportingItem.MAX_LEN_C1_COUNTRY_CODE),
-                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getC4CountryCode (),
-                                                                                                                                             PeppolReportingItem.MAX_LEN_C4_COUNTRY_CODE),
-                                                                                                           DBValueHelper.getTrimmedToLength (aReportingItem.getEndUserID (),
-                                                                                                                                             PeppolReportingItem.MAX_LEN_END_USER_ID)));
-        if (nCreated != 1)
-          throw new IllegalStateException ("Failed to create new SQL DB entry (" + nCreated + ")");
-      });
-      if (eSuccess.isFailure ())
-        throw new IllegalStateException ("Failed to insert Peppol Reporting item into SQL DB");
-
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Successfully stored Peppol Reporting Item in SQL DB");
-    }
-    else
-    {
-      LOGGER.info ("Not storing Peppol Reporting Item in SQL DB, as the document type is not eligable for reporting (" +
-                   CIdentifier.getURIEncoded (aReportingItem.getDocTypeIDScheme (),
-                                              aReportingItem.getDocTypeIDValue ()) +
-                   ")");
-    }
-  }
-
-  public void forEachReportingItem (@NonNull final LocalDate aStartDateIncl,
-                                    @NonNull final LocalDate aEndDateIncl,
-                                    @NonNull final Consumer <? super PeppolReportingItem> aConsumer) throws PeppolReportingBackendException
-  {
-    ValueEnforcer.notNull (aStartDateIncl, "StartDateIncl");
-    ValueEnforcer.notNull (aEndDateIncl, "EndDateIncl");
-    ValueEnforcer.isTrue (() -> aEndDateIncl.compareTo (aStartDateIncl) >= 0, "EndDateIncl must be >= StartDateIncl");
-    ValueEnforcer.notNull (aConsumer, "Consumer");
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Querying Peppol Reporting Items from SQL DB between " + aStartDateIncl + " and " + aEndDateIncl);
-
-    if (!isInitialized ())
-      throw new IllegalStateException ("The Peppol Reporting SQL DB backend is not initialized");
-
-    // Map each row while the ResultSet is open and pass it to the consumer
-    // directly, so that no list of all reporting items is created. The
-    // DBExecutor turns all exceptions into a failure, so remember the one of
-    // the consumer to re-throw it afterwards.
-    final Wrapper <RuntimeException> aConsumerEx = new Wrapper <> ();
-    final IResultSetRowCallback aResultRowCallback = aRow -> {
-      final PeppolReportingItem aItem = PeppolReportingItem.builder ()
-                                                           .exchangeDateTimeInUTC (aRow.getAsLocalDateTime (0))
-                                                           .direction (aRow.getAsBoolean (1) ? EReportingDirection.SENDING
-                                                                                             : EReportingDirection.RECEIVING)
-                                                           .c2ID (aRow.getAsString (2))
-                                                           .c3ID (aRow.getAsString (3))
-                                                           .docTypeIDScheme (aRow.getAsString (4))
-                                                           .docTypeIDValue (aRow.getAsString (5))
-                                                           .processIDScheme (aRow.getAsString (6))
-                                                           .processIDValue (aRow.getAsString (7))
-                                                           .transportProtocol (aRow.getAsString (8))
-                                                           .c1CountryCode (aRow.getAsString (9))
-                                                           .c4CountryCode (aRow.getAsString (10))
-                                                           .endUserID (aRow.getAsString (11))
-                                                           .build ();
       try
       {
-        aConsumer.accept (aItem);
+        ReportingFlywayMigrator.Singleton.INSTANCE.runFlyway (eDBType, aJdbcConfig, aFlywayConfig);
       }
       catch (final RuntimeException ex)
       {
-        aConsumerEx.set (ex);
-        // Abort the iteration
-        throw ex;
+        throw new PeppolReportingBackendException ("Failed to run the Peppol Reporting Flyway migration", ex);
       }
-    };
-    final ESuccess eSuccess = _newExecutor ().queryAll ("SELECT exchangedt, sending, c2id, c3id, dtscheme, dtvalue, procscheme, procvalue, tp, c1cc, c4cc, enduserid" +
-                                                        " FROM " +
-                                                        m_sTableNamePrefix +
-                                                        "peppol_reporting_item" +
-                                                        " WHERE exchangedt >= ? AND exchangedt < ?",
-                                                        new ConstantPreparedStatementDataProvider (DBValueHelper.toTimestamp (aStartDateIncl.atStartOfDay ()),
-                                                                                                   DBValueHelper.toTimestamp (aEndDateIncl.plusDays (1)
-                                                                                                                                          .atStartOfDay ())),
-                                                        aResultRowCallback);
-    if (aConsumerEx.get () != null)
-      throw aConsumerEx.get ();
-    if (eSuccess.isFailure ())
-      throw new PeppolReportingBackendException ("Failed to query Peppol Reporting items from SQL DB");
-  }
+    }
+    else
+      LOGGER.warn ("Peppol Reporting Flyway Migration is disabled according to the configuration key '" +
+                   aBuilder.getConfigKeyEnabled () +
+                   "'");
 
-  @NonNull
-  public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
-                                                               @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
-  {
-    final ICommonsList <PeppolReportingItem> ret = new CommonsArrayList <> ();
-    forEachReportingItem (aStartDateIncl, aEndDateIncl, ret::add);
-    return ret;
+    return new PeppolReportingBackendSql (aJdbcConfig,
+                                          createReportingDataSourceProvider (aJdbcConfig),
+                                          DBSystemHelper.getTableNamePrefix (eDBType, aJdbcConfig.getJdbcSchema ()));
   }
 }

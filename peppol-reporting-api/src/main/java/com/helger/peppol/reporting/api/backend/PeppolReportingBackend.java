@@ -16,8 +16,6 @@
  */
 package com.helger.peppol.reporting.api.backend;
 
-import java.util.List;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -25,88 +23,215 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.concurrent.GuardedBy;
 import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.functional.IThrowingConsumer;
 import com.helger.base.spi.ServiceLoaderHelper;
 import com.helger.base.state.ESuccess;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringImplode;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.config.IConfig;
 import com.helger.peppol.reporting.api.PeppolReportingAPIVersion;
 
 /**
- * This is the entry class for the reporting backend. It uses the SPI mechanism to load an instance
- * of {@link IPeppolReportingBackendSPI} which is then accessible via {@link #getBackendService()}.
+ * This is the entry class for the reporting backend. It finds all
+ * {@link IPeppolReportingBackendProviderSPI} implementations via the SPI mechanism, selects one
+ * based on the configuration and creates the backend:
+ *
+ * <pre>
+ * try (final IPeppolReportingBackend aBackend = PeppolReportingBackend.createBackend (aConfig))
+ * {
+ *   aBackend.storeReportingItem (sItemID, aReportingItem);
+ * }
+ * </pre>
  *
  * @author Philip Helger
  */
 @ThreadSafe
-public class PeppolReportingBackend
+public final class PeppolReportingBackend
 {
+  /**
+   * The configuration property containing the ID of the backend to use. Only required if more than
+   * one backend is on the classpath.
+   *
+   * @since 5.0.0
+   */
+  public static final String CONFIG_PEPPOL_REPORTING_BACKEND = "peppol.reporting.backend";
+
   private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackend.class);
 
-  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
-  @GuardedBy ("RW_LOCK")
-  private static IPeppolReportingBackendSPI s_aBackendService = _loadBackendService ();
-
-  @Nullable
-  private static IPeppolReportingBackendSPI _loadBackendService ()
+  /**
+   * Lazily loads all providers exactly once.
+   */
+  private static final class ProviderHolder
   {
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Loading IPeppolReportingBackendSPI implementation");
-
-    final List <IPeppolReportingBackendSPI> aBackends = ServiceLoaderHelper.getAllSPIImplementations (IPeppolReportingBackendSPI.class);
-    final int nBackends = aBackends.size ();
-    if (nBackends != 1)
-    {
-      if (nBackends == 0)
-        LOGGER.error ("Failed to find any Peppol Reporting backend SPI implementation");
-      else
-        LOGGER.error ("Failed to find exactly one Peppol Reporting backend SPI implementations, but " +
-                      nBackends +
-                      " instances");
-      return null;
-    }
-
-    final IPeppolReportingBackendSPI ret = aBackends.get (0);
-    LOGGER.info ("Using IPeppolReportingBackendSPI implementation '" +
-                 ret.getDisplayName () +
-                 "/" +
-                 PeppolReportingAPIVersion.BUILD_VERSION +
-                 "'");
-    return ret;
+    private static final ICommonsList <IPeppolReportingBackendProviderSPI> PROVIDERS = new CommonsArrayList <> (ServiceLoaderHelper.getAllSPIImplementations (IPeppolReportingBackendProviderSPI.class));
   }
+
+  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
+  @Deprecated (forRemoval = true, since = "5.0.0")
+  @SuppressWarnings ("removal")
+  @GuardedBy ("RW_LOCK")
+  private static IPeppolReportingBackendSPI s_aBackendService;
 
   private PeppolReportingBackend ()
   {}
 
   /**
-   * @return The loaded reporting backend implementation. May be <code>null</code> if no SPI
-   *         implementation is registered.
+   * @return All backend providers found via the SPI mechanism. Never <code>null</code> but maybe
+   *         empty.
+   * @since 5.0.0
    */
-  @Nullable
-  public static IPeppolReportingBackendSPI getBackendService ()
+  @NonNull
+  @ReturnsMutableCopy
+  public static ICommonsList <IPeppolReportingBackendProviderSPI> getAllBackendProviders ()
   {
-    return RW_LOCK.readLockedGet (() -> s_aBackendService);
+    return ProviderHolder.PROVIDERS.getClone ();
+  }
+
+  @NonNull
+  private static String _getAllBackendIDs (@NonNull final ICommonsList <IPeppolReportingBackendProviderSPI> aProviders)
+  {
+    return StringImplode.imploder ()
+                        .source (aProviders, IPeppolReportingBackendProviderSPI::getBackendID)
+                        .separator (", ")
+                        .build ();
   }
 
   /**
-   * Explicitly set a backend service, in case loading via the SPI failed.
+   * Find the backend provider to use. If the configuration property
+   * {@link #CONFIG_PEPPOL_REPORTING_BACKEND} is set, the provider with that backend ID (compared
+   * case-insensitively) is used. If it is not set, the only available provider is used.
+   *
+   * @param aConfig
+   *        The configuration to use. May not be <code>null</code>.
+   * @return The selected provider and never <code>null</code>.
+   * @throws PeppolReportingBackendException
+   *         If no provider matches, or if the selection is ambiguous
+   * @since 5.0.0
+   */
+  @NonNull
+  public static IPeppolReportingBackendProviderSPI getBackendProvider (@NonNull final IConfig aConfig) throws PeppolReportingBackendException
+  {
+    ValueEnforcer.notNull (aConfig, "Config");
+
+    final ICommonsList <IPeppolReportingBackendProviderSPI> aProviders = ProviderHolder.PROVIDERS;
+    if (aProviders.isEmpty ())
+      throw new PeppolReportingBackendException ("No Peppol Reporting backend provider was found on the classpath");
+
+    final String sBackendID = aConfig.getAsString (CONFIG_PEPPOL_REPORTING_BACKEND);
+    if (StringHelper.isEmpty (sBackendID))
+    {
+      if (aProviders.size () > 1)
+        throw new PeppolReportingBackendException ("Found " +
+                                                   aProviders.size () +
+                                                   " Peppol Reporting backend providers (" +
+                                                   _getAllBackendIDs (aProviders) +
+                                                   ") - use the configuration property '" +
+                                                   CONFIG_PEPPOL_REPORTING_BACKEND +
+                                                   "' to select one");
+      return aProviders.getFirstOrNull ();
+    }
+
+    final ICommonsList <IPeppolReportingBackendProviderSPI> aMatches = aProviders.getAll (x -> x.getBackendID ()
+                                                                                                .equalsIgnoreCase (sBackendID));
+    if (aMatches.isEmpty ())
+      throw new PeppolReportingBackendException ("The Peppol Reporting backend '" +
+                                                 sBackendID +
+                                                 "' configured in '" +
+                                                 CONFIG_PEPPOL_REPORTING_BACKEND +
+                                                 "' was not found. Available backends: " +
+                                                 _getAllBackendIDs (aProviders));
+    if (aMatches.size () > 1)
+      throw new PeppolReportingBackendException ("Found " +
+                                                 aMatches.size () +
+                                                 " Peppol Reporting backend providers with the ID '" +
+                                                 sBackendID +
+                                                 "'");
+    return aMatches.getFirstOrNull ();
+  }
+
+  /**
+   * Select the backend provider via {@link #getBackendProvider(IConfig)} and create the backend.
+   * The caller is responsible for closing the returned backend.
+   *
+   * @param aConfig
+   *        The configuration to use. May not be <code>null</code>.
+   * @return The created backend and never <code>null</code>.
+   * @throws PeppolReportingBackendException
+   *         If no provider could be selected or if the backend could not be created
+   * @since 5.0.0
+   */
+  @NonNull
+  public static IPeppolReportingBackend createBackend (@NonNull final IConfig aConfig) throws PeppolReportingBackendException
+  {
+    final IPeppolReportingBackendProviderSPI aProvider = getBackendProvider (aConfig);
+    LOGGER.info ("Creating Peppol Reporting backend '" +
+                 aProvider.getDisplayName () +
+                 "/" +
+                 PeppolReportingAPIVersion.BUILD_VERSION +
+                 "'");
+    return aProvider.createBackend (aConfig);
+  }
+
+  /**
+   * @return The backend service. Unless one was set explicitly via
+   *         {@link #setBackendService(IPeppolReportingBackendSPI)}, this is an adapter that selects
+   *         and creates the backend in {@link IPeppolReportingBackendSPI#initBackend(IConfig)} via
+   *         {@link #createBackend(IConfig)}. May be <code>null</code> if no backend provider was
+   *         found.
+   * @deprecated Use {@link #createBackend(IConfig)} instead
+   */
+  @Deprecated (forRemoval = true, since = "5.0.0")
+  @SuppressWarnings ("removal")
+  @Nullable
+  public static IPeppolReportingBackendSPI getBackendService ()
+  {
+    final IPeppolReportingBackendSPI ret = RW_LOCK.readLockedGet ( () -> s_aBackendService);
+    if (ret != null)
+      return ret;
+
+    if (ProviderHolder.PROVIDERS.isEmpty ())
+    {
+      LOGGER.error ("Failed to find any Peppol Reporting backend provider");
+      return null;
+    }
+
+    return RW_LOCK.writeLockedGet ( () -> {
+      if (s_aBackendService == null)
+        s_aBackendService = new PeppolReportingBackendSPIAdapter ();
+      return s_aBackendService;
+    });
+  }
+
+  /**
+   * Explicitly set a backend service.
    *
    * @param aBackendService
    *        The backend service to use. May not be <code>null</code>.
    * @since 3.0.2
+   * @deprecated Use {@link IPeppolReportingBackendProviderSPI#createBackend(IConfig)} of the
+   *             desired provider instead
    */
+  @Deprecated (forRemoval = true, since = "5.0.0")
+  @SuppressWarnings ("removal")
   public static void setBackendService (@NonNull final IPeppolReportingBackendSPI aBackendService)
   {
     ValueEnforcer.notNull (aBackendService, "BackendService");
 
-    RW_LOCK.writeLocked (() -> s_aBackendService = aBackendService);
+    RW_LOCK.writeLocked ( () -> s_aBackendService = aBackendService);
   }
 
   /**
    * @return <code>true</code> if a backend service is configured, <code>false</code> if not.
    * @since 2.1.1
+   * @deprecated Use {@link #getAllBackendProviders()} instead
    */
+  @Deprecated (forRemoval = true, since = "5.0.0")
+  @SuppressWarnings ("removal")
   public static boolean isBackendServiceConfigured ()
   {
     return getBackendService () != null;
@@ -115,10 +240,7 @@ public class PeppolReportingBackend
   /**
    * This is a helper method that ensures that all activities with an
    * {@link IPeppolReportingBackendSPI} are wrapped in the proper init and shutdown method calls.
-   * Make sure to not call this method in a nested fashion or in multiple threads. This method is
-   * primarily helpful for tests and single-threaded applications. To use the reporting backend in a
-   * multi threaded environment, it is highly recommended that you extract the init and shutdown
-   * calls into your application framework.
+   * Make sure to not call this method in a nested fashion or in multiple threads.
    *
    * @param aConfig
    *        The configuration required to start the backend. May not be <code>null</code>.
@@ -127,7 +249,10 @@ public class PeppolReportingBackend
    * @return {@link ESuccess} if it was successful or not.
    * @throws PeppolReportingBackendException
    *         if the backend consumer throws an exception
+   * @deprecated Use {@link #createBackend(IConfig)} in a try-with-resources block instead
    */
+  @Deprecated (forRemoval = true, since = "5.0.0")
+  @SuppressWarnings ("removal")
   @NonNull
   public static ESuccess withBackendDo (@NonNull final IConfig aConfig,
                                         @NonNull final IThrowingConsumer <? super IPeppolReportingBackendSPI, PeppolReportingBackendException> aBackendConsumer) throws PeppolReportingBackendException

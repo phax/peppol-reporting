@@ -16,7 +16,6 @@
  */
 package com.helger.peppol.reporting.backend.sql;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.time.LocalDate;
@@ -47,10 +46,8 @@ public final class PeppolReportingBackendSqlTest
                                                    "jdbc:unavailable:reporting",
                                                    "peppol.reporting.flyway.enabled",
                                                    "false");
-    final PeppolReportingBackendSqlSPI aBackend = new PeppolReportingBackendSqlSPI ();
-    try
+    try (final PeppolReportingBackendSql aBackend = new PeppolReportingBackendSqlSPI ().createBackend (new Config (new ConfigurationSourceFunction (aSettings::get))))
     {
-      assertTrue (aBackend.initBackend (new Config (new ConfigurationSourceFunction (aSettings::get))).isSuccess ());
       final LocalDate aDate = LocalDate.of (2026, 1, 1);
       try
       {
@@ -61,10 +58,6 @@ public final class PeppolReportingBackendSqlTest
       {
         // Expected: callers must not create a report from missing query results.
       }
-    }
-    finally
-    {
-      aBackend.shutdownBackend ();
     }
   }
 }
