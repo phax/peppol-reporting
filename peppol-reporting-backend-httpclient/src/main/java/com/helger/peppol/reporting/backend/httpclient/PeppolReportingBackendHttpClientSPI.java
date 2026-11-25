@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.peppol.reporting.backend.remote;
+package com.helger.peppol.reporting.backend.httpclient;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -44,7 +44,9 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.ESuccess;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashSet;
 import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsSet;
 import com.helger.config.IConfig;
 import com.helger.config.fallback.IConfigWithFallback;
 import com.helger.httpclient.HttpClientHelper;
@@ -68,9 +70,11 @@ import com.helger.peppolid.CIdentifier;
  * the reports. The items are transferred as {@link PeppolReportingEnvelope} in batches of at most
  * {@link PeppolReportingEnvelope#MAX_ITEMS} items. The request is authenticated with the HTTP
  * header {@value #HTTP_HEADER_TOKEN}.<br>
- * Each reporting item requires a unique item ID, so only
- * {@link #storeReportingItem(String, PeppolReportingItem)} and {@link #storeReportingItems(List)} are
- * supported. Reading reporting items is not supported.<br>
+ * Each reporting item is submitted with its item ID, so that the collector can ignore items it
+ * already stored. Callers should use {@link #storeReportingItem(String, PeppolReportingItem)} or
+ * {@link #storeReportingItems(List)} with stable item IDs, because
+ * {@link #storeReportingItem(PeppolReportingItem)} uses a new random UUID on every call. Reading
+ * reporting items is not supported.<br>
  * Failed submissions (network errors, HTTP status codes 408, 429 and 5xx) are retried with
  * exponential back-off and jitter. If all attempts fail, a {@link PeppolReportingBackendException}
  * is thrown, so that the caller can keep the items and submit them again later. If the collector
@@ -80,17 +84,17 @@ import com.helger.peppolid.CIdentifier;
  * @since 4.6.0
  */
 @IsSPIImplementation
-public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendSPI
+public class PeppolReportingBackendHttpClientSPI implements IPeppolReportingBackendSPI
 {
-  public static final String CONFIG_PREFIX = "peppol.reporting.remote.";
-  public static final String CONFIG_PEPPOL_REPORTING_REMOTE_URL = CONFIG_PREFIX + "url";
-  public static final String CONFIG_PEPPOL_REPORTING_REMOTE_TOKEN = CONFIG_PREFIX + "token";
-  public static final String CONFIG_PEPPOL_REPORTING_REMOTE_SEATID = CONFIG_PREFIX + "seatid";
-  public static final String CONFIG_PEPPOL_REPORTING_REMOTE_SOURCEID = CONFIG_PREFIX + "sourceid";
-  public static final String CONFIG_PEPPOL_REPORTING_REMOTE_MAXBATCHSIZE = CONFIG_PREFIX + "maxbatchsize";
-  public static final String CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_MAXATTEMPTS = CONFIG_PREFIX + "retry.maxattempts";
-  public static final String CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_INITIALDELAY = CONFIG_PREFIX + "retry.initialdelay";
-  public static final String CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_MAXDELAY = CONFIG_PREFIX + "retry.maxdelay";
+  public static final String CONFIG_PREFIX = "peppol.reporting.httpclient.";
+  public static final String CONFIG_PEPPOL_REPORTING_HTTPCLIENT_URL = CONFIG_PREFIX + "url";
+  public static final String CONFIG_PEPPOL_REPORTING_HTTPCLIENT_TOKEN = CONFIG_PREFIX + "token";
+  public static final String CONFIG_PEPPOL_REPORTING_HTTPCLIENT_SEATID = CONFIG_PREFIX + "seatid";
+  public static final String CONFIG_PEPPOL_REPORTING_HTTPCLIENT_SOURCEID = CONFIG_PREFIX + "sourceid";
+  public static final String CONFIG_PEPPOL_REPORTING_HTTPCLIENT_MAXBATCHSIZE = CONFIG_PREFIX + "maxbatchsize";
+  public static final String CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_MAXATTEMPTS = CONFIG_PREFIX + "retry.maxattempts";
+  public static final String CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_INITIALDELAY = CONFIG_PREFIX + "retry.initialdelay";
+  public static final String CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_MAXDELAY = CONFIG_PREFIX + "retry.maxdelay";
 
   /** The HTTP header containing the authentication token */
   public static final String HTTP_HEADER_TOKEN = "X-Token";
@@ -100,7 +104,7 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
   public static final Duration DEFAULT_RETRY_INITIAL_DELAY = Duration.ofSeconds (1);
   public static final Duration DEFAULT_RETRY_MAX_DELAY = Duration.ofMinutes (1);
 
-  private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendRemoteSPI.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (PeppolReportingBackendHttpClientSPI.class);
   private static final int MAX_BODY_LEN_IN_MESSAGE = 1000;
 
   /**
@@ -181,7 +185,7 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
   @Nonempty
   public String getDisplayName ()
   {
-    return "Remote";
+    return "HttpClient";
   }
 
   @Nullable
@@ -224,7 +228,7 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
   {
     ValueEnforcer.notNull (aConfig, "Config");
 
-    final String sURL = _getMandatoryString (aConfig, CONFIG_PEPPOL_REPORTING_REMOTE_URL, 0);
+    final String sURL = _getMandatoryString (aConfig, CONFIG_PEPPOL_REPORTING_HTTPCLIENT_URL, 0);
     if (sURL == null)
       return ESuccess.FAILURE;
     final String sLowerURL = sURL.toLowerCase (Locale.ROOT);
@@ -233,7 +237,7 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
       if (!sLowerURL.startsWith ("http://"))
       {
         LOGGER.error ("The configuration property '" +
-                      CONFIG_PEPPOL_REPORTING_REMOTE_URL +
+                      CONFIG_PEPPOL_REPORTING_HTTPCLIENT_URL +
                       "' must contain an http or https URL, but is '" +
                       sURL +
                       "'");
@@ -244,27 +248,27 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
                    "' does not use https - the authentication token is transmitted unencrypted");
     }
 
-    final String sToken = _getMandatoryString (aConfig, CONFIG_PEPPOL_REPORTING_REMOTE_TOKEN, 0);
+    final String sToken = _getMandatoryString (aConfig, CONFIG_PEPPOL_REPORTING_HTTPCLIENT_TOKEN, 0);
     if (sToken == null)
       return ESuccess.FAILURE;
 
     final String sSeatID = _getMandatoryString (aConfig,
-                                                CONFIG_PEPPOL_REPORTING_REMOTE_SEATID,
+                                                CONFIG_PEPPOL_REPORTING_HTTPCLIENT_SEATID,
                                                 PeppolReportingEnvelope.MAX_LEN_SEAT_ID);
     if (sSeatID == null)
       return ESuccess.FAILURE;
 
     final String sSourceID = _getMandatoryString (aConfig,
-                                                  CONFIG_PEPPOL_REPORTING_REMOTE_SOURCEID,
+                                                  CONFIG_PEPPOL_REPORTING_HTTPCLIENT_SOURCEID,
                                                   PeppolReportingEnvelope.MAX_LEN_SOURCE_ID);
     if (sSourceID == null)
       return ESuccess.FAILURE;
 
-    final int nMaxBatchSize = aConfig.getAsInt (CONFIG_PEPPOL_REPORTING_REMOTE_MAXBATCHSIZE, DEFAULT_MAX_BATCH_SIZE);
+    final int nMaxBatchSize = aConfig.getAsInt (CONFIG_PEPPOL_REPORTING_HTTPCLIENT_MAXBATCHSIZE, DEFAULT_MAX_BATCH_SIZE);
     if (nMaxBatchSize < 1 || nMaxBatchSize > PeppolReportingEnvelope.MAX_ITEMS)
     {
       LOGGER.error ("The configuration property '" +
-                    CONFIG_PEPPOL_REPORTING_REMOTE_MAXBATCHSIZE +
+                    CONFIG_PEPPOL_REPORTING_HTTPCLIENT_MAXBATCHSIZE +
                     "' must be between 1 and " +
                     PeppolReportingEnvelope.MAX_ITEMS +
                     ", but is " +
@@ -272,31 +276,31 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
       return ESuccess.FAILURE;
     }
 
-    final int nRetryMaxAttempts = aConfig.getAsInt (CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_MAXATTEMPTS,
+    final int nRetryMaxAttempts = aConfig.getAsInt (CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_MAXATTEMPTS,
                                                     DEFAULT_RETRY_MAX_ATTEMPTS);
     if (nRetryMaxAttempts < 1)
     {
       LOGGER.error ("The configuration property '" +
-                    CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_MAXATTEMPTS +
+                    CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_MAXATTEMPTS +
                     "' must be at least 1, but is " +
                     nRetryMaxAttempts);
       return ESuccess.FAILURE;
     }
 
     final Duration aRetryInitialDelay = _getDuration (aConfig,
-                                                      CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_INITIALDELAY,
+                                                      CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_INITIALDELAY,
                                                       DEFAULT_RETRY_INITIAL_DELAY);
     final Duration aRetryMaxDelay = _getDuration (aConfig,
-                                                  CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_MAXDELAY,
+                                                  CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_MAXDELAY,
                                                   DEFAULT_RETRY_MAX_DELAY);
     if (aRetryMaxDelay.compareTo (aRetryInitialDelay) < 0)
     {
       LOGGER.error ("The configuration property '" +
-                    CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_MAXDELAY +
+                    CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_MAXDELAY +
                     "' (" +
                     aRetryMaxDelay +
                     ") must not be smaller than '" +
-                    CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_INITIALDELAY +
+                    CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_INITIALDELAY +
                     "' (" +
                     aRetryInitialDelay +
                     ")");
@@ -319,18 +323,18 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
                                                    nRetryMaxAttempts,
                                                    aRetryInitialDelay,
                                                    aRetryMaxDelay);
-    final RemoteState aOldState = m_aRWLock.writeLockedGet ( () -> {
+    final RemoteState aOldState = m_aRWLock.writeLockedGet (() -> {
       final RemoteState ret = m_aState;
       m_aState = aNewState;
       return ret;
     });
     if (aOldState != null)
     {
-      LOGGER.warn ("The Peppol Reporting Remote backend was already initialized - replacing the previous settings");
+      LOGGER.warn ("The Peppol Reporting HttpClient backend was already initialized - replacing the previous settings");
       aOldState.m_aHttpClientMgr.close ();
     }
 
-    LOGGER.info ("Peppol Reporting Remote backend submits reporting items for Seat ID '" +
+    LOGGER.info ("Peppol Reporting HttpClient backend submits reporting items for Seat ID '" +
                  sSeatID +
                  "' and source ID '" +
                  sSourceID +
@@ -342,12 +346,12 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
 
   public boolean isInitialized ()
   {
-    return m_aRWLock.readLockedBoolean ( () -> m_aState != null);
+    return m_aRWLock.readLockedBoolean (() -> m_aState != null);
   }
 
   public void shutdownBackend ()
   {
-    final RemoteState aOldState = m_aRWLock.writeLockedGet ( () -> {
+    final RemoteState aOldState = m_aRWLock.writeLockedGet (() -> {
       final RemoteState ret = m_aState;
       m_aState = null;
       return ret;
@@ -359,16 +363,16 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
   @NonNull
   private RemoteState _getState ()
   {
-    final RemoteState ret = m_aRWLock.readLockedGet ( () -> m_aState);
+    final RemoteState ret = m_aRWLock.readLockedGet (() -> m_aState);
     if (ret == null)
-      throw new IllegalStateException ("The Peppol Reporting Remote backend is not initialized");
+      throw new IllegalStateException ("The Peppol Reporting HttpClient backend is not initialized");
     return ret;
   }
 
   /**
    * Get the delay before the next retry, using exponential back-off with "equal jitter": the delay
-   * is doubled for every retry, starting at the initial delay and capped at the maximum delay, and a
-   * random value between half and the full delay is used.
+   * is doubled for every retry, starting at the initial delay and capped at the maximum delay, and
+   * a random value between half and the full delay is used.
    *
    * @param nRetryIndex
    *        The 0-based index of the retry. Must be &ge; 0.
@@ -425,7 +429,7 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
 
   @NonNull
   private static PeppolReportingSubmissionRejectedException _createRejectedException (@NonNull final PeppolReportingEnvelope aEnvelope,
-                                                                                     @NonNull final PeppolReportingSubmissionResponse aResponse)
+                                                                                      @NonNull final PeppolReportingSubmissionResponse aResponse)
   {
     return new PeppolReportingSubmissionRejectedException ("The remote Peppol Reporting collector rejected " +
                                                            aResponse.getAllRejectedItems ().size () +
@@ -494,7 +498,9 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
                      aResponse.getDuplicateCount () +
                      " duplicates)");
       else
-        LOGGER.info ("The remote Peppol Reporting collector accepted " + aEnvelope.getItemCount () + " reporting items");
+        LOGGER.info ("The remote Peppol Reporting collector accepted " +
+                     aEnvelope.getItemCount () +
+                     " reporting items");
       return null;
     }
 
@@ -565,19 +571,6 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
     throw new PeppolReportingBackendException (sMsg);
   }
 
-  /**
-   * Always throws an exception, because the remote collector requires a unique item ID per
-   * reporting item. Use {@link #storeReportingItem(String, PeppolReportingItem)} instead.
-   *
-   * @throws PeppolReportingBackendException
-   *         always
-   */
-  public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
-  {
-    throw new PeppolReportingBackendException ("The Peppol Reporting Remote backend requires a unique item ID for each reporting item - use storeReportingItem (String, PeppolReportingItem) instead");
-  }
-
-  @Override
   public void storeReportingItem (@NonNull @Nonempty final String sItemID,
                                   @NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
@@ -603,7 +596,10 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
 
     final RemoteState aState = _getState ();
 
+    // First check if all items are eligible before processing any of them
+    // Either all or none
     final ICommonsList <PeppolReportingItemWithID> aEligibleItems = new CommonsArrayList <> ();
+    final ICommonsSet <String> aUniqueID = new CommonsHashSet <> ();
     for (final PeppolReportingItemWithID aItemWithID : aReportingItems)
     {
       final PeppolReportingItem aItem = aItemWithID.getReportingItem ();
@@ -626,9 +622,16 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
                                                    "' but the backend is configured for the Seat ID '" +
                                                    aState.m_sSeatID +
                                                    "'");
+
+      if (!aUniqueID.add (aItemWithID.getItemID ()))
+        throw new PeppolReportingBackendException ("The Peppol Reporting Item '" +
+                                                   aItemWithID.getItemID () +
+                                                   "' is used more then once in the provided batch");
+
       aEligibleItems.add (aItemWithID);
     }
 
+    // Process them
     final int nCount = aEligibleItems.size ();
     for (int nStart = 0; nStart < nCount; nStart += aState.m_nMaxBatchSize)
     {
@@ -663,6 +666,6 @@ public class PeppolReportingBackendRemoteSPI implements IPeppolReportingBackendS
   public Iterable <PeppolReportingItem> iterateReportingItems (@NonNull final LocalDate aStartDateIncl,
                                                                @NonNull final LocalDate aEndDateIncl) throws PeppolReportingBackendException
   {
-    throw new PeppolReportingBackendException ("The Peppol Reporting Remote backend does not support reading reporting items - the reports are created by the remote collector");
+    throw new PeppolReportingBackendException ("The Peppol Reporting HttpClient backend does not support reading reporting items - the reports are created by the remote collector");
   }
 }

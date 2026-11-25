@@ -156,7 +156,7 @@
       </dependency>
       <dependency>
         <groupId>com.helger.peppol</groupId>
-        <artifactId>peppol-reporting-backend-remote</artifactId>
+        <artifactId>peppol-reporting-backend-httpclient</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -178,7 +178,7 @@
     <module>peppol-reporting-backend-inmemory</module>
     <module>peppol-reporting-backend-mongodb</module>
     <module>peppol-reporting-backend-redis</module>
-    <module>peppol-reporting-backend-remote</module>
+    <module>peppol-reporting-backend-httpclient</module>
     <module>peppol-reporting-backend-sql</module>
   </modules>
 </project>

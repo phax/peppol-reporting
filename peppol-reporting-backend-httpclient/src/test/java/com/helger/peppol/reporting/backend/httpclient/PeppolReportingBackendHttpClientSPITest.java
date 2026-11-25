@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.peppol.reporting.backend.remote;
+package com.helger.peppol.reporting.backend.httpclient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -31,6 +32,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -47,6 +49,7 @@ import com.helger.collection.commons.ICommonsMap;
 import com.helger.config.IConfig;
 import com.helger.config.fallback.ConfigWithFallback;
 import com.helger.config.source.appl.ConfigurationSourceFunction;
+import com.helger.peppol.reporting.api.PeppolReportingItem;
 import com.helger.peppol.reporting.api.PeppolReportingItemWithID;
 import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppol.reporting.api.envelope.PeppolReportingEnvelope;
@@ -59,12 +62,12 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 /**
- * Test class for class {@link PeppolReportingBackendRemoteSPI}, using a local HTTP server as mock
+ * Test class for class {@link PeppolReportingBackendHttpClientSPI}, using a local HTTP server as mock
  * collector.
  *
  * @author Philip Helger
  */
-public final class PeppolReportingBackendRemoteSPITest
+public final class PeppolReportingBackendHttpClientSPITest
 {
   private static final String TOKEN = "secret-token";
   // The test items use lower case Seat IDs
@@ -112,13 +115,13 @@ public final class PeppolReportingBackendRemoteSPITest
   @GuardedBy ("m_aLock")
   private final ICommonsList <MockRequest> m_aRequests = new CommonsArrayList <> ();
   private HttpServer m_aServer;
-  private final PeppolReportingBackendRemoteSPI m_aBackend = new PeppolReportingBackendRemoteSPI ();
+  private final PeppolReportingBackendHttpClientSPI m_aBackend = new PeppolReportingBackendHttpClientSPI ();
 
   private void _handle (@NonNull final HttpExchange aExchange) throws IOException
   {
     final String sBody = new String (aExchange.getRequestBody ().readAllBytes (), StandardCharsets.UTF_8);
     final MockRequest aRequest = new MockRequest (aExchange.getRequestHeaders ()
-                                                           .getFirst (PeppolReportingBackendRemoteSPI.HTTP_HEADER_TOKEN),
+                                                           .getFirst (PeppolReportingBackendHttpClientSPI.HTTP_HEADER_TOKEN),
                                                   aExchange.getRequestHeaders ().getFirst ("Content-Type"),
                                                   PeppolReportingEnvelopeJsonHelper.toDomain (sBody));
     final MockResponse aResponse = m_aLock.lockedGet ( () -> {
@@ -178,14 +181,14 @@ public final class PeppolReportingBackendRemoteSPITest
   private ICommonsMap <String, String> _createSettings ()
   {
     final ICommonsMap <String, String> ret = new CommonsHashMap <> ();
-    ret.put (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_URL,
+    ret.put (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_URL,
              "http://localhost:" + m_aServer.getAddress ().getPort () + "/api/reporting/items");
-    ret.put (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_TOKEN, TOKEN);
-    ret.put (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_SEATID, SEAT_ID);
-    ret.put (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_SOURCEID, SOURCE_ID);
-    ret.put (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_MAXATTEMPTS, "3");
-    ret.put (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_INITIALDELAY, "10ms");
-    ret.put (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_MAXDELAY, "40ms");
+    ret.put (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_TOKEN, TOKEN);
+    ret.put (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_SEATID, SEAT_ID);
+    ret.put (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_SOURCEID, SOURCE_ID);
+    ret.put (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_MAXATTEMPTS, "3");
+    ret.put (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_INITIALDELAY, "10ms");
+    ret.put (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_MAXDELAY, "40ms");
     return ret;
   }
 
@@ -224,18 +227,18 @@ public final class PeppolReportingBackendRemoteSPITest
   @Test
   public void testInitFailures ()
   {
-    _expectInitFailure (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_URL, null);
-    _expectInitFailure (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_URL, "ftp://localhost/x");
-    _expectInitFailure (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_TOKEN, null);
-    _expectInitFailure (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_SEATID, null);
-    _expectInitFailure (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_SOURCEID, null);
-    _expectInitFailure (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_SOURCEID,
+    _expectInitFailure (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_URL, null);
+    _expectInitFailure (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_URL, "ftp://localhost/x");
+    _expectInitFailure (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_TOKEN, null);
+    _expectInitFailure (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_SEATID, null);
+    _expectInitFailure (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_SOURCEID, null);
+    _expectInitFailure (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_SOURCEID,
                         "x".repeat (PeppolReportingEnvelope.MAX_LEN_SOURCE_ID + 1));
-    _expectInitFailure (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_MAXBATCHSIZE, "0");
-    _expectInitFailure (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_MAXBATCHSIZE,
+    _expectInitFailure (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_MAXBATCHSIZE, "0");
+    _expectInitFailure (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_MAXBATCHSIZE,
                         Integer.toString (PeppolReportingEnvelope.MAX_ITEMS + 1));
-    _expectInitFailure (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_MAXATTEMPTS, "0");
-    _expectInitFailure (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_RETRY_MAXDELAY, "5ms");
+    _expectInitFailure (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_MAXATTEMPTS, "0");
+    _expectInitFailure (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_RETRY_MAXDELAY, "5ms");
   }
 
   @Test
@@ -256,7 +259,7 @@ public final class PeppolReportingBackendRemoteSPITest
   public void testSubmitInBatches () throws Exception
   {
     final ICommonsMap <String, String> aSettings = _createSettings ();
-    aSettings.put (PeppolReportingBackendRemoteSPI.CONFIG_PEPPOL_REPORTING_REMOTE_MAXBATCHSIZE, "2");
+    aSettings.put (PeppolReportingBackendHttpClientSPI.CONFIG_PEPPOL_REPORTING_HTTPCLIENT_MAXBATCHSIZE, "2");
     _init (aSettings);
 
     _addResponse (200,
@@ -294,6 +297,30 @@ public final class PeppolReportingBackendRemoteSPITest
     final ICommonsList <MockRequest> aRequests = _getRequests ();
     assertEquals (1, aRequests.size ());
     assertEquals (new CommonsArrayList <> (aItem), aRequests.getFirstOrNull ().m_aEnvelope.getAllItems ());
+  }
+
+  @Test
+  public void testSingleItemWithRandomItemID () throws Exception
+  {
+    _init (_createSettings ());
+
+    _addResponse (204, null);
+    _addResponse (204, null);
+    final PeppolReportingItem aItem = PeppolReportingTestItems.sendingItem (DATE, 1);
+    m_aBackend.storeReportingItem (aItem);
+    m_aBackend.storeReportingItem (aItem);
+
+    final ICommonsList <MockRequest> aRequests = _getRequests ();
+    assertEquals (2, aRequests.size ());
+    final PeppolReportingItemWithID aSent0 = aRequests.get (0).m_aEnvelope.getAllItems ().getFirstOrNull ();
+    final PeppolReportingItemWithID aSent1 = aRequests.get (1).m_aEnvelope.getAllItems ().getFirstOrNull ();
+    assertEquals (aItem, aSent0.getReportingItem ());
+    assertEquals (aItem, aSent1.getReportingItem ());
+
+    // A new UUID is used for each call
+    assertEquals (aSent0.getItemID (), UUID.fromString (aSent0.getItemID ()).toString ());
+    assertEquals (aSent1.getItemID (), UUID.fromString (aSent1.getItemID ()).toString ());
+    assertNotEquals (aSent0.getItemID (), aSent1.getItemID ());
   }
 
   @Test
@@ -474,16 +501,6 @@ public final class PeppolReportingBackendRemoteSPITest
 
     try
     {
-      m_aBackend.storeReportingItem (PeppolReportingTestItems.sendingItem (DATE, 1));
-      fail ();
-    }
-    catch (final PeppolReportingBackendException ex)
-    {
-      // expected
-    }
-
-    try
-    {
       m_aBackend.iterateReportingItems (YearMonth.from (DATE));
       fail ();
     }
@@ -511,23 +528,23 @@ public final class PeppolReportingBackendRemoteSPITest
     final Duration aMax = Duration.ofMillis (1000);
     for (int i = 0; i < 100; ++i)
     {
-      final long n0 = PeppolReportingBackendRemoteSPI.getBackOffDelay (0, aInitial, aMax).toMillis ();
+      final long n0 = PeppolReportingBackendHttpClientSPI.getBackOffDelay (0, aInitial, aMax).toMillis ();
       assertTrue (Long.toString (n0), n0 >= 50 && n0 <= 100);
 
-      final long n2 = PeppolReportingBackendRemoteSPI.getBackOffDelay (2, aInitial, aMax).toMillis ();
+      final long n2 = PeppolReportingBackendHttpClientSPI.getBackOffDelay (2, aInitial, aMax).toMillis ();
       assertTrue (Long.toString (n2), n2 >= 200 && n2 <= 400);
 
       // Capped at the maximum
-      final long n10 = PeppolReportingBackendRemoteSPI.getBackOffDelay (10, aInitial, aMax).toMillis ();
+      final long n10 = PeppolReportingBackendHttpClientSPI.getBackOffDelay (10, aInitial, aMax).toMillis ();
       assertTrue (Long.toString (n10), n10 >= 500 && n10 <= 1000);
 
       // No overflow for large indices
-      final long nLarge = PeppolReportingBackendRemoteSPI.getBackOffDelay (Integer.MAX_VALUE, aInitial, aMax)
+      final long nLarge = PeppolReportingBackendHttpClientSPI.getBackOffDelay (Integer.MAX_VALUE, aInitial, aMax)
                                                          .toMillis ();
       assertTrue (Long.toString (nLarge), nLarge >= 500 && nLarge <= 1000);
     }
-    assertEquals (0, PeppolReportingBackendRemoteSPI.getBackOffDelay (3, Duration.ZERO, Duration.ZERO).toMillis ());
+    assertEquals (0, PeppolReportingBackendHttpClientSPI.getBackOffDelay (3, Duration.ZERO, Duration.ZERO).toMillis ());
     assertEquals (0,
-                  PeppolReportingBackendRemoteSPI.getBackOffDelay (Integer.MAX_VALUE, Duration.ZERO, aMax).toMillis ());
+                  PeppolReportingBackendHttpClientSPI.getBackOffDelay (Integer.MAX_VALUE, Duration.ZERO, aMax).toMillis ());
   }
 }

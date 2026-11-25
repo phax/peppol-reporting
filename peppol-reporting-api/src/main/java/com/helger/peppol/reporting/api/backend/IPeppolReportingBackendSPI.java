@@ -19,6 +19,7 @@ package com.helger.peppol.reporting.api.backend;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.NonNull;
@@ -74,20 +75,9 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
   void shutdownBackend ();
 
   /**
-   * Write a new {@link PeppolReportingItem} to the data storage.
-   *
-   * @param aReportingItem
-   *        The reporting item to write. Must not be <code>null</code>.
-   * @throws PeppolReportingBackendException
-   *         In case of an unrecoverable error
-   */
-  void storeReportingItem (@NonNull PeppolReportingItem aReportingItem) throws PeppolReportingBackendException;
-
-  /**
    * Write a new {@link PeppolReportingItem} together with its unique item ID to the data storage.
    * The item ID is assigned by the caller (e.g. the transaction ID) and must stay the same if the
-   * same item is stored again, so that backends that support it can detect duplicates. The default
-   * implementation ignores the item ID and calls {@link #storeReportingItem(PeppolReportingItem)}.
+   * same item is stored again, so that backends that support it can detect duplicates.
    *
    * @param sItemID
    *        The unique ID of the reporting item. May neither be <code>null</code> nor empty and must
@@ -98,11 +88,24 @@ public interface IPeppolReportingBackendSPI extends IHasDisplayName
    *         In case of an unrecoverable error
    * @since 4.6.0
    */
-  default void storeReportingItem (@NonNull @Nonempty final String sItemID,
-                                   @NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
+  void storeReportingItem (@NonNull @Nonempty String sItemID,
+                           @NonNull PeppolReportingItem aReportingItem) throws PeppolReportingBackendException;
+
+  /**
+   * Write a new {@link PeppolReportingItem} to the data storage, using a new random UUID as the
+   * item ID. Because a new item ID is created on every call, storing the same item again cannot be
+   * detected as a duplicate. Callers that may store the same item more than once should use
+   * {@link #storeReportingItem(String, PeppolReportingItem)} with a stable item ID instead.
+   *
+   * @param aReportingItem
+   *        The reporting item to write. Must not be <code>null</code>.
+   * @throws PeppolReportingBackendException
+   *         In case of an unrecoverable error
+   * @see #storeReportingItem(String, PeppolReportingItem)
+   */
+  default void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
-    ValueEnforcer.notEmpty (sItemID, "ItemID");
-    storeReportingItem (aReportingItem);
+    storeReportingItem (UUID.randomUUID ().toString (), aReportingItem);
   }
 
   /**

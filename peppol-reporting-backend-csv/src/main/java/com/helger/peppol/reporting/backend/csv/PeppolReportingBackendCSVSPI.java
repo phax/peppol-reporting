@@ -207,8 +207,10 @@ public class PeppolReportingBackendCSVSPI implements IPeppolReportingBackendSPI
     return m_aRWLock.readLockedGet (() -> m_aCSVFile == null ? "" : m_aCSVFile.getAbsolutePath ());
   }
 
-  public void storeReportingItem (@NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
+  public void storeReportingItem (@NonNull @Nonempty final String sItemID,
+                                  @NonNull final PeppolReportingItem aReportingItem) throws PeppolReportingBackendException
   {
+    ValueEnforcer.notEmpty (sItemID, "ItemID");
     ValueEnforcer.notNull (aReportingItem, "ReportingItem");
 
     final String sCSVFilename = _getCSVFilename ();

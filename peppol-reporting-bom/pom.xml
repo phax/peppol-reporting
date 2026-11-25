@@ -97,7 +97,7 @@
       </dependency>
       <dependency>
         <groupId>com.helger.peppol</groupId>
-        <artifactId>peppol-reporting-backend-remote</artifactId>
+        <artifactId>peppol-reporting-backend-httpclient</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

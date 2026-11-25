@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.peppol.reporting.backend.remote;
+package com.helger.peppol.reporting.backend.httpclient;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ import com.helger.peppol.reporting.api.backend.PeppolReportingBackendException;
 import com.helger.peppol.reporting.api.envelope.PeppolReportingRejectedItem;
 
 /**
- * Exception thrown by {@link PeppolReportingBackendRemoteSPI} if the remote collector rejected an
+ * Exception thrown by {@link PeppolReportingBackendHttpClientSPI} if the remote collector rejected an
  * envelope because of invalid reporting items. None of the items of the rejected envelope were
  * stored by the collector. The caller should set the rejected items aside and store the remaining
  * items again.

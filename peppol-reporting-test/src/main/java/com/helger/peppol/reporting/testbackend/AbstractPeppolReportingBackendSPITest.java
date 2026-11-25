@@ -281,6 +281,26 @@ public abstract class AbstractPeppolReportingBackendSPITest
 
     try
     {
+      m_aBackend.storeReportingItem (null, PeppolReportingTestItems.sendingItem (aDate, 0));
+      fail ("storeReportingItem(null, item) must throw");
+    }
+    catch (final NullPointerException ex)
+    {
+      // expected (ValueEnforcer.notEmpty throws NullPointerException)
+    }
+
+    try
+    {
+      m_aBackend.storeReportingItem ("", PeppolReportingTestItems.sendingItem (aDate, 0));
+      fail ("storeReportingItem(\"\", item) must throw");
+    }
+    catch (final IllegalArgumentException ex)
+    {
+      // expected (ValueEnforcer.notEmpty throws IllegalArgumentException)
+    }
+
+    try
+    {
       m_aBackend.iterateReportingItems (null, aDate);
       fail ("iterateReportingItems(null, end) must throw");
     }

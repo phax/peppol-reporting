@@ -146,10 +146,12 @@ Please make sure to only use **one** submodule at a time - storing to multiple b
 Alternatively you can implement your own Reporting backend implementation, by implementing the  SPI interface
 `com.helper.peppol.reporting.api.backend.IPeppolReportingBackendSPI` defined in the `peppol-reporting-api` submodule. 
 
-Since v4.6.0 the SPI interface also offers `storeReportingItem (String, PeppolReportingItem)` and
-`storeReportingItems (List <PeppolReportingItemWithID>)` to store items together with a unique item ID.
-The default implementations ignore the item ID and call `storeReportingItem (PeppolReportingItem)` for each item.
-Callers should prefer these methods, because the remote backend requires the item ID.
+Since v4.6.0 every reporting item is stored together with a unique item ID. Implementations must implement
+`storeReportingItem (String, PeppolReportingItem)`. `storeReportingItem (PeppolReportingItem)` is a default method that
+uses a new random UUID as the item ID, and `storeReportingItems (List <PeppolReportingItemWithID>)` is a default method
+that stores the items one by one.
+Callers should pass a stable item ID (e.g. the transaction ID), because a random UUID differs on every call, so storing
+the same item again cannot be detected as a duplicate. The local backends currently accept the item ID but don't store it.
 
 ### Storage in MongoDB
 
@@ -304,16 +306,17 @@ This module is mainly meant for testing purposes.
 
 ### Submission to a remote collector
 
-Submodule `peppol-reporting-backend-remote` does not store data locally, but submits it via HTTP POST to a remote
+Submodule `peppol-reporting-backend-httpclient` does not store data locally, but submits it via HTTP POST to a remote
 reporting collector, which stores the items and creates and sends the reports.
 This submodule was introduced in version 4.6.0.
 
 The items are sent as JSON envelopes (see above) with the content type `application/json`, in batches of at most the
 configured batch size. The request is authenticated with the HTTP header `X-Token`.
 
-Each reporting item requires a unique item ID, so only `storeReportingItem (String, PeppolReportingItem)` and
-`storeReportingItems (List <PeppolReportingItemWithID>)` are supported - `storeReportingItem (PeppolReportingItem)` throws
-an exception. Reading reporting items is not supported, because the reports are created by the collector.
+Each reporting item is submitted with its item ID, so that the collector can ignore items it already stored. Callers
+should use `storeReportingItem (String, PeppolReportingItem)` or `storeReportingItems (List <PeppolReportingItemWithID>)`
+with stable item IDs, because `storeReportingItem (PeppolReportingItem)` uses a new random UUID on every call.
+Reading reporting items is not supported, because the reports are created by the collector.
 Items with document types that are not eligible for reporting are skipped. All other items must belong to the
 configured Seat ID (the C2 ID for sent and the C3 ID for received messages, compared case-insensitively), otherwise an
 exception is thrown and nothing is submitted.
@@ -332,22 +335,22 @@ If an exception is thrown while submitting multiple batches, the batches submitt
 collector. As the collector ignores duplicates, all items can be submitted again.
 
 It supports the following configuration properties:
-* **`peppol.reporting.remote.url`**: the full URL of the collector endpoint to POST to. Must be an `http` or `https` URL;
+* **`peppol.reporting.httpclient.url`**: the full URL of the collector endpoint to POST to. Must be an `http` or `https` URL;
   a warning is logged for `http`, because the token is transmitted unencrypted.
-* **`peppol.reporting.remote.token`**: the authentication token to send in the HTTP header `X-Token`
-* **`peppol.reporting.remote.seatid`**: the Seat ID of the reporting service provider
-* **`peppol.reporting.remote.sourceid`**: the stable ID of this Access Point deployment (max. 64 characters - a UUID is
+* **`peppol.reporting.httpclient.token`**: the authentication token to send in the HTTP header `X-Token`
+* **`peppol.reporting.httpclient.seatid`**: the Seat ID of the reporting service provider
+* **`peppol.reporting.httpclient.sourceid`**: the stable ID of this Access Point deployment (max. 64 characters - a UUID is
   recommended). It must stay the same across restarts.
-* **`peppol.reporting.remote.maxbatchsize`**: the maximum number of items per request. Must be between 1 and 100.
+* **`peppol.reporting.httpclient.maxbatchsize`**: the maximum number of items per request. Must be between 1 and 100.
   Defaults to `100`.
-* **`peppol.reporting.remote.retry.maxattempts`**: the maximum number of attempts per request, including the first one.
+* **`peppol.reporting.httpclient.retry.maxattempts`**: the maximum number of attempts per request, including the first one.
   Must be at least 1. Defaults to `5`.
-* **`peppol.reporting.remote.retry.initialdelay`**: the delay before the first retry, e.g. `500ms` or `2s`. It is doubled
+* **`peppol.reporting.httpclient.retry.initialdelay`**: the delay before the first retry, e.g. `500ms` or `2s`. It is doubled
   for every further retry. Defaults to `1s`.
-* **`peppol.reporting.remote.retry.maxdelay`**: the maximum delay between two attempts. Must not be smaller than the
+* **`peppol.reporting.httpclient.retry.maxdelay`**: the maximum delay between two attempts. Must not be smaller than the
   initial delay. Defaults to `1m`.
-* The HTTP client settings of ph-httpclient (proxy, timeouts, TLS etc.) with the prefix `peppol.reporting.remote.`, e.g.
-  **`peppol.reporting.remote.http.proxy.host`** or **`peppol.reporting.remote.http.timeout.response`**.
+* The HTTP client settings of ph-httpclient (proxy, timeouts, TLS etc.) with the prefix `peppol.reporting.httpclient.`, e.g.
+  **`peppol.reporting.httpclient.http.proxy.host`** or **`peppol.reporting.httpclient.http.timeout.response`**.
   They are only read if the provided configuration is an `IConfigWithFallback` (as e.g. the one created by
   `ConfigFactory.getDefaultConfig ()`).
 
@@ -479,9 +482,11 @@ Note: all v1.x releases used the group ID `com.helger` only.
 # News and Noteworthy
 
 v4.6.0 - work in progress
-* Added new submodule `peppol-reporting-backend-remote` that submits reporting items to a remote reporting collector via HTTP, with retries using exponential back-off and jitter
+* Added new submodule `peppol-reporting-backend-httpclient` that submits reporting items to a remote reporting collector via HTTP, with retries using exponential back-off and jitter
 * Added class `PeppolReportingItemWithID` to combine a `PeppolReportingItem` with a unique item ID
-* Added the default methods `storeReportingItem (String, PeppolReportingItem)` and `storeReportingItems (List <PeppolReportingItemWithID>)` to `IPeppolReportingBackendSPI`
+* Added the method `storeReportingItem (String, PeppolReportingItem)` to `IPeppolReportingBackendSPI`, which every implementation must implement now. This is incompatible for custom backend implementations
+* `IPeppolReportingBackendSPI.storeReportingItem (PeppolReportingItem)` is now a default method that uses a random UUID as the item ID
+* Added the default method `storeReportingItems (List <PeppolReportingItemWithID>)` to `IPeppolReportingBackendSPI`
 * Added the envelope classes `PeppolReportingEnvelope`, `PeppolReportingSubmissionResponse` and `PeppolReportingRejectedItem` together with their JSON serializations `PeppolReportingEnvelopeJsonHelper` and `PeppolReportingSubmissionResponseJsonHelper` in the new package `com.helger.peppol.reporting.api.envelope`
 * Added `PeppolReportingItem.getReportingServiceProviderID ()`
 

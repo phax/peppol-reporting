@@ -24,11 +24,11 @@
     <artifactId>peppol-reporting-parent-pom</artifactId>
     <version>4.6.0-SNAPSHOT</version>
   </parent>
-  <artifactId>peppol-reporting-backend-remote</artifactId>
+  <artifactId>peppol-reporting-backend-httpclient</artifactId>
   <packaging>jar</packaging>
-  <name>peppol-reporting-backend-remote</name>
+  <name>peppol-reporting-backend-httpclient</name>
   <inceptionYear>2026</inceptionYear>
-  <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-remote</url>
+  <url>https://github.com/phax/peppol-reporting/peppol-reporting-backend-httpclient</url>
   <licenses>
     <license>
       <name>Apache 2</name>
