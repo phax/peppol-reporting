@@ -479,6 +479,94 @@ All checks are performed against the default Schematrons provided by OpenPeppol.
 * Reporting - The process of transmitting a **Report** to OpenPeppol
 * Reporting Period - The period for which reporting data is to be collected and transmitted to OpenPeppol 
 
+# Migration from v4 to v5
+
+v5 replaces the stateful, singleton `IPeppolReportingBackendSPI` with a stateless provider SPI that creates closable
+backends. The v4 API is still available, but deprecated for removal. Code using only
+`PeppolReportingBackend.getBackendService ()` and `PeppolReportingBackend.withBackendDo (...)` compiles and works
+unchanged, with deprecation warnings.
+
+## Using a backend
+
+| v4 | v5 |
+|----|----|
+| `PeppolReportingBackend.getBackendService ()` + `initBackend (aConfig)` | `PeppolReportingBackend.createBackend (aConfig)` - the backend is ready to use when it is returned |
+| `shutdownBackend ()` | `close ()` (or try-with-resources) |
+| `isInitialized ()` | not needed - a backend exists only after a successful creation |
+| `initBackend` returns `ESuccess.FAILURE` and logs the error | `createBackend` throws a `PeppolReportingBackendException` with the reason |
+| `withBackendDo (aConfig, aBackend -> ...)` | `try (final IPeppolReportingBackend aBackend = PeppolReportingBackend.createBackend (aConfig)) { ... }` |
+| `isBackendServiceConfigured ()` | `!PeppolReportingBackend.getAllBackendProviders ().isEmpty ()` |
+| `setBackendService (aBackendService)` | `new XxxSPI ().createBackend (aConfig)` on the desired provider |
+| `storeReportingItem (aReportingItem)` | `storeReportingItem (sItemID, aReportingItem)` with a stable item ID (e.g. the transaction ID) |
+| `iterateReportingItems (...)` / `forEachReportingItem (...)` on the backend | the same methods on `IPeppolReportingItemReader`, which all local backends implement, but not the `httpclient` backend |
+
+Before (v4):
+
+```java
+PeppolReportingBackend.withBackendDo (aConfig, aBackend -> {
+  aBackend.storeReportingItem (aReportingItem);
+  aBackend.forEachReportingItem (aYearMonth, aAccumulator::accept);
+});
+```
+
+After (v5):
+
+```java
+try (final IPeppolReportingBackend aBackend = PeppolReportingBackend.createBackend (aConfig))
+{
+  aBackend.storeReportingItem (sTransactionID, aReportingItem);
+  if (aBackend instanceof final IPeppolReportingItemReader aReader)
+    aReader.forEachReportingItem (aYearMonth, aAccumulator::accept);
+}
+```
+
+Long-running applications (e.g. an Access Point) should create the backend once at startup, keep it, and close it at
+shutdown, instead of calling `withBackendDo` for every item. The backend is thread-safe.
+
+## Configuration
+
+* If more than one backend submodule is on the classpath, set **`peppol.reporting.backend`** to the ID of the backend
+  to use (`csv`, `httpclient`, `inmemory`, `mongodb`, `redis` or `sql`). In v4 more than one backend on the classpath
+  meant that no backend was available at all. The deprecated `initBackend` and `withBackendDo` also use this property.
+* All backend-specific configuration properties are unchanged.
+
+## Custom backend implementations
+
+Custom implementations of `IPeppolReportingBackendSPI` are no longer loaded via SPI. They can still be set with the
+deprecated `PeppolReportingBackend.setBackendService (...)`, but should be migrated:
+
+1. Implement `IPeppolReportingBackendProviderSPI` (`getBackendID ()`, `getDisplayName ()` and `createBackend (IConfig)`)
+   and annotate it with `@IsSPIImplementation`.
+2. Rename the services file from `META-INF/services/com.helger.peppol.reporting.api.backend.IPeppolReportingBackendSPI`
+   to `META-INF/services/com.helger.peppol.reporting.api.backend.IPeppolReportingBackendProviderSPI`.
+3. Move the state that was set up in `initBackend` and released in `shutdownBackend` into a backend class created by
+   `createBackend`. Extend `AbstractPeppolReportingBackendWithReader` (or `AbstractPeppolReportingBackend` if the
+   backend can't read): implement `storeEligibleReportingItem`, `forEachReportingItemInRange` and optionally `onClose`.
+   The base classes validate the arguments, skip document types that are not eligible for reporting and reject calls
+   after closing.
+4. Report configuration and connection errors in `createBackend` by throwing `PeppolReportingBackendException`.
+5. Tests based on `AbstractPeppolReportingBackendSPITest` (submodule `peppol-reporting-test`) implement
+   `createProvider ()` instead of `createBackend ()`.
+
+## Subclasses of the provided backends
+
+The `...SPI` class of each submodule (e.g. `PeppolReportingBackendSqlSPI`) is now the provider and no longer implements
+`IPeppolReportingBackendSPI`. It keeps its configuration constants. The storage logic moved to a new backend class
+(e.g. `PeppolReportingBackendSql`). The overridable hooks changed like this:
+
+* Redis: `createJedisPool (IConfig)` was renamed to `createRedisClient (IConfig)`
+* MongoDB: `createDefaultClientWrapper (IConfig)` and `createClientWrapper (IConfig)` no longer return `null` but throw
+  `PeppolReportingBackendException` on invalid configuration
+* SQL: `createReportingDataSourceProvider (IJdbcConfiguration)` must not return `null`
+
+## Changed behaviour
+
+* MongoDB: a failed or not acknowledged insert now throws `PeppolReportingBackendException` instead of
+  `IllegalStateException`
+* SQL: a failed insert or Flyway migration now throws `PeppolReportingBackendException`
+* CSV: configuration errors now throw `PeppolReportingBackendException` instead of being only logged
+* Storing or reading on a closed backend throws `IllegalStateException`
+
 # Maven usage
 
 Add the following to your pom.xml to use this artifact, replacing `x.y.z` with the real version:
@@ -522,6 +610,7 @@ v5.0.0 - work in progress
 * Added class `PeppolReportingItemWithID` to combine a `PeppolReportingItem` with a unique item ID
 * Added the envelope classes `PeppolReportingEnvelope`, `PeppolReportingSubmissionResponse` and `PeppolReportingRejectedItem` together with their JSON serializations `PeppolReportingEnvelopeJsonHelper` and `PeppolReportingSubmissionResponseJsonHelper` in the new package `com.helger.peppol.reporting.api.envelope`
 * Added `PeppolReportingItem.getReportingServiceProviderID ()`
+* See the section "Migration from v4 to v5" for upgrading
 
 v4.5.0 - 2026-11-16
 * The SQL backend now overrides `forEachReportingItem` to pass each reporting item to the consumer while reading the result set, instead of collecting all items in a list first
